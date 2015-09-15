@@ -1,0 +1,8 @@
+{
+  "name": "agarden.io",
+  "version": "0.0.1",
+  "description": "Realtime multiplayer web game",
+  "dependencies": {
+    "express": "^4.13.3"
+  }
+}
