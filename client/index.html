@@ -1,0 +1,40 @@
+<html>
+
+<head>
+    <title>agarden.io</title>
+</head>
+
+<style>
+    html, body {
+        width:  100%;
+        height: 100%;
+        margin: 0px;
+    }
+</style>
+
+<body>
+    <canvas id="canvas"></canvas>
+</body>
+
+<script>
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    ctx.canvas.width = window.innerWidth;
+    ctx.canvas.height = window.innerHeight;
+
+    ctx.fillStyle = "green";
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    // Main game loop
+    var lastTime;
+    function main() {
+        var now = Date.now();
+        var dt = (now - lastTime) / 1000.0;
+        update(dt);
+        render();
+        lastTime = now;
+        requestAnimationFrame(main);
+    };
+</script>
+
+</html>
