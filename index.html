@@ -2,6 +2,8 @@
 
 <head>
     <title>agarden.io</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
 </head>
 
 <style>
@@ -13,27 +15,41 @@
 </style>
 
 <body>
+    <div id="startScreen"></div>
+    <div id="gameoverScreen"></div>
     <canvas id="canvas"></canvas>
 </body>
 
 <script>
-    var canvas = document.getElementById("canvas");
-    var ctx = canvas.getContext("2d");
-    ctx.canvas.width = window.innerWidth;
-    ctx.canvas.height = window.innerHeight;
+    var socket = io();
 
-    ctx.fillStyle = "green";
+    var users = [];
+    var leaderboard = [];
+
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    ctx.fillStyle = 'green';
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    var lineColor = '#000000';
+    var backgroundColor = '#f2fbff';
+
+    function drawGrid() {
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = lineColor;
+    }
 
     // Main game loop
     var lastTime;
-    function main() {
+    function gameLoop() {
         var now = Date.now();
         var dt = (now - lastTime) / 1000.0;
         update(dt);
         render();
         lastTime = now;
-        requestAnimationFrame(main);
+        requestAnimationFrame(gameLoop);
     };
 </script>
 
