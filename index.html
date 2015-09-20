@@ -22,6 +22,16 @@
     ctx.canvas.width = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
 
+    // Total number of tiles in game 
+    var total_tiles_h = 50;
+    var total_tiles_w = 100;
+
+    var tile_edge_length = 15;
+
+    function drawGameGrid(total_width, total_height){
+
+    }
+
     ctx.fillStyle = "green";
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
@@ -30,7 +40,7 @@
     // That player can then move their own circle around the game
 
     // Draw circles
-    ctx.beginPath();
+/*    ctx.beginPath();
     ctx.arc(100,75,10,0,2*Math.PI);
     //ctx.stroke(); // This draws an outline, fill() draws a solid shape
 
@@ -44,29 +54,47 @@
     // Fills in circles
     ctx.fillStyle="blue";
     ctx.fill();
-
-    // Draw a grid
-    // http://stackoverflow.com/questions/11735856/draw-grid-table-on-canvas-html5
-    /*var bw = window.innerWidth;
-    var bh = window.innerHeight;
-    var p = 0;
-
-    function drawGrid(){
-        for (var x = 0; x <= bw; x += 40){
-            ctx.moveTo(0.5 + x + p, p);
-            ctx.lineTo(0.5 + x + p, bh + p);
+*/
+    // Function to initialize an array
+    Array.build = function(numrows, numcols, init_val){
+        var arr = [];
+        for (var i = 0; i < numrows; i++){
+            var column = [];
+            for (var j = 0; j < numcols; j++){
+                column[j] = init_val;
+            }
+            arr[i] = column;
         }
 
-        for (var x = 0; x <= bh; x += 40){
-              ctx.moveTo(p, 0.5 + x + p);
-              ctx.lineTo(bw + p, 0.5 + x + p);
-        }
-
-        ctx.strokeStyle = "black";
-        ctx.stroke();
+        return arr;
     }
 
-    drawGrid();*/
+    // Build an array
+    var board = Array.build(total_tiles_h, total_tiles_w, 0);
+
+    board[3][0] = 1;
+    board[5][0] = 1;
+
+    // Test draw array
+    for (var y = 0; y < total_tiles_h; y++){
+        for (var x = 0; x <total_tiles_w; x++){
+            ctx.strokeRect(x*tile_edge_length, y*tile_edge_length, tile_edge_length, tile_edge_length);
+            switch(board[y][x]){
+                case(0):
+                    document.write("0");
+                    ctx.fillStyle = "purple";
+                    break;
+                case(1):
+                    document.write("1");
+                    ctx.fillStyle = "red";
+                    break;
+                default:
+                    ctx.fillStyle = "black";
+                    break;
+            }
+            ctx.fillRect(x*tile_edge_length, y*tile_edge_length, tile_edge_length, tile_edge_length);
+        }
+    }
 
     // Main game loop
     var lastTime;
