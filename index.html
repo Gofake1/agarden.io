@@ -17,6 +17,13 @@
 </body>
 
 <script>
+
+    // TODO
+    // Current Power Up text in the top left
+    // Score rectangle in the bottom left, similar to leaderboard code
+    // Finding/Adding sprites
+    // Make colors sensible
+
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
     ctx.canvas.width = window.innerWidth;
@@ -28,33 +35,9 @@
 
     var tile_edge_length = 15;
 
-    function drawGameGrid(total_width, total_height){
-
-    }
-
     ctx.fillStyle = "green";
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-
-    // When we actually make this work we should probably draw a circle when a player connects
-    // That player can then move their own circle around the game
-
-    // Draw circles
-/*    ctx.beginPath();
-    ctx.arc(100,75,10,0,2*Math.PI);
-    //ctx.stroke(); // This draws an outline, fill() draws a solid shape
-
-    // Fills in circles
-    ctx.fillStyle="red";
-    ctx.fill();
-
-    // Draw circles
-    ctx.beginPath();
-    ctx.arc(300,400,10,0,2*Math.PI);
-    // Fills in circles
-    ctx.fillStyle="blue";
-    ctx.fill();
-*/
     // Function to initialize an array
     Array.build = function(numrows, numcols, init_val){
         var arr = [];
@@ -69,32 +52,73 @@
         return arr;
     }
 
-    // Build an array
-    var board = Array.build(total_tiles_h, total_tiles_w, 0);
+    // MAKE SURE TO SEPARATE STUFF OUT LATER!!!!!
+    function drawGrid(){
+        // Build an array
+        var board = Array.build(total_tiles_h, total_tiles_w, 0);
 
-    board[3][0] = 1;
-    board[5][0] = 1;
+        board[3][0] = 1;
+        board[5][0] = 1;
 
-    // Test draw array
-    for (var y = 0; y < total_tiles_h; y++){
-        for (var x = 0; x <total_tiles_w; x++){
-            ctx.strokeRect(x*tile_edge_length, y*tile_edge_length, tile_edge_length, tile_edge_length);
-            switch(board[y][x]){
-                case(0):
-                    document.write("0");
-                    ctx.fillStyle = "purple";
-                    break;
-                case(1):
-                    document.write("1");
-                    ctx.fillStyle = "red";
-                    break;
-                default:
-                    ctx.fillStyle = "black";
-                    break;
+        // Test draw array
+        for (var y = 0; y < total_tiles_h; y++){
+            for (var x = 0; x <total_tiles_w; x++){
+                ctx.strokeRect(x*tile_edge_length, y*tile_edge_length, tile_edge_length, tile_edge_length);
+                switch(board[y][x]){
+                    case(0):
+                        document.write("0");
+                        ctx.fillStyle = "purple";
+                        break;
+                    case(1):
+                        document.write("1");
+                        ctx.fillStyle = "red";
+                        break;
+                    default:
+                        ctx.fillStyle = "black";
+                        break;
+                }
+                ctx.fillRect(x*tile_edge_length, y*tile_edge_length, tile_edge_length, tile_edge_length);
             }
-            ctx.fillRect(x*tile_edge_length, y*tile_edge_length, tile_edge_length, tile_edge_length);
         }
     }
+
+    // Draws the leaderboard
+    // MAKE THIS DYNAMIC, GLOBAL CONSTANTS
+    function drawLeaderboard(){
+        ctx.globalAlpha = 0.4;
+        ctx.strokeRect(window.innerWidth-300, 30, 250, 250);
+        ctx.fillStyle = "black";
+        ctx.fillRect(window.innerWidth-300, 30, 250, 250);
+
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = "white";
+        ctx.font = "20px Georgia";
+        ctx.fillText("Leaderboard", window.innerWidth-225, 50);
+    }
+
+    drawGrid();
+
+    // When we actually make this work we should probably draw a circle when a player connects
+    // That player can then move their own circle around the game
+    // MAKE A DRAW PLAYER FUNCTION!!!!!
+
+    // Draw circles
+    ctx.beginPath();
+    ctx.arc(100,75,10,0,2*Math.PI);
+    //ctx.stroke(); // This draws an outline, fill() draws a solid shape
+
+    // Fills in circles
+    ctx.fillStyle="red";
+    ctx.fill();
+
+    // Draw circles
+    ctx.beginPath();
+    ctx.arc(300,400,10,0,2*Math.PI);
+    // Fills in circles
+    ctx.fillStyle="blue";
+    ctx.fill();
+
+    drawLeaderboard();
 
     // Main game loop
     var lastTime;
