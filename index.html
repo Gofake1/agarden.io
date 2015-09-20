@@ -25,6 +25,26 @@
     ctx.fillStyle = "green";
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
+
+    // When we actually make this work we should probably draw a circle when a player connects
+    // That player can then move their own circle around the game
+
+    // Draw circles
+    ctx.beginPath();
+    ctx.arc(100,75,10,0,2*Math.PI);
+    //ctx.stroke(); // This draws an outline, fill() draws a solid shape
+
+    // Fills in circles
+    ctx.fillStyle="red";
+    ctx.fill();
+
+    // Draw circles
+    ctx.beginPath();
+    ctx.arc(300,400,10,0,2*Math.PI);
+    // Fills in circles
+    ctx.fillStyle="blue";
+    ctx.fill();
+
     // Main game loop
     var lastTime;
     function main() {
