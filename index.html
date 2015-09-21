@@ -67,7 +67,7 @@
     var lineColor = '#000000';
     var backgroundColor = '#f2fbff';
 
-    // Function to initialize an array
+    // Initialize game array
     Array.build = function(numRows, numCols, value){
         var array = [];
         for (var i = 0; i < numRows; i++){
@@ -95,11 +95,9 @@
                 ctx.strokeRect(x*tileLength, y*tileLength, tileLength, tileLength);
                 switch(board[y][x]){
                     case(0):
-                        document.write('0');
-                        ctx.fillStyle = 'purple';
+                        ctx.fillStyle = 'green';
                         break;
                     case(1):
-                        document.write('1');
                         ctx.fillStyle = 'red';
                         break;
                     default:
