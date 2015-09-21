@@ -45,11 +45,6 @@
     var lineColor = '#000000';
     var backgroundColor = '#f2fbff';
 
-    function drawGrid() {
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = lineColor;
-    }
-
     // Function to initialize an array
     Array.build = function(numRows, numCols, value){
         var array = [];
@@ -108,8 +103,21 @@
         ctx.fillText('Leaderboard', window.innerWidth-225, 50);
     }
 
+    // Draws the current score
+    // MAKE THIS DYNAMIC
+    function drawScore(){
+        ctx.globalAlpha = 0.4;
+        ctx.strokeRect(30, window.innerHeight, 20, 50);
+        ctx.fillStyle = "black";
+        ctx.fillRect(30, window.innerHeight, 20, 50);
+
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = 'white';
+        ctx.font = '20px Georgia';
+        ctx.fillText('Score: ', 0, window.innerHeight);
+    }
+
     drawGrid();
-    drawLeaderboard();
 
     // When we actually make this work we should probably draw a circle when a player connects
     // That player can then move their own circle around the game
@@ -130,6 +138,8 @@
     // Fills in circles
     ctx.fillStyle = 'blue';
     ctx.fill();
+
+    drawLeaderboard();
 
     // Main game loop
     var lastTime;
