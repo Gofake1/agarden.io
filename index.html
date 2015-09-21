@@ -35,12 +35,27 @@
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Play</button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="modal fade" id="gameoverScreen"></div>
+    <div class="modal fade" id="gameoverScreen">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">You died</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Largest size</p>
+                    <p>Time alive</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Play again</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <canvas id="canvas"></canvas>
 </body>
 
@@ -48,6 +63,12 @@
     // Start screen modal
     $(document).ready(function() {
         $("#startScreen").modal();
+    });
+
+    // TODO: Trigger game screen modal 
+    // For the demo, clicking anywhere triggers the game over modal
+    $("#canvas").click(function() {
+        $("#gameoverScreen").modal();
     });
 
     var socket = io();
@@ -117,7 +138,7 @@
 
     // Draws the leaderboard
     // MAKE THIS DYNAMIC, GLOBAL CONSTANTS
-    function drawLeaderboard(){
+    function drawLeaderboard() {
         ctx.globalAlpha = 0.4;
         ctx.strokeRect(window.innerWidth-300, 30, 250, 250);
         ctx.fillStyle = 'black';
@@ -131,7 +152,7 @@
 
     // Draws the current score
     // MAKE THIS DYNAMIC
-    function drawScore(){
+    function drawScore() {
         ctx.globalAlpha = 0.4;
         ctx.strokeRect(10, window.innerHeight-60, 200, 50);
         ctx.fillStyle = "black";
@@ -143,7 +164,7 @@
         ctx.fillText('Score: ', 15, window.innerHeight-30);
     }
 
-    function drawCurrentPowerup(){
+    function drawCurrentPowerup() {
         ctx.globalAlpha = 0.4;
         ctx.strokeRect(10, 10, 275, 50);
         ctx.fillStyle = "black";
