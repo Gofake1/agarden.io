@@ -1,2 +1,3 @@
 water_bucket.png: http://vignette1.wikia.nocookie.net/thetekkit/images/d/d3/Water_Bucket.png/revision/latest?cb=20120811211403
 
+plants.png: http://s1065.photobucket.com/user/sweet7tiger/media/Outside.png.html
