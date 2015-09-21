@@ -108,13 +108,33 @@
         return array;
     }
 
+    // Draws a sprite at a specified location
+    function drawSprite(xpos, ypos, sprite){
+
+    }
+
     // MAKE SURE TO SEPARATE STUFF OUT LATER!!!!!
     function drawGrid(){
         // Build an array
         var board = Array.build(gridHeight, gridWidth, 0);
 
+        // Red Farmer
         board[3][28] = 1;
-        board[35][70] = 1;
+        board[3][29] = 1;
+        board[4][28] = 1;
+        board[5][28] = 1;
+        board[4][29] = 1;
+        board[5][29] = 1;
+        board[3][30] = 1;
+
+        // Purple Farmer
+        board[35][70] = 2;
+        board[36][70] = 2;
+        board[37][70] = 2;
+        board[36][71] = 2;
+        board[36][72] = 2;
+        board[35][71] = 2;
+
 
         // Test draw array
         for (var y = 0; y < gridHeight; y++){
@@ -126,6 +146,9 @@
                         break;
                     case(1):
                         ctx.fillStyle = 'red';
+                        break;
+                    case(2):
+                        ctx.fillStyle = 'purple';
                         break;
                     default:
                         ctx.fillStyle = 'black';
@@ -189,7 +212,7 @@
 
         ctx.beginPath();
         ctx.arc(300,400,10,0,2*Math.PI);
-        ctx.fillStyle = 'blue';
+        ctx.fillStyle = 'purple';
         ctx.fill();
     }
 
