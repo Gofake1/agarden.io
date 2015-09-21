@@ -20,15 +20,17 @@
 <body>
     <div class="modal fade" id="startScreen" role="dialog">
         <div class="modal-dialog">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Start</h4>
-            </div>
-            <div class="modal-body">
-                <p>Hi Spencer</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Start</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Hi Spencer</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -150,25 +152,26 @@
         ctx.fillText('Current powerup: ', 15, 35);
     }
 
-    drawGrid();
-
     // When we actually make this work we should probably draw a circle when a player connects
     // That player can then move their own circle around the game
-    // drawPlayer()
+    function drawPlayers() {
+        // Draw circles
+        ctx.beginPath();
+        ctx.arc(100,75,10,0,2*Math.PI);
+        //ctx.stroke(); // This draws an outline, fill() draws a solid shape
+        // Fills in circles
+        ctx.fillStyle = 'red';
+        ctx.fill();
 
-    // Draw circles
-    ctx.beginPath();
-    ctx.arc(100,75,10,0,2*Math.PI);
-    //ctx.stroke(); // This draws an outline, fill() draws a solid shape
-    // Fills in circles
-    ctx.fillStyle = 'red';
-    ctx.fill();
+        ctx.beginPath();
+        ctx.arc(300,400,10,0,2*Math.PI);
+        ctx.fillStyle = 'blue';
+        ctx.fill();
+    }
 
-    ctx.beginPath();
-    ctx.arc(300,400,10,0,2*Math.PI);
-    ctx.fillStyle = 'blue';
-    ctx.fill();
-
+    // Drawing order is important
+    drawGrid();
+    drawPlayers();
     drawLeaderboard();
     drawScore();
     drawCurrentPowerup();
