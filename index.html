@@ -66,8 +66,8 @@
         // Build an array
         var board = Array.build(gridHeight, gridWidth, 0);
 
-        board[3][0] = 1;
-        board[5][0] = 1;
+        board[3][28] = 1;
+        board[35][70] = 1;
 
         // Test draw array
         for (var y = 0; y < gridHeight; y++){
@@ -109,14 +109,26 @@
     // MAKE THIS DYNAMIC
     function drawScore(){
         ctx.globalAlpha = 0.4;
-        ctx.strokeRect(30, window.innerHeight, 20, 50);
+        ctx.strokeRect(10, window.innerHeight-60, 200, 50);
         ctx.fillStyle = "black";
-        ctx.fillRect(30, window.innerHeight, 20, 50);
+        ctx.fillRect(10, window.innerHeight-60, 200, 50);
 
         ctx.globalAlpha = 0.9;
         ctx.fillStyle = 'white';
         ctx.font = '20px Georgia';
-        ctx.fillText('Score: ', 0, window.innerHeight);
+        ctx.fillText('Score: ', 15, window.innerHeight-30);
+    }
+
+    function drawCurrentPowerup(){
+        ctx.globalAlpha = 0.4;
+        ctx.strokeRect(10, 10, 275, 50);
+        ctx.fillStyle = "black";
+        ctx.fillRect(10, 10, 275, 50);
+
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = 'white';
+        ctx.font = '20px Georgia';
+        ctx.fillText('Current powerup: ', 15, 35);
     }
 
     drawGrid();
@@ -142,6 +154,8 @@
     ctx.fill();
 
     drawLeaderboard();
+    drawScore();
+    drawCurrentPowerup();
 
     // Main game loop
     var lastTime;
