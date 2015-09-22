@@ -117,11 +117,11 @@
     }
 
     // This function is designed to draw a dirt tile at the specified x,y coords
-    function drawTile_Dirt(x,y) {
+    function drawTile_dirt(x,y) {
         // Grab the image from the webpage
         var tile_img = document.getElementById("tile_dirt");
         // This is the factor by which the image needs to be scaled
-        var scaler = .07;
+        var scaler = .055;
         // slider is the number of units the image must be moved over to be centered in a cell
         var slider = 0;
 
@@ -130,6 +130,22 @@
         ctx.drawImage(tile_img, x/scaler*tileLength+slider, y/scaler*tileLength+slider);
         ctx.scale(1/scaler,1/scaler);
     }
+
+    // This function is designed to draw a dirt tile at the specified x,y coords
+    function drawTile_plant(x,y) {
+        // Grab the image from the webpage
+        var tile_img = document.getElementById("tile_plant");
+        // This is the factor by which the image needs to be scaled
+        var scaler = .07;
+        // slider is the number of units the image must be moved over to be centered in a cell
+        var slider = 0;
+
+        // Scale down the canvas to draw the image, draw it, scale back up
+        ctx.scale(scaler,scaler);
+        ctx.drawImage(tile_img, x/scaler*tileLength+slider, y/scaler*tileLength+slider);
+        ctx.scale(1/scaler,1/scaler);
+    }
+
 
     // MAKE SURE TO SEPARATE STUFF OUT LATER!!!!!
     function drawGrid(){
@@ -161,15 +177,21 @@
                 switch(board[y][x]){
                     case(0):
                         //ctx.fillStyle = 'green';
-                        drawTile_Dirt(x,y);
+                        drawTile_dirt(x,y);
                         break;
                     case(1):
                         ctx.fillStyle = 'red';
                         ctx.fillRect(x*tileLength, y*tileLength, tileLength, tileLength);
+                        ctx.globalAlpha = 0.7;
+                        drawTile_plant(x,y);
+                        ctx.globalAlpha = 1;
                         break;
                     case(2):
                         ctx.fillStyle = 'purple';
                         ctx.fillRect(x*tileLength, y*tileLength, tileLength, tileLength);
+                        ctx.globalAlpha = 0.7;
+                        drawTile_plant(x,y);
+                        ctx.globalAlpha = 1;
                         break;
                     default:
                         ctx.fillStyle = 'black';
