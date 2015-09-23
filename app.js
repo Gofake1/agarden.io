@@ -51,7 +51,7 @@ Array.build = function(numRows, numCols, value) {
 
 // Draws a sprite at a specified location
 function drawSprite(xpos, ypos, src, scalar, offset) {
-    sprite = new Image();
+    var sprite = new Image();
     sprite.src = src;
     sprite.onload = function() {
         // Scale down the canvas to draw the image, draw it, then scale back up
