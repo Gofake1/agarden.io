@@ -11,16 +11,26 @@ $('#canvas').click(function() {
 
 var socket = io();
 
+// Initialize game array
+Array.build = function(numRows, numCols, value) {
+    var array = [];
+    for (var i = 0; i < numRows; i++){
+        var column = [];
+        for (var j = 0; j < numCols; j++){
+            column[j] = value;
+        }
+        array[i] = column;
+    }
+    return array;
+}
+
 var players = [
     { x: 100, y: 75, color: 'red' },
     { x: 300, y: 400, color: 'purple' }
 ];
+//var board = Array.build(gridHeight, gridWidth, 0);
+//var pickups = Array.build(gridHeight, gridWidth, 0);
 var leaderboard = [];
-
-// TODO:
-// Finding/Adding sprites
-// Make colors sensible
-// Start screen and game over screen
 
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
@@ -36,22 +46,9 @@ ctx.fillStyle = 'green';
 ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 var lineColor = '#000000';
 
-// Initialize game array
-Array.build = function(numRows, numCols, value) {
-    var array = [];
-    for (var i = 0; i < numRows; i++){
-        var column = [];
-        for (var j = 0; j < numCols; j++){
-            column[j] = value;
-        }
-        array[i] = column;
-    }
-    return array;
-}
-
 // Draws a sprite at a specified location
 function drawSprite(xpos, ypos, src, scalar, offset) {
-    sprite = new Image();
+    var sprite = new Image();
     sprite.src = src;
     sprite.onload = function() {
         // Scale down the canvas to draw the image, draw it, then scale back up
@@ -63,9 +60,7 @@ function drawSprite(xpos, ypos, src, scalar, offset) {
 
 // MAKE SURE TO SEPARATE STUFF OUT LATER!!!!!
 function drawGrid() {
-    // Build an array for the game "ground"
     var board = Array.build(gridHeight, gridWidth, 0);
-
     // Red Farmer
     board[3][28] = 1;
     board[3][29] = 1;
@@ -115,9 +110,7 @@ function drawGrid() {
 }
 
 function drawPickups() {
-    // Build an array for the powerups
     var pickups = Array.build(gridHeight, gridWidth, 0);
-
     // 'w' could stand for water, currently just testing to see if it works
     pickups[3][28] = 1;
     pickups[4][29] = 1;
@@ -147,6 +140,10 @@ function drawLeaderboard() {
     ctx.fillStyle = 'white';
     ctx.font = '20px Arial';
     ctx.fillText('Leaderboard', window.innerWidth-225, 50);
+
+    leaderboard.forEach(function() {
+        // Print player and score
+    });
 }
 
 // MAKE THIS DYNAMIC
@@ -186,16 +183,7 @@ function drawPlayers() {
 }
 
 // Main game loop
-// var lastTime;
-// function gameLoop() {
-//     var now = Date.now();
-//     var dt = (now - lastTime) / 1000.0;
-//     update(dt);
-//     render();
-//     lastTime = now;
-//     requestAnimationFrame(gameLoop);
-// };
-
+var lastTime;
 // TODO: actually animate
 // Currently static
 function gameLoop() {
@@ -205,6 +193,21 @@ function gameLoop() {
     drawLeaderboard();
     drawScore();
     drawCurrentPowerup();
+    // var now = Date.now();
+    // var dt = (now - lastTime) / 1000.0;
+    // update(dt);
+    // render();
+    // lastTime = now;
+    // requestAnimationFrame(gameLoop);
+}
+
+function init() {
+    // document.getElementById('play-again').addEventListener('click', function() {
+    //     reset();
+    // });
+    reset();
+    lastTime = Date.now();
+    gameLoop();
 }
 
 gameLoop();
