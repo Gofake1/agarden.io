@@ -47,13 +47,15 @@ ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 var lineColor = '#000000';
 
 // Draws a sprite at a specified location
-function drawSprite(xpos, ypos, src, scalar, offset) {
+function drawSprite(xpos, ypos, src, scalar, offset, alpha=1) {
     var sprite = new Image();
     sprite.src = src;
     sprite.onload = function() {
         // Scale down the canvas to draw the image, draw it, then scale back up
         ctx.scale(scalar, scalar);
+        ctx.globalAlpha = alpha;
         ctx.drawImage(sprite, xpos/scalar*tileLength+offset, ypos/scalar*tileLength+offset);
+        ctx.globalAlpha = 1.0;
         ctx.scale(1/scalar, 1/scalar);
     };
 }
@@ -88,17 +90,12 @@ function drawGrid() {
                 case (1):
                     ctx.fillStyle = 'red';
                     ctx.fillRect(x*tileLength, y*tileLength, tileLength, tileLength);
-                    ctx.globalAlpha = 0.7;
-                    drawSprite(x, y, 'sprites/plant.png', .07, 0);
-                    ctx.globalAlpha = 1;
-                    break;
+                    drawSprite(x, y, 'sprites/plant.png', .07, 0, .7);                    break;
                 case (2):
                     ctx.fillStyle = 'purple';
                     ctx.fillRect(x*tileLength, y*tileLength, tileLength, tileLength);
-                    ctx.globalAlpha = 0.7;
-                    drawSprite(x, y, 'sprites/plant.png', .07, 0);
-                    ctx.globalAlpha = 1;
-                    break;
+                    drawSprite(x, y, 'sprites/plant.png', .07, 0, .7);
+=                    break;
                 default:
                     ctx.fillStyle = 'black';
                     ctx.fillRect(x*tileLength, y*tileLength, tileLength, tileLength);
@@ -176,7 +173,7 @@ function drawCurrentPowerup() {
 function drawPlayers() {
     players.forEach(function(x, y, color) {
         ctx.beginPath();
-        ctx.arc(x, y, 10, 0, 2*Math.PI);
+        ctx.arc(x, y, 10, 0, 2*Math.PI, false);
         ctx.fillStyle = color;
         ctx.fill();
     });
@@ -211,3 +208,8 @@ function init() {
 }
 
 gameLoop();
+
+
+
+
+

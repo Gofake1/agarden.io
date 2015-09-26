@@ -1,4 +1,4 @@
-// https://github.com/jlongster/canvas-game-bootstrap/blob/master/js/resources.js
+/z/ https://github.com/jlongster/canvas-game-bootstrap/blob/master/js/resources.js
 (function() {
     var resourceCache = {};
     var loading = [];
