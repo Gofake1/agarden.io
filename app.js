@@ -28,6 +28,7 @@ var players = [
     { x: 100, y: 75, color: 'red' },
     { x: 300, y: 400, color: 'purple' }
 ];
+
 //var board = Array.build(gridHeight, gridWidth, 0);
 //var pickups = Array.build(gridHeight, gridWidth, 0);
 var leaderboard = [];
@@ -174,11 +175,13 @@ function drawCurrentPowerup() {
 // When we actually make this work we should probably draw a circle when a player connects
 // That player can then move their own circle around the game
 function drawPlayers() {
-    players.forEach(function(x, y, color) {
+    var i = 0;
+    players.forEach(function() {
         ctx.beginPath();
-        ctx.arc(x, y, 10, 0, 2*Math.PI);
-        ctx.fillStyle = color;
+        ctx.arc(players[i].x, players[i].y, 10, 0, 2*Math.PI);
+        ctx.fillStyle = players[i].color;
         ctx.fill();
+        i++;
     });
 }
 
@@ -187,7 +190,7 @@ var lastTime;
 // TODO: actually animate
 // Currently static
 function gameLoop() {
-    drawGrid();
+    //drawGrid();
     drawPickups();
     drawPlayers();
     drawLeaderboard();
