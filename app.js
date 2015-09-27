@@ -11,26 +11,23 @@ $('#canvas').click(function() {
 
 var socket = io();
 
-// Initialize game array
-Array.build = function(numRows, numCols, value) {
-    var array = [];
+// Create 2d array
+var Board = function(numRows, numCols, value) {
+    this.array = new Array;
     for (var i = 0; i < numRows; i++){
-        var column = [];
+        var column = new Array;
         for (var j = 0; j < numCols; j++){
-            column[j] = value;
+            column.push(value);
         }
-        array[i] = column;
+        this.array.push(column);
     }
-    return array;
+    return this.array;
 }
 
 var players = [
     { x: 100, y: 75, color: 'red' },
     { x: 300, y: 400, color: 'purple' }
 ];
-//var board = Array.build(gridHeight, gridWidth, 0);
-//var pickups = Array.build(gridHeight, gridWidth, 0);
-var leaderboard = [];
 
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
@@ -42,12 +39,13 @@ var gridHeight = 50;
 var gridWidth = 100;
 var tileLength = 15;
 
-ctx.fillStyle = 'green';
-ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-var lineColor = '#000000';
+// Global variables
+var board = Board(gridHeight, gridWidth, 0);
+var pickups = Board(gridHeight, gridWidth, 0);
+var leaderboard = [];
 
 // Draws a sprite at a specified location
-function drawSprite(xpos, ypos, src, scalar, offset, alpha=1) {
+function drawSprite(xpos, ypos, src, scalar, offset, alpha) {
     var sprite = new Image();
     sprite.src = src;
     sprite.onload = function() {
@@ -62,7 +60,6 @@ function drawSprite(xpos, ypos, src, scalar, offset, alpha=1) {
 
 // MAKE SURE TO SEPARATE STUFF OUT LATER!!!!!
 function drawGrid() {
-    var board = Array.build(gridHeight, gridWidth, 0);
     // Red Farmer
     board[3][28] = 1;
     board[3][29] = 1;
@@ -90,12 +87,13 @@ function drawGrid() {
                 case (1):
                     ctx.fillStyle = 'red';
                     ctx.fillRect(x*tileLength, y*tileLength, tileLength, tileLength);
-                    drawSprite(x, y, 'sprites/plant.png', .07, 0, .7);                    break;
+                    drawSprite(x, y, 'sprites/plant.png', .07, 0, .7);
+                    break;
                 case (2):
                     ctx.fillStyle = 'purple';
                     ctx.fillRect(x*tileLength, y*tileLength, tileLength, tileLength);
                     drawSprite(x, y, 'sprites/plant.png', .07, 0, .7);
-=                    break;
+                    break;
                 default:
                     ctx.fillStyle = 'black';
                     ctx.fillRect(x*tileLength, y*tileLength, tileLength, tileLength);
@@ -107,7 +105,6 @@ function drawGrid() {
 }
 
 function drawPickups() {
-    var pickups = Array.build(gridHeight, gridWidth, 0);
     // 'w' could stand for water, currently just testing to see if it works
     pickups[3][28] = 1;
     pickups[4][29] = 1;
@@ -199,17 +196,15 @@ function gameLoop() {
 }
 
 function init() {
+    // Fill the canvas with green
+    ctx.fillStyle = 'green';
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     // document.getElementById('play-again').addEventListener('click', function() {
     //     reset();
     // });
-    reset();
+    // reset();
     lastTime = Date.now();
     gameLoop();
 }
 
-gameLoop();
-
-
-
-
-
+init();
