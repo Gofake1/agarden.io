@@ -44,6 +44,20 @@ var board = Board(gridHeight, gridWidth, 0);
 var pickups = Board(gridHeight, gridWidth, 0);
 var leaderboard = [];
 
+// Describes this specific player
+var player = {
+    x: ctx.canvas.width/2,
+    y: ctx.canvas.height/2
+};
+
+// Array of all players, don't think we need this in the long run
+var players = [
+    { x: 100, y: 75, color: 'red' },
+    { x: 300, y: 400, color: 'purple' }
+];
+
+document.addEventListener('mousemove', mouseInput, false);
+
 // Draws a sprite at a specified location
 function drawSprite(xpos, ypos, src, scalar, offset, alpha) {
     var sprite = new Image();
@@ -165,6 +179,7 @@ function drawCurrentPowerup() {
     ctx.fillText('Current powerup: ', 15, 35);
 }
 
+// MAKE THIS DYNAMIC
 // When we actually make this work we should probably draw a circle when a player connects
 // That player can then move their own circle around the game
 function drawPlayers() {
@@ -176,6 +191,26 @@ function drawPlayers() {
     });
 }
 
+// TEST, CUT LATER
+function drawPlayer() {
+        color = "black";
+        ctx.beginPath();
+        ctx.arc(player.x, player.y, 10, 0, 2*Math.PI, false);
+        ctx.fillStyle = color;
+        ctx.fill();
+}
+
+// Handles mouse movement
+function mouseInput(mouse){
+    player.x = mouse.clientX - ctx.canvas.width/2;
+    player.y = mouse.clientY - ctx.canvas.height/2; 
+}
+
+// Handles keyboard input
+/*function keyInput(){
+
+}*/
+
 // Main game loop
 var lastTime;
 // TODO: actually animate
@@ -183,10 +218,12 @@ var lastTime;
 function gameLoop() {
     drawGrid();
     drawPickups();
-    drawPlayers();
+    //drawPlayers();
+    drawPlayer();
     drawLeaderboard();
     drawScore();
     drawCurrentPowerup();
+  
     // var now = Date.now();
     // var dt = (now - lastTime) / 1000.0;
     // update(dt);
