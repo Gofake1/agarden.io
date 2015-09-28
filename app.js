@@ -63,7 +63,8 @@ function drawSprite(xpos, ypos, src, scalar, offset, alpha=1) {
 }
 
 // MAKE SURE TO SEPARATE STUFF OUT LATER!!!!!
-function drawGrid(xmin, ymin, xmax, ymax, tileLength) {
+function drawGrid(xmin, ymin, xmax, ymax, tileLength)
+{
     var board = Array.build(gridHeight, gridWidth, 0);
     // Red Farmer
     board[3][28] = 1;
@@ -88,31 +89,30 @@ function drawGrid(xmin, ymin, xmax, ymax, tileLength) {
         {
             if (x*tileLength>=xmin-tileLength && x*tileLength<xmax && y*tileLength>=ymin-tileLength && y*tileLength<ymax)
             {
-                ctx.strokeRect(x*tileLength, y*tileLength, tileLength, tileLength);
+                ctx.strokeRect(x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength);
                 switch (board[y][x]) 
                 {
                 case (0):
-                    drawSprite(x*tileLength, y*tileLength, 'sprites/dirt.jpg', .191, 0);
+                    drawSprite(x*tileLength-xmin, y*tileLength-ymin, 'sprites/dirt.jpg', .191, 0);
                     break;
                 case (1):
                     ctx.fillStyle = 'red';
-                    ctx.fillRect(x*tileLength, y*tileLength, tileLength, tileLength);
-                    drawSprite(x*tileLength, y*tileLength, 'sprites/plant.png', .07, 0, .7);
+                    ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength);
+                    drawSprite(x*tileLength-xmin, y*tileLength-ymin, 'sprites/plant.png', .07, 0, .7);
                     break;
                 case (2):
                     ctx.fillStyle = 'purple';
-                    ctx.fillRect(x*tileLength, y*tileLength, tileLength, tileLength);
-                    drawSprite(x*tileLength, y*tileLength, 'sprites/plant.png', .07, 0, .7);
+                    ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength);
+                    drawSprite(x*tileLength-xmin, y*tileLength-ymin, 'sprites/plant.png', .07, 0, .7);
                     break;
                 default:
                     ctx.fillStyle = 'black';
-                    ctx.fillRect(x*tileLength, y*tileLength, tileLength, tileLength);
+                    ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength);
                     break;
                 }
             }
         }
     }
-
 }
 
 function drawPickups(tileLength) {
@@ -214,7 +214,7 @@ var lastTime;
 function gameLoop() {
     //drawGrid();
     //drawPlayerWindow();
-    drawGrid(100, 100, 1100, 1100, tileLength_start);
+    drawGrid(120, 130, 1100, 1100, tileLength_start);
     drawPickups(tileLength_start);
     //drawPlayers();
     drawLeaderboard();
