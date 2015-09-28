@@ -197,10 +197,10 @@ function drawPlayers() {
 // around him/her as he moves in realtime
 function drawPlayerWindow()  {
     // Record the board's visible bounds
-    var min_x = mainPlayer.x<tileLength_start*10 ? 0 : mainPlayer.x-tileLength_start*10;
-    var min_y = mainPlayer.y<tileLength_start*10 ? 0 : mainPlayer.y-tileLength_start*10;
-    var max_x = min_x+tileLength_start*20;
-    var max_y = min_y+tileLength_start*20;
+    var min_x = thisPlayer.x<tileLength_start*10 ? 0 : thisPlayer.x-tileLength_start*10;
+    var min_y = thisPlayer.y<tileLength_start*10 ? 0 : thisPlayer.y-tileLength_start*10;
+    var max_x = min_x+tileLength_start*30;
+    var max_y = min_y+tileLength_start*30;
 
     drawGrid(min_x, min_y, max_x, max_y, tileLength_start);
 
@@ -213,8 +213,8 @@ var lastTime;
 // Currently static
 function gameLoop() {
     //drawGrid();
-    //drawPlayerWindow();
-    drawGrid(120, 130, 1100, 1100, tileLength_start);
+    drawPlayerWindow();
+    //drawGrid(120, 130, 1100, 1100, tileLength_start);
     drawPickups(tileLength_start);
     //drawPlayers();
     drawLeaderboard();
