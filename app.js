@@ -32,7 +32,7 @@ var otherPlayers = [
 ];
 
 //var board = Array.build(gridHeight, gridWidth, 0);
-//var pickups = Array.build(gridHeight, gridWidth, 0);
+//var overLayer = Array.build(gridHeight, gridWidth, 0);
 var leaderboard = [];
 
 var canvas = document.getElementById('canvas');
@@ -57,8 +57,10 @@ function drawSprite(xpos, ypos, src, scalar, offset, alpha=1) {
     sprite.onload = function() {
         // Scale down the canvas to draw the image, draw it, then scale back up
         ctx.scale(scalar, scalar);
+        ctx.globalAlpha = alpha;
         ctx.drawImage(sprite, xpos/scalar+offset, ypos/scalar+offset);
         ctx.scale(1/scalar, 1/scalar);
+        ctx.globalAlpha = 1;
     };
 }
 
@@ -67,13 +69,13 @@ function drawGrid(xmin, ymin, xmax, ymax, tileLength)
 {
     var board = Array.build(gridHeight, gridWidth, 0);
     // Red Farmer
-    board[3][28] = 1;
-    board[3][29] = 1;
-    board[4][28] = 1;
-    board[5][28] = 1;
-    board[4][29] = 1;
-    board[5][29] = 1;
-    board[3][30] = 1;
+    board[3][8] = 1;
+    board[3][9] = 1;
+    board[4][8] = 1;
+    board[5][8] = 1;
+    board[4][9] = 1;
+    board[5][9] = 1;
+    board[3][10] = 1;
 
     // Purple Farmer
     board[35][70] = 2;
@@ -97,14 +99,14 @@ function drawGrid(xmin, ymin, xmax, ymax, tileLength)
                     break;
                 case (1):
                     ctx.fillStyle = 'red';
-                    ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength);
-                    drawSprite(x*tileLength-xmin, y*tileLength-ymin, 'sprites/plant.png', .07, 0, .7);
+                    ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength-1, tileLength-1);
+                    drawSprite(x*tileLength-xmin, y*tileLength-ymin, 'sprites/plant.png', .245, 0, .6);
                     break;
                 case (2):
                     ctx.fillStyle = 'purple';
-                    ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength);
-                    drawSprite(x*tileLength-xmin, y*tileLength-ymin, 'sprites/plant.png', .07, 0, .7);
-                    break;
+                    ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength-1, tileLength-1);
+                    drawSprite(x*tileLength-xmin, y*tileLength-ymin, 'sprites/plant.png', .245, 0, .6);
+                    break;                
                 default:
                     ctx.fillStyle = 'black';
                     ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength);
@@ -115,25 +117,34 @@ function drawGrid(xmin, ymin, xmax, ymax, tileLength)
     }
 }
 
-function drawPickups(tileLength) {
-    var pickups = Array.build(gridHeight, gridWidth, 0);
+function drawOverlayer(xmin, ymin, xmax, ymax, tileLength)
+{
+    var overLayer = Array.build(gridHeight, gridWidth, 0);
     // 'w' could stand for water, currently just testing to see if it works
-    pickups[3][28] = 1;
-    pickups[4][29] = 1;
-    pickups[7][7] = 1;
+    overLayer[3][28] = 1;
+    overLayer[4][29] = 1;
+    overLayer[7][7] = 1;
+    overLayer[4][8] = 'H';
 
     for (var y = 0; y < gridHeight; y++) 
     {
         for (var x = 0; x < gridWidth; x++) 
         {
-            switch (pickups[y][x]) 
+        	if (x*tileLength>=xmin-tileLength && x*tileLength<xmax && y*tileLength>=ymin-tileLength && y*tileLength<ymax)
             {
-                case (0):
-                    break;
-                case (1):
-                    drawSprite(x*tileLength, y*tileLength, 'sprites/water_bucket.png', .07, 25);
-                    break;
-            }
+	            switch (overLayer[y][x]) 
+	            {
+	                case (0):
+	                    break;
+	                case (1):
+	                    drawSprite(x*tileLength, y*tileLength, 'sprites/water_bucket.png', .25, 22);
+	                    break;
+	                case ('H'):
+						// This is the case where the tile is a house space
+						drawSprite(x*tileLength-xmin, y*tileLength-ymin, 'sprites/house.png', .245, 15);
+						break;
+	            }
+	        }
         }
     }
 }
@@ -203,7 +214,13 @@ function drawPlayerWindow()  {
     var max_y = min_y+tileLength_start*30;
 
     drawGrid(min_x, min_y, max_x, max_y, tileLength_start);
+    drawOverlayer(min_x, min_y, max_x, max_y, tileLength_start);
+}
 
+// This function is used to load images prior to their use
+// so that there is no draw delay
+function init_images()
+{
 
 }
 
@@ -211,12 +228,11 @@ function drawPlayerWindow()  {
 var lastTime;
 // TODO: actually animate
 // Currently static
-function gameLoop() {
-    //drawGrid();
+function gameLoop()
+{
     drawPlayerWindow();
-    //drawGrid(120, 130, 1100, 1100, tileLength_start);
-    drawPickups(tileLength_start);
-    //drawPlayers();
+    drawOverlayer(tileLength_start);
+    // drawPlayers(); // obsolete function call
     drawLeaderboard();
     drawScore();
     drawCurrentPowerup();
@@ -234,6 +250,7 @@ function init() {
     // });
     reset();
     lastTime = Date.now();
+    init_images();
     gameLoop();
 }
 
