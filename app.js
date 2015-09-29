@@ -11,29 +11,30 @@ $('#canvas').click(function() {
 
 var socket = io();
 
-// Initialize game array
-Array.build = function(numRows, numCols, value) {
-    var array = [];
+// Create 2d array
+var Board = function(numRows, numCols, value) {
+    this.array = new Array;
     for (var i = 0; i < numRows; i++){
-        var column = [];
+        var column = new Array;
         for (var j = 0; j < numCols; j++){
-            column[j] = value;
+            column.push(value);
         }
-        array[i] = column;
+        this.array.array.push(column);
     }
-    return array;
+    return this.array;
 }
 
+// Describes the local player
 var thisPlayer = {x:550, y:550, color:'blue'}
 
+// Might not need this in the long run
 var otherPlayers = [
     { x: 100, y: 75, color: 'red' },
     { x: 300, y: 400, color: 'purple' }
 ];
 
-//var board = Array.build(gridHeight, gridWidth, 0);
-//var overLayer = Array.build(gridHeight, gridWidth, 0);
-var leaderboard = [];
+// Setup mouse listener
+document.addEventListener('mousemove', mouseInput, false);
 
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
@@ -46,9 +47,10 @@ var gridWidth = 100;
 var tileLength_start = 50;
 var tileLength_min = 25;
 
-ctx.fillStyle = 'green';
-ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-var lineColor = '#000000';
+//  Global variables
+var board = Board(gridHeight, gridWidth, 0);
+var overlayer = Board(gridHeight, gridWdith, 0);
+var leaderboard = [];
 
 // Draws a sprite at a specified location
 function drawSprite(xpos, ypos, src, scalar, offset, alpha=1) {
@@ -58,7 +60,12 @@ function drawSprite(xpos, ypos, src, scalar, offset, alpha=1) {
         // Scale down the canvas to draw the image, draw it, then scale back up
         ctx.scale(scalar, scalar);
         ctx.globalAlpha = alpha;
+<<<<<<< HEAD
         ctx.drawImage(sprite, xpos/scalar+offset, ypos/scalar+offset);
+=======
+        ctx.drawImage(sprite, xpos/scalar*tileLength+offset, ypos/scalar*tileLength+offset);
+        ctx.globalAlpha = 1.0;
+>>>>>>> master
         ctx.scale(1/scalar, 1/scalar);
         ctx.globalAlpha = 1;
     };
@@ -67,7 +74,6 @@ function drawSprite(xpos, ypos, src, scalar, offset, alpha=1) {
 // MAKE SURE TO SEPARATE STUFF OUT LATER!!!!!
 function drawGrid(xmin, ymin, xmax, ymax, tileLength)
 {
-    var board = Array.build(gridHeight, gridWidth, 0);
     // Red Farmer
     board[3][8] = 1;
     board[3][9] = 1;
@@ -107,6 +113,13 @@ function drawGrid(xmin, ymin, xmax, ymax, tileLength)
                     ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength-1, tileLength-1);
                     drawSprite(x*tileLength-xmin, y*tileLength-ymin, 'sprites/plant.png', .245, 0, .6);
                     break;                
+                    ctx.fillRect(x*tileLength, y*tileLength, tileLength, tileLength);
+                    drawSprite(x, y, 'sprites/plant.png', .07, 0, .7);                    break;
+                case (2):
+                    ctx.fillStyle = 'purple';
+                    ctx.fillRect(x*tileLength, y*tileLength, tileLength, tileLength);
+                    drawSprite(x, y, 'sprites/plant.png', .07, 0, .7);
+                    break;
                 default:
                     ctx.fillStyle = 'black';
                     ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength);
@@ -119,12 +132,12 @@ function drawGrid(xmin, ymin, xmax, ymax, tileLength)
 
 function drawOverlayer(xmin, ymin, xmax, ymax, tileLength)
 {
-    var overLayer = Array.build(gridHeight, gridWidth, 0);
+    var overlayer = Array.build(gridHeight, gridWidth, 0);
     // 'w' could stand for water, currently just testing to see if it works
-    overLayer[3][28] = 1;
-    overLayer[4][29] = 1;
-    overLayer[7][7] = 1;
-    overLayer[4][8] = 'H';
+    overlayer[3][28] = 1;
+    overlayer[4][29] = 1;
+    overlayer[7][7] = 1;
+    overlayer[4][8] = 'H';
 
     for (var y = 0; y < gridHeight; y++) 
     {
@@ -132,7 +145,7 @@ function drawOverlayer(xmin, ymin, xmax, ymax, tileLength)
         {
         	if (x*tileLength>=xmin-tileLength && x*tileLength<xmax && y*tileLength>=ymin-tileLength && y*tileLength<ymax)
             {
-	            switch (overLayer[y][x]) 
+	            switch (overlayer[y][x]) 
 	            {
 	                case (0):
 	                    break;
@@ -191,6 +204,7 @@ function drawCurrentPowerup() {
     ctx.fillText('Current powerup: ', 15, 35);
 }
 
+// TODO: Make this dynamic
 // When we actually make this work we should probably draw a circle when a player connects
 // That player can then move their own circle around the game
 function drawPlayers() {
@@ -199,10 +213,31 @@ function drawPlayers() {
         ctx.beginPath();
         ctx.arc(otherPlayers[i].x, otherPlayers[i].y, 10, 0, 2*Math.PI);
         ctx.fillStyle = otherPlayers[i].color;
+        ctx.arc(x, y, 10, 0, 2*Math.PI, false);
+        ctx.fillStyle = color;
         ctx.fill();
         i++;
     });
 }
+
+// TEST, CUT LATER
+fucntion drawPlayer() {
+	ctx.beginPath();
+	ctx.arc(thisPlayer.x, thisPlayer.y, 25, 0, 2*Math.PI, false);
+	ctx.fillStyle = thisPlayer.color;
+	ctx.fill();
+}
+
+// Handles mouse movement
+function mouseInput(mouse) {
+	player.x = mouse.clientX - ctx.canvas.width/2;
+	player.y = mouse.clientY - ctx.canvas.height/2;
+}
+
+/*
+function keyInput(){
+}
+*/
 
 // This function will dynamically follow the player, drawing the board
 // around him/her as he moves in realtime
@@ -219,6 +254,7 @@ function drawPlayerWindow()  {
 
 // This function is used to load images prior to their use
 // so that there is no draw delay
+// Draw delay obscures the leaderboard and other text overlay
 function init_images()
 {
 
@@ -245,13 +281,21 @@ function gameLoop()
 }
 
 function init() {
+	// Fill the canvas with green
+	ctx.fillStyle = 'green';
+	ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
     // document.getElementById('play-again').addEventListener('click', function() {
     //     reset();
     // });
-    reset();
+    // reset();
     lastTime = Date.now();
-    init_images();
+    // init_images();
     gameLoop();
 }
 
 gameLoop();
+
+
+
+
+
