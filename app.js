@@ -19,7 +19,7 @@ var Board = function(numRows, numCols, value) {
         for (var j = 0; j < numCols; j++){
             column.push(value);
         }
-        this.array.array.push(column);
+        this.array.push(column);
     }
     return this.array;
 }
@@ -49,7 +49,7 @@ var tileLength_min = 25;
 
 //  Global variables
 var board = Board(gridHeight, gridWidth, 0);
-var overlayer = Board(gridHeight, gridWdith, 0);
+var overlayer = Board(gridHeight, gridWidth, 0);
 var leaderboard = [];
 
 // Draws a sprite at a specified location
@@ -60,12 +60,9 @@ function drawSprite(xpos, ypos, src, scalar, offset, alpha=1) {
         // Scale down the canvas to draw the image, draw it, then scale back up
         ctx.scale(scalar, scalar);
         ctx.globalAlpha = alpha;
-<<<<<<< HEAD
         ctx.drawImage(sprite, xpos/scalar+offset, ypos/scalar+offset);
-=======
-        ctx.drawImage(sprite, xpos/scalar*tileLength+offset, ypos/scalar*tileLength+offset);
+        ctx.drawImage(sprite, xpos/scalar+offset, ypos/scalar+offset);
         ctx.globalAlpha = 1.0;
->>>>>>> master
         ctx.scale(1/scalar, 1/scalar);
         ctx.globalAlpha = 1;
     };
@@ -132,7 +129,6 @@ function drawGrid(xmin, ymin, xmax, ymax, tileLength)
 
 function drawOverlayer(xmin, ymin, xmax, ymax, tileLength)
 {
-    var overlayer = Array.build(gridHeight, gridWidth, 0);
     // 'w' could stand for water, currently just testing to see if it works
     overlayer[3][28] = 1;
     overlayer[4][29] = 1;
@@ -221,7 +217,7 @@ function drawPlayers() {
 }
 
 // TEST, CUT LATER
-fucntion drawPlayer() {
+function drawPlayer() {
 	ctx.beginPath();
 	ctx.arc(thisPlayer.x, thisPlayer.y, 25, 0, 2*Math.PI, false);
 	ctx.fillStyle = thisPlayer.color;
@@ -230,8 +226,8 @@ fucntion drawPlayer() {
 
 // Handles mouse movement
 function mouseInput(mouse) {
-	player.x = mouse.clientX - ctx.canvas.width/2;
-	player.y = mouse.clientY - ctx.canvas.height/2;
+	thisPlayer.x = mouse.clientX - ctx.canvas.width/2;
+	thisPlayer.y = mouse.clientY - ctx.canvas.height/2;
 }
 
 /*
