@@ -36,6 +36,13 @@ var otherPlayers = [
 // Setup mouse listener
 document.addEventListener('mousemove', mouseInput, false);
 
+// Player movement stuff
+// http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
+var now = (new Date()).getTime();
+var last = (new Date()).getTime()-1;
+var delta = 1;
+var angle = 0;
+
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 ctx.canvas.width = window.innerWidth;
@@ -52,8 +59,27 @@ var board = Board(gridHeight, gridWidth, 0);
 var overlayer = Board(gridHeight, gridWidth, 0);
 var leaderboard = [];
 
+// Describes this specific player
+// http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
+var player = {
+    x: ctx.canvas.width/2,
+    y: ctx.canvas.height/2,
+    speed: 25,
+    target: {x: ctx.canvas.width/2, y: ctx.canvas.height/2}
+};
+
+var target = {x: player.x, y: player.y};
+
+// Array of all players, don't think we need this in the long run
+var players = [
+    { x: 100, y: 75, color: 'red' },
+    { x: 300, y: 400, color: 'purple' }
+];
+
+document.addEventListener('mousemove', mouseInput, false);
+
 // Draws a sprite at a specified location
-function drawSprite(xpos, ypos, src, scalar, offset, alpha=1) {
+function drawSprite(xpos, ypos, src, scalar, offset, alpha) {
     var sprite = new Image();
     sprite.src = src;
     sprite.onload = function() {
@@ -225,9 +251,21 @@ function drawPlayer() {
 }
 
 // Handles mouse movement
+// http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
 function mouseInput(mouse) {
-	thisPlayer.x = mouse.clientX - ctx.canvas.width/2;
-	thisPlayer.y = mouse.clientY - ctx.canvas.height/2;
+    if (isNaN(delta) || delta <= 0) {
+        return;
+    }
+    else {
+        var distX = mouse.clientX - (player.x);
+        var distY = mouse.clientY - (player.y);
+    }
+
+    if (distX !== 0 && distY !== 0) {
+        angle = Math.atan2(distx, distY*-1);
+        player.x -= (player.x - (mouse.clientX/player.speed));
+        player.y -= (player.y - (mouse.clientY/player.speed));
+    }
 }
 
 /*
@@ -251,8 +289,30 @@ function drawPlayerWindow()  {
 // This function is used to load images prior to their use
 // so that there is no draw delay
 // Draw delay obscures the leaderboard and other text overlay
-function init_images()
-{
+function init_images() {
+
+}
+
+// Calculates a new delta
+// http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
+function setDelta() {
+    // Need a now and a then
+    // Maybe set these as globals
+    // delta = (now-then)/1000;
+
+    now = (new Date()).getTime();
+    delta = (now-then)/1000;
+    then = now;
+}
+
+// Calls all needed object update functions
+function update() {
+
+}
+
+// Calls all needed object rendering functions
+// http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
+function render() {
 
 }
 
@@ -268,12 +328,14 @@ function gameLoop()
     drawLeaderboard();
     drawScore();
     drawCurrentPowerup();
-    // var now = Date.now();
-    // var dt = (now - lastTime) / 1000.0;
-    // update(dt);
-    // render();
-    // lastTime = now;
-    // requestAnimationFrame(gameLoop);
+    drawPlayer();
+    var now = Date.now();
+    var dt = (now - lastTime) / 1000.0;
+    setDelta();
+    update(dt);
+    render();
+    lastTime = now;
+    requestAnimationFrame(gameLoop);
 }
 
 function init() {
