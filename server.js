@@ -3,12 +3,6 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-var users = [];
-var board = [];
-var powerups = [];
-var leaderboard = [];
-
-// Build 2d array
 var Board = function(numRows, numCols, value) {
     var array = [];
     for (var i = 0; i < numRows; i++){
@@ -21,10 +15,24 @@ var Board = function(numRows, numCols, value) {
     return array;
 }
 
+// Total number of tiles in game 
+var gridHeight = 50;
+var gridWidth = 100;
+var tileLength = 15;
+
+// Global variables
+var users = [];
+var board = Board(gridHeight, gridWidth, 0);
+var powerups = Board(gridWidth, gridHeight, 0);
+var leaderboard = [];
+
 // TODO: check that name, position, color are unique
 function addPlayer(name) {
     color = '#'+(Math.random().toString(16)+'000000').slice(2,8);
-    users.push( { name: name, position: startPos, color: color } );
+    // TODO: check if start position is valid
+    x = Math.floor(Math.random()*gridWidth*tileLength);
+    y = Math.floor(Math.random()*gridHeight*tileLength);
+    users.push( { name: name, x: x, y: y, color: color } );
 }
 
 function gameLoop() {
@@ -34,10 +42,6 @@ function gameLoop() {
     // TODO: calculate plant growth
 }
 
-function init() {
-    board
-}
-
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
@@ -45,9 +49,25 @@ app.get('/', function(req, res) {
 io.on('connection', function(socket) {
     var type = socket.handshake.query.type;
     console.log('A user connected', type);
+    socket.emit('setup', {
+
+    });
+
     socket.on('disconnect', function() {
         console.log('A user disconnected');
-    })
+    });
+
+    socket.on('0', function() { // Heartbeat
+
+    });
+
+    socket.on('1', function() { // Till
+
+    });
+
+    socket.on('2', function() { // Use power up
+
+    });
 });
 
 app.use(express.static(__dirname));

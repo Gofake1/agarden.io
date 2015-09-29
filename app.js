@@ -1,22 +1,10 @@
-// Start screen modal
-$(document).ready(function() {
-    $('#startScreen').modal();
-});
-
-// TODO: Trigger game screen modal when player dies
-// For the demo, clicking anywhere triggers the game over modal
-$('#canvas').click(function() {
-    $('#gameoverScreen').modal();
-});
-
 var socket = io();
 
-// Create 2d array
 var Board = function(numRows, numCols, value) {
     this.array = new Array;
-    for (var i = 0; i < numRows; i++){
+    for (var i = 0; i < numRows; i++) {
         var column = new Array;
-        for (var j = 0; j < numCols; j++){
+        for (var j = 0; j < numCols; j++) {
             column.push(value);
         }
         this.array.push(column);
@@ -193,32 +181,30 @@ function drawPlayers() {
 
 // TEST, CUT LATER
 function drawPlayer() {
-        color = "black";
-        ctx.beginPath();
-        ctx.arc(player.x, player.y, 10, 0, 2*Math.PI, false);
-        ctx.fillStyle = color;
-        ctx.fill();
+    color = "black";
+    ctx.beginPath();
+    ctx.arc(player.x, player.y, 10, 0, 2*Math.PI, false);
+    ctx.fillStyle = color;
+    ctx.fill();
 }
 
 // Handles mouse movement
-function mouseInput(mouse){
+function mouseInput(mouse) {
     player.x = mouse.clientX - ctx.canvas.width/2;
     player.y = mouse.clientY - ctx.canvas.height/2; 
 }
 
 // Handles keyboard input
-/*function keyInput(){
+function keyInput() {
 
-}*/
+}
 
 // Main game loop
-var lastTime;
 // TODO: actually animate
-// Currently static
 function gameLoop() {
     drawGrid();
     drawPickups();
-    //drawPlayers();
+    drawPlayers();
     drawPlayer();
     drawLeaderboard();
     drawScore();
@@ -227,7 +213,6 @@ function gameLoop() {
     // var now = Date.now();
     // var dt = (now - lastTime) / 1000.0;
     // update(dt);
-    // render();
     // lastTime = now;
     // requestAnimationFrame(gameLoop);
 }
@@ -244,4 +229,8 @@ function init() {
     gameLoop();
 }
 
+// Socket
+socket.on('connected')
+
+var lastTime;
 init();
