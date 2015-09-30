@@ -213,18 +213,18 @@ function drawCurrentPowerup() {
 // TODO: Make this dynamic
 // When we actually make this work we should probably draw a circle when a player connects
 // That player can then move their own circle around the game
-function drawPlayers() {
-    var i = 0;
-    otherPlayers.forEach(function() {
-        ctx.beginPath();
-        ctx.arc(otherPlayers[i].x, otherPlayers[i].y, 10, 0, 2*Math.PI);
-        ctx.fillStyle = otherPlayers[i].color;
-        ctx.arc(x, y, 10, 0, 2*Math.PI, false);
-        ctx.fillStyle = color;
-        ctx.fill();
-        i++;
-    });
-}
+// function drawPlayers() {
+//     var i = 0;
+//     otherPlayers.forEach(function() {
+//         ctx.beginPath();
+//         ctx.arc(otherPlayers[i].x, otherPlayers[i].y, 10, 0, 2*Math.PI);
+//         ctx.fillStyle = otherPlayers[i].color;
+//         ctx.arc(x, y, 10, 0, 2*Math.PI, false);
+//         ctx.fillStyle = color;
+//         ctx.fill();
+//         i++;
+//     });
+// }
 
 // Draws this specific player as opposed to the opposing players
 function drawPlayer(xmin, ymin) {
@@ -324,7 +324,7 @@ function render(ctx) {
 function gameLoop() {
     drawGrid();
     //drawPickups();
-    drawPlayers();
+    // drawPlayers();
     drawPlayer();
     drawLeaderboard();
     drawScore();
