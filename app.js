@@ -25,7 +25,7 @@ var Board = function(numRows, numCols, value) {
 }
 
 // Describes the local player
-var thisPlayer = {x:550, y:550, color:'blue'}
+var thisPlayer = {x:550, y:550, speed:25, color:'blue'}
 
 // Might not need this in the long run
 var otherPlayers = [
@@ -39,7 +39,7 @@ document.addEventListener('mousemove', mouseInput, false);
 // Player movement stuff
 // http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
 var now = (new Date()).getTime();
-var last = (new Date()).getTime()-1;
+var then = (new Date()).getTime()-1;
 var delta = 1;
 var angle = 0;
 
@@ -62,17 +62,6 @@ var tileLength = window.innerWidth / numTiles_x;
 var board = Board(gridHeight, gridWidth, 0);
 var overlayer = Board(gridHeight, gridWidth, 0);
 var leaderboard = [];
-
-// Describes this specific player
-// http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
-var player = {
-    x: ctx.canvas.width/2,
-    y: ctx.canvas.height/2,
-    speed: 25,
-    target: {x: ctx.canvas.width/2, y: ctx.canvas.height/2}
-};
-
-var target = {x: player.x, y: player.y};
 
 // Array of all players, don't think we need this in the long run
 var players = [
@@ -106,7 +95,7 @@ function drawSprite_exact(src, x, y, w, h, alpha)
     var sprite = new Image();
     sprite.src = src;
     sprite.onload = function()
-    ctx.globalAlpha = alpha;
+    //ctx.globalAlpha = alpha; // The site doesn't work with this line for me
     {
         ctx.drawImage(sprite, x, y, w, h);
     }
@@ -256,7 +245,7 @@ function drawPlayers() {
     });
 }
 
-// TEST, CUT LATER
+// Draws this specific player as opposed to the opposing players
 function drawPlayer(xmin, ymin) {
 	ctx.beginPath();
 	ctx.arc(thisPlayer.x-xmin, thisPlayer.y-ymin, tileLength/2.25, 0, 2*Math.PI, false);
@@ -271,21 +260,21 @@ function mouseInput(mouse) {
         return;
     }
     else {
-        var distX = mouse.clientX - (player.x);
-        var distY = mouse.clientY - (player.y);
+        var distX = mouse.clientX - (thisPlayer.x);
+        var distY = mouse.clientY - (thisPlayer.y);
     }
 
     if (distX !== 0 && distY !== 0) {
         angle = Math.atan2(distX, distY*-1);
-        player.x -= (player.x - (mouse.clientX/player.speed));
-        player.y -= (player.y - (mouse.clientY/player.speed));
+        thisPlayer.x -= (((thisPlayer.x - 10/2) - mouse.clientX)/thisPlayer.speed);
+        thisPlayer.y -= (((thisPlayer.y - 10/2) - mouse.clientY)/thisPlayer.speed);
     }
 }
 
-/*
+// Handles keyboard input
 function keyInput(){
 }
-*/
+
 
 // This function will dynamically follow the player, drawing the board
 // around him/her as he moves in realtime
@@ -323,7 +312,7 @@ function setDelta() {
     // delta = (now-then)/1000;
 
     now = (new Date()).getTime();
-    delta = (now-then)/1000;    // WHAT IS THEN?
+    delta = (now-then)/1000;
     then = now;
 }
 
@@ -332,10 +321,18 @@ function update() {
 
 }
 
+// I'm not sure if we need to use render() for player movement, the tutorial only seems to use it for rotations
 // Calls all needed object rendering functions
 // http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
-function render() {
+function render(ctx) {
+    // save the current context so we can set options without touching all the other rendered objects
+    ctx.save();
 
+    // draw image
+
+
+    // restore the old context
+    ctx.restore();
 }
 
 // Main game loop
@@ -353,7 +350,7 @@ function gameLoop()
     var dt = (now - lastTime) / 1000.0;
     setDelta();
     update(dt);
-    render();
+    render(ctx);
     lastTime = now;
     requestAnimationFrame(gameLoop);
 }
