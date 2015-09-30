@@ -1,22 +1,10 @@
-// Start screen modal
-$(document).ready(function() {
-    $('#startScreen').modal();
-});
-
-// TODO: Trigger game screen modal when player dies
-// For the demo, clicking anywhere triggers the game over modal
-$('#canvas').click(function() {
-    $('#gameoverScreen').modal();
-});
-
 var socket = io();
 
-// Create 2d array
 var Board = function(numRows, numCols, value) {
     this.array = new Array;
-    for (var i = 0; i < numRows; i++){
+    for (var i = 0; i < numRows; i++) {
         var column = new Array;
-        for (var j = 0; j < numCols; j++){
+        for (var j = 0; j < numCols; j++) {
             column.push(value);
         }
         this.array.push(column);
@@ -53,21 +41,15 @@ var gridHeight = 50;
 var gridWidth = 100;
 var numTiles_x_start = 20;
 var numTiles_x_max = 30;
+
 // number of visible tiles (width)
 var numTiles_x = numTiles_x_start;
 var tileLength = window.innerWidth / numTiles_x;
-
 
 //  Global variables
 var board = Board(gridHeight, gridWidth, 0);
 var overlayer = Board(gridHeight, gridWidth, 0);
 var leaderboard = [];
-
-// Array of all players, don't think we need this in the long run
-var players = [
-    { x: 100, y: 75, color: 'red' },
-    { x: 300, y: 400, color: 'purple' }
-];
 
 document.addEventListener('mousemove', mouseInput, false);
 
@@ -80,7 +62,6 @@ function drawSprite(xpos, ypos, src, scalar, offset, alpha) {
         // Scale down the canvas to draw the image, draw it, then scale back up
         ctx.scale(scalar, scalar);
         ctx.globalAlpha = alpha;
-        ctx.drawImage(sprite, xpos/scalar+offset, ypos/scalar+offset);
         ctx.drawImage(sprite, xpos/scalar+offset, ypos/scalar+offset);
         ctx.globalAlpha = 1.0;
         ctx.scale(1/scalar, 1/scalar);
@@ -144,7 +125,7 @@ function drawGrid(xmin, ymin, xmax, ymax, tileLength)
                     ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength-1, tileLength-1);
                     drawSprite_exact('sprites/plant.png', x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength, .6);
                     break;
-                default: // ERROR
+                default: // UNKNOWN
                     ctx.fillStyle = 'black';
                     ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength);
                     break;
@@ -271,9 +252,12 @@ function mouseInput(mouse) {
     }
 }
 
+
 // Handles keyboard input
-function keyInput(){
+function keyInput() {
+
 }
+
 
 
 // This function will dynamically follow the player, drawing the board
@@ -284,8 +268,8 @@ function drawPlayerWindow()  {
     var halfY = numTiles_y / 2;
 
     // Record the board's visible bounds
-    var min_x = thisPlayer.x<tileLength*halfX ? 0 : thisPlayer.x-tileLength*halfX;
-    var min_y = thisPlayer.y<tileLength*halfY ? 0 : thisPlayer.y-tileLength*halfY;
+    var min_x = player.x<tileLength*halfX ? 0 : player.x-tileLength*halfX;
+    var min_y = player.y<tileLength*halfY ? 0 : player.y-tileLength*halfY;
     var max_x = min_x+tileLength*numTiles_x;
     var max_y = min_y+tileLength*numTiles_y;
 
@@ -336,19 +320,18 @@ function render(ctx) {
 }
 
 // Main game loop
-var lastTime;
 // TODO: actually animate
-// Currently static
-function gameLoop()
-{
-    drawPlayerWindow();
-    // drawPlayers(); // obsolete function call
+function gameLoop() {
+    drawGrid();
+    //drawPickups();
+    drawPlayers();
+    drawPlayer();
     drawLeaderboard();
     drawScore();
     drawCurrentPowerup();
+  
     var now = Date.now();
     var dt = (now - lastTime) / 1000.0;
-    setDelta();
     update(dt);
     render(ctx);
     lastTime = now;
@@ -368,10 +351,8 @@ function init() {
     gameLoop();
 }
 
-gameLoop();
+// Socket
+socket.on('connected')
 
-
-
-
-
-
+var lastTime;
+init();
