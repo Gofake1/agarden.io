@@ -268,8 +268,8 @@ function drawPlayerWindow()  {
     var halfY = numTiles_y / 2;
 
     // Record the board's visible bounds
-    var min_x = player.x<tileLength*halfX ? 0 : player.x-tileLength*halfX;
-    var min_y = player.y<tileLength*halfY ? 0 : player.y-tileLength*halfY;
+    var min_x = thisPlayer.x<tileLength*halfX ? 0 : thisPlayer.x-tileLength*halfX;
+    var min_y = thisPlayer.y<tileLength*halfY ? 0 : thisPlayer.y-tileLength*halfY;
     var max_x = min_x+tileLength*numTiles_x;
     var max_y = min_y+tileLength*numTiles_y;
 
@@ -322,7 +322,7 @@ function render(ctx) {
 // Main game loop
 // TODO: actually animate
 function gameLoop() {
-    drawGrid();
+    drawPlayerWindow();
     //drawPickups();
     // drawPlayers();
     drawPlayer();
