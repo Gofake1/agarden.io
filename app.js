@@ -12,14 +12,8 @@ var Board = function(numRows, numCols, value) {
     return this.array;
 }
 
-// Describes the local player
-var thisPlayer = {x:550, y:550, speed:25, color:'blue'}
-
-// Might not need this in the long run
-var otherPlayers = [
-    { x: 100, y: 75, color: 'red' },
-    { x: 300, y: 400, color: 'purple' }
-];
+var thisPlayer = {id:-1, x:0, y:0, speed:25, color:'blue', score:0};
+var otherPlayers = [];
 
 // Setup mouse listener
 document.addEventListener('mousemove', mouseInput, false);
@@ -78,11 +72,7 @@ function drawSprite(xpos, ypos, src, scalar, offset, alpha) {
 // This function will draw an image in the exact dimensions we want.
 // It will be useful for resizing tiles as the window resizes
 function drawSprite_exact(img, x, y, w, h, alpha) {
-    img.onload = function()
-    //ctx.globalAlpha = alpha; // The site doesn't work with this line for me
-    {
-        ctx.drawImage(img, x, y, w, h);
-    }
+    ctx.drawImage(img, x, y, w, h);
     ctx.globalAlpha = 1;
 }
 
@@ -168,14 +158,15 @@ function drawOverlayer(xmin, ymin, xmax, ymax, tileLength) {
 // MAKE THIS DYNAMIC, GLOBAL CONSTANTS
 function drawLeaderboard() {
     ctx.globalAlpha = 0.4;
-    ctx.strokeRect(window.innerWidth-300, 30, 250, 250);
+    ctx.strokeRect(window.innerWidth-250, 10, 240, 300);
     ctx.fillStyle = 'black';
-    ctx.fillRect(window.innerWidth-300, 30, 250, 250);
+    ctx.fillRect(window.innerWidth-250, 10, 240, 300);
 
     ctx.globalAlpha = 0.9;
     ctx.fillStyle = 'white';
     ctx.font = '20px Arial';
-    ctx.fillText('Leaderboard', window.innerWidth-225, 50);
+    ctx.textAlign = 'left';
+    ctx.fillText('Leaderboard', window.innerWidth-190, 40);
 
     leaderboard.forEach(function() {
         // Print player and score
@@ -185,26 +176,28 @@ function drawLeaderboard() {
 // MAKE THIS DYNAMIC
 function drawScore() {
     ctx.globalAlpha = 0.4;
-    ctx.strokeRect(10, window.innerHeight-60, 200, 50);
+    ctx.strokeRect(10, window.innerHeight-60, 250, 50);
     ctx.fillStyle = "black";
-    ctx.fillRect(10, window.innerHeight-60, 200, 50);
+    ctx.fillRect(10, window.innerHeight-60, 250, 50);
 
     ctx.globalAlpha = 0.9;
     ctx.fillStyle = 'white';
     ctx.font = '20px Arial';
+    ctx.textAlign = 'left';
     ctx.fillText('Score: ', 15, window.innerHeight-30);
 }
 
 function drawCurrentPowerup() {
     ctx.globalAlpha = 0.4;
-    ctx.strokeRect(10, 10, 275, 50);
+    ctx.strokeRect(10, 10, 250, 50);
     ctx.fillStyle = 'black';
-    ctx.fillRect(10, 10, 275, 50);
+    ctx.fillRect(10, 10, 250, 50);
 
     ctx.globalAlpha = 0.9;
     ctx.fillStyle = 'white';
     ctx.font = '20px Arial';
-    ctx.fillText('Current powerup: ', 15, 35);
+    ctx.textAlign = 'left';
+    ctx.fillText('Current powerup:', 15, 40);
 }
 
 // TODO: Make this dynamic
@@ -257,7 +250,7 @@ function keyInput() {
 
 // This function will dynamically follow the player, drawing the board
 // around him/her as he moves in realtime
-function drawPlayerWindow() {
+function drawViewport() {
     var numTiles_y = window.innerHeight / tileLength + 1;
     var halfX = numTiles_x / 2;
     var halfY = numTiles_y / 2;
@@ -287,7 +280,9 @@ function initImages() {
 }
 
 function initSocket(socket) {
-
+    socket.on('init', function(playerData) {
+        player = playerData;
+    })
 }
 
 // Calculates a new delta
@@ -303,7 +298,7 @@ function setDelta() {
 }
 
 // Calls all needed object update functions
-function update() {
+function update(dt) {
 
 }
 
@@ -324,9 +319,9 @@ function render(ctx) {
 // Main game loop
 // TODO: actually animate
 function gameLoop() {
-    drawPlayerWindow();
+    drawViewport();
     //drawPickups();
-    // drawPlayers();
+    //drawPlayers();
     drawPlayer();
     drawLeaderboard();
     drawScore();
@@ -343,6 +338,7 @@ function gameLoop() {
 function init() {
     // Fill the canvas with green
     ctx.fillStyle = 'green';
+    // Fill entire canvas
     ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
     // document.getElementById('play-again').addEventListener('click', function() {
     //     reset();
@@ -353,8 +349,6 @@ function init() {
     gameLoop();
 }
 
-// Socket
-socket.on('connected')
-
+socket.on('connected');
 var lastTime;
 init();
