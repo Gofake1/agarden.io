@@ -266,23 +266,23 @@ function playerMove(){
         return;
     }
     else {
-        var distX = mouse_x - (thisPlayer.x-mov/2);
-        var distY = mouse_y - (thisPlayer.y-mov/2);
+        var distX = mouseX - (thisPlayer.x-mov/2);
+        var distY = mouseY - (thisPlayer.y-mov/2);
     }
 
     if (distX !== 0 && distY !== 0) {
         console.log('mouseX');
-        console.log(mouse_x);
+        console.log(mouseX);
         console.log('mouseY');
-        console.log(mouse_y);
+        console.log(mouseY);
         console.log('playerX');
         console.log(thisPlayer.x);
         console.log('playerY');
         console.log(thisPlayer.y);
         angle = Math.atan2(distX, distY*-1);
 
-        thisPlayer.x -= (((thisPlayer.x - mov/2) - mouse_x)/thisPlayer.speed);
-        thisPlayer.y -= (((thisPlayer.y - mov/2) - mouse_y)/thisPlayer.speed);
+        thisPlayer.x -= (((thisPlayer.x - mov/2) - mouseX)/thisPlayer.speed);
+        thisPlayer.y -= (((thisPlayer.y - mov/2) - mouseY)/thisPlayer.speed);
     }
 }
 
