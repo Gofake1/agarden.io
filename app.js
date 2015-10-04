@@ -222,27 +222,32 @@ function drawPlayer(xmin, ymin) {
 }
 
 // Handles mouse movement
-// http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
 function mouseInput(mouse) {
     mouseX = mouse.clientX;
     mouseY = mouse.clientY;
 }
 
-function playerMove(){
+// Moves the player
+function playerMove() {
     updateBoardVars();
 
-    var mov_x = max_x - min_x;
-    var mov_y = max_y - min_y;
-
-    var distX = mouseX - (thisPlayer.x-mov_x/2);
-    var distY = mouseY - (thisPlayer.y-mov_y/2);
+    var mov = 2*(tileLength/2.25);
+    var distX = mouseX - (thisPlayer.x-mov/2);
+    var distY = mouseY - (thisPlayer.y-mov/2);
 
     if (distX !== 0 && distY !== 0) {
-        console.log(distX);
-
+        console.log('mouseX');
+        console.log(mouseX);
+        console.log('mouseY');
+        console.log(mouseY);
+        console.log('playerX');
+        console.log(thisPlayer.x);
+        console.log('playerY');
+        console.log(thisPlayer.y);
         angle = Math.atan2(distX, distY*-1);
-        thisPlayer.x -= (((thisPlayer.x - mov_x/2) - mouseX)/thisPlayer.speed);
-        thisPlayer.y -= (((thisPlayer.y - mov_y/2) - mouseY)/thisPlayer.speed);
+
+        thisPlayer.x -= (((thisPlayer.x - mov/2) - mouseX)/thisPlayer.speed);
+        thisPlayer.y -= (((thisPlayer.y - mov/2) - mouseY)/thisPlayer.speed);
     }
 }
 
@@ -256,11 +261,8 @@ function keyInput() {
 function drawViewport() {
     updateBoardVars();
 
-    // Draw that board!
     drawGrid(min_x, min_y, max_x, max_y, tileLength);
     drawOverlayer(min_x, min_y, max_x, max_y, tileLength);
-
-    // And the player too!
     drawPlayer(min_x, min_y);
 }
 
@@ -293,7 +295,6 @@ function render(ctx) {
     ctx.save();
 
     // draw image
-
 
     // restore the old context
     ctx.restore();
