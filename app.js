@@ -44,7 +44,16 @@ var numTiles_x_max = 30;
 
 // Number of visible tiles (width)
 var numTiles_x = numTiles_x_start;
+var numTiles_y = window.innerHeight / tileLength + 1;
 var tileLength = window.innerWidth / numTiles_x;
+var halfX = numTiles_x / 2;
+var halfY = numTiles_y / 2;
+
+// Record the board's visible bounds
+var min_x = thisPlayer.x<tileLength*halfX ? 0 : thisPlayer.x-tileLength*halfX;
+var min_y = thisPlayer.y<tileLength*halfY ? 0 : thisPlayer.y-tileLength*halfY;
+var max_x = min_x+tileLength*numTiles_x;
+var max_y = min_y+tileLength*numTiles_y;
 
 // Global variables
 var board = Board(gridHeight, gridWidth, 0);
@@ -58,6 +67,20 @@ var waterBucket = new Image();
 var house = new Image();
 
 document.addEventListener('mousemove', mouseInput, false);
+
+// Updates global variables for board drawing
+function updateBoardVars() {
+    // Record the board's visible bounds
+    min_x = thisPlayer.x<tileLength*halfX ? 0 : thisPlayer.x-tileLength*halfX;
+    min_y = thisPlayer.y<tileLength*halfY ? 0 : thisPlayer.y-tileLength*halfY;
+    max_x = min_x+tileLength*numTiles_x;
+    max_y = min_y+tileLength*numTiles_y;
+
+    // Number of visible tiles
+    numTiles_y = window.innerHeight / tileLength + 1;
+    halfX = numTiles_x / 2;
+    halfY = numTiles_y / 2;
+}
 
 // This may be obsolete with the introduction of drawSprite_exact()
 // Draws a sprite at a specified location
@@ -78,8 +101,7 @@ function drawSprite(xpos, ypos, src, scalar, offset, alpha) {
 // This function will draw an image in the exact dimensions we want.
 // It will be useful for resizing tiles as the window resizes
 function drawSprite_exact(img, x, y, w, h, alpha) {
-    img.onload = function()
-    //ctx.globalAlpha = alpha; // The site doesn't work with this line for me
+    ctx.globalAlpha = alpha; // The site doesn't work with this line for me
     {
         ctx.drawImage(img, x, y, w, h);
     }
@@ -234,15 +256,7 @@ function drawPlayer(xmin, ymin) {
 // Handles mouse movement
 // http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
 function mouseInput(mouse) {
-    // took these variables from drawPlayerWindow
-    // maybe make these attributes of thisPlayer or global or something
-    var numTiles_y = window.innerHeight / tileLength + 1;
-    var halfX = numTiles_x / 2;
-    var halfY = numTiles_y / 2;
-    var min_x = thisPlayer.x<tileLength*halfX ? 0 : thisPlayer.x-tileLength*halfX;
-    var min_y = thisPlayer.y<tileLength*halfY ? 0 : thisPlayer.y-tileLength*halfY;
-    var max_x = min_x+tileLength*numTiles_x;
-    var max_y = min_y+tileLength*numTiles_y;
+    updateBoardVars();
 
     var mov_x = max_x - min_x;
     var mov_y = max_y - min_y;
@@ -271,15 +285,7 @@ function keyInput() {
 // This function will dynamically follow the player, drawing the board
 // around him/her as he moves in realtime
 function drawPlayerWindow() {
-    var numTiles_y = window.innerHeight / tileLength + 1;
-    var halfX = numTiles_x / 2;
-    var halfY = numTiles_y / 2;
-
-    // Record the board's visible bounds
-    var min_x = thisPlayer.x<tileLength*halfX ? 0 : thisPlayer.x-tileLength*halfX;
-    var min_y = thisPlayer.y<tileLength*halfY ? 0 : thisPlayer.y-tileLength*halfY;
-    var max_x = min_x+tileLength*numTiles_x;
-    var max_y = min_y+tileLength*numTiles_y;
+    updateBoardVars();
 
     // Draw that board!
     drawGrid(min_x, min_y, max_x, max_y, tileLength);
@@ -306,10 +312,6 @@ function initSocket(socket) {
 // Calculates a new delta
 // http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
 function setDelta() {
-    // Need a now and a then
-    // Maybe set these as globals
-    // delta = (now-then)/1000;
-
     now = (new Date()).getTime();
     delta = (now-then)/1000;
     then = now;
