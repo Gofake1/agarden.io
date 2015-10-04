@@ -67,6 +67,8 @@ var waterBucket = new Image();
 var house = new Image();
 
 document.addEventListener('mousemove', mouseInput, false);
+var mouse_x = 0;
+var mouse_y = 0;
 
 // Updates global variables for board drawing
 function updateBoardVars() {
@@ -256,6 +258,11 @@ function drawPlayer(xmin, ymin) {
 // Handles mouse movement
 // http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
 function mouseInput(mouse) {
+    mouse_x = mouse.clientX;
+    mouse_y = mouse.clientY;
+}
+
+function playerMove(){
     updateBoardVars();
 
     var mov_x = max_x - min_x;
@@ -265,17 +272,18 @@ function mouseInput(mouse) {
         return;
     }
     else {
-        var distX = mouse.clientX - (thisPlayer.x-mov_x/2);
-        var distY = mouse.clientY - (thisPlayer.y-mov_y/2);
+        var distX = mouse_x - (thisPlayer.x-mov_x/2);
+        var distY = mouse_y - (thisPlayer.y-mov_y/2);
     }
 
     if (distX !== 0 && distY !== 0) {
+        console.log(distX);
+
         angle = Math.atan2(distX, distY*-1);
-        thisPlayer.x -= (((thisPlayer.x - mov_x/2) - mouse.clientX)/thisPlayer.speed);
-        thisPlayer.y -= (((thisPlayer.y - mov_y/2) - mouse.clientY)/thisPlayer.speed);
+        thisPlayer.x -= (((thisPlayer.x - mov_x/2) - mouse_x)/thisPlayer.speed);
+        thisPlayer.y -= (((thisPlayer.y - mov_y/2) - mouse_y)/thisPlayer.speed);
     }
 }
-
 
 // Handles keyboard input
 function keyInput() {
@@ -346,6 +354,7 @@ function gameLoop() {
     drawLeaderboard();
     drawScore();
     drawCurrentPowerup();
+    playerMove();
   
     var now = Date.now();
     var dt = (now - lastTime) / 1000.0;
