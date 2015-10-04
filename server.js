@@ -5,15 +5,15 @@ var io = require('socket.io')(http);
 
 var Board = function(numRows, numCols, value) {
     var array = [];
-    for (var i = 0; i < numRows; i++){
+    for (var i = 0; i < numRows; i++) {
         var column = [];
-        for (var j = 0; j < numCols; j++){
+        for (var j = 0; j < numCols; j++) {
             column[j] = value;
         }
         array[i] = column;
     }
     return array;
-}
+};
 
 // Total number of tiles in game 
 var gridHeight = 50;

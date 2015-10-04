@@ -1,29 +1,19 @@
 var socket = io();
 
 var Board = function(numRows, numCols, value) {
-    this.array = new Array;
+    this.array = [];
     for (var i = 0; i < numRows; i++) {
-        var column = new Array;
+        var column = [];
         for (var j = 0; j < numCols; j++) {
             column.push(value);
         }
         this.array.push(column);
     }
     return this.array;
-}
+};
 
-var thisPlayer = {id:-1, x:0, y:0, speed:25, color:'blue', score:0};
+var thisPlayer = {x:0, y:0, speed:25, color:'blue', score:0};
 var otherPlayers = [];
-
-// Setup mouse listener
-document.addEventListener('mousemove', mouseInput, false);
-
-// Player movement stuff
-// http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
-var now = (new Date()).getTime();
-var then = (new Date()).getTime()-1;
-var delta = 1;
-var angle = 0;
 
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
@@ -78,25 +68,9 @@ function updateBoardVars() {
     halfY = numTiles_y / 2;
 }
 
-// This may be obsolete with the introduction of drawSprite_exact()
-// Draws a sprite at a specified location
-function drawSprite(xpos, ypos, src, scalar, offset, alpha) {
-    var sprite = new Image();
-    sprite.src = src;
-    sprite.onload = function() {
-        // Scale down the canvas to draw the image, draw it, then scale back up
-        ctx.scale(scalar, scalar);
-        ctx.globalAlpha = alpha;
-        ctx.drawImage(sprite, xpos/scalar+offset, ypos/scalar+offset);
-        ctx.globalAlpha = 1.0;
-        ctx.scale(1/scalar, 1/scalar);
-        ctx.globalAlpha = 1;
-    };
-}
-
 // This function will draw an image in the exact dimensions we want.
 // It will be useful for resizing tiles as the window resizes
-function drawSprite_exact(img, x, y, w, h, alpha) {
+function drawSprite(img, x, y, w, h, alpha) {
     ctx.globalAlpha = alpha; // The site doesn't work with this line for me
     ctx.drawImage(img, x, y, w, h);
     ctx.globalAlpha = 1;
@@ -123,25 +97,27 @@ function drawGrid(xmin, ymin, xmax, ymax, tileLength) {
 
     for (var y = 0; y < gridHeight; y++) {
         for (var x = 0; x < gridWidth; x++) {
-            if (x*tileLength>=xmin-tileLength && x*tileLength<xmax && y*tileLength>=ymin-tileLength && y*tileLength<ymax) {
-                ctx.strokeRect(x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength);
+            fooX = x*tileLength;
+            fooY = y*tileLength;
+            if (fooX>=xmin-tileLength && fooX<xmax && fooY>=ymin-tileLength && fooY<ymax) {
+                ctx.strokeRect(fooX-xmin, fooY-ymin, tileLength, tileLength);
                 switch (board[y][x]) {
                     case (0): // DIRT
-                        drawSprite_exact(dirt, x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength, 1);
+                        drawSprite(dirt, fooX-xmin, fooY-ymin, tileLength, tileLength, 1);
                         break;
                     case (1): // RED PLANT
                         ctx.fillStyle = 'red';
-                        ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength-1, tileLength-1);
-                        drawSprite_exact(plant, x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength, .6);
+                        ctx.fillRect(fooX-xmin, fooY-ymin, tileLength-1, tileLength-1);
+                        drawSprite(plant, fooX-xmin, fooY-ymin, tileLength, tileLength, 0.6);
                         break;
                     case (2): // PURPLE PLANT
                         ctx.fillStyle = 'purple';
-                        ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength-1, tileLength-1);
-                        drawSprite_exact(plant, x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength, .6);
+                        ctx.fillRect(fooX-xmin, fooY-ymin, tileLength-1, tileLength-1);
+                        drawSprite(plant, fooX-xmin, fooY-ymin, tileLength, tileLength, 0.6);
                         break;
                     default: // UNKNOWN
                         ctx.fillStyle = 'black';
-                        ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength);
+                        ctx.fillRect(fooX-xmin, fooY-ymin, tileLength, tileLength);
                         break;
                 }
             }
@@ -156,24 +132,19 @@ function drawOverlayer(xmin, ymin, xmax, ymax, tileLength) {
     overlayer[3][28] = 1;
     overlayer[4][29] = 1;
     overlayer[7][7] = 1;
-    overlayer[4][8] = 'H';
+    overlayer[4][8] = 2;
 
-    for (var y = 0; y < gridHeight; y++) 
-    {
-        for (var x = 0; x < gridWidth; x++) 
-        {
-            if (x*tileLength>=xmin-tl && x*tl<xmax && y*tl>=ymin-tl && y*tl<ymax)
-            {
-                switch (overlayer[y][x]) 
-                {
-                    case (0):
-                        break;
+    for (var y = 0; y < gridHeight; y++) {
+        for (var x = 0; x < gridWidth; x++) {
+            if (x*tileLength>=xmin-tl && x*tl<xmax && y*tl>=ymin-tl && y*tl<ymax) {
+                switch (overlayer[y][x]) {
                     case (1):
-                        drawSprite_exact(waterBucket, x*tl-xmin+tl/9, y*tl-ymin+tl/9, tl*3/4, tl*3/4, 1);
+                        drawSprite(waterBucket, x*tl-xmin+tl/9, y*tl-ymin+tl/9, tl*3/4, tl*3/4, 1);
                         break;
-                    case ('H'):
-                        // This is the case where the tile is a house space
-                        drawSprite_exact(house, x*tl-xmin, y*tl-ymin, tl, tl, 1);
+                    case (2):
+                        drawSprite(house, x*tl-xmin, y*tl-ymin, tl, tl, 1);
+                        break;
+                    default:
                         break;
                 }
             }
@@ -263,13 +234,8 @@ function playerMove(){
     var mov_x = max_x - min_x;
     var mov_y = max_y - min_y;
 
-    if (isNaN(delta) || delta <= 0) {
-        return;
-    }
-    else {
-        var distX = mouseX - (thisPlayer.x-mov_x/2);
-        var distY = mouseY - (thisPlayer.y-mov_y/2);
-    }
+    var distX = mouseX - (thisPlayer.x-mov_x/2);
+    var distY = mouseY - (thisPlayer.y-mov_y/2);
 
     if (distX !== 0 && distY !== 0) {
         console.log(distX);
@@ -311,15 +277,7 @@ function initImages() {
 function initSocket(socket) {
     socket.on('init', function(playerData) {
         player = playerData;
-    })
-}
-
-// Calculates a new delta
-// http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
-function setDelta() {
-    now = (new Date()).getTime();
-    delta = (now-then)/1000;
-    then = now;
+    });
 }
 
 // Calls all needed object update functions
@@ -341,13 +299,8 @@ function render(ctx) {
     ctx.restore();
 }
 
-// Main game loop
-// TODO: actually animate
 function gameLoop() {
     drawViewport();
-    //drawPickups();
-    //drawPlayers();
-    drawPlayer();
     drawLeaderboard();
     drawScore();
     drawCurrentPowerup();
