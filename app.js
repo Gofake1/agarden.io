@@ -234,18 +234,31 @@ function drawPlayer(xmin, ymin) {
 // Handles mouse movement
 // http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
 function mouseInput(mouse) {
+    // took these variables from drawPlayerWindow
+    // maybe make these attributes of thisPlayer or global or something
+    var numTiles_y = window.innerHeight / tileLength + 1;
+    var halfX = numTiles_x / 2;
+    var halfY = numTiles_y / 2;
+    var min_x = thisPlayer.x<tileLength*halfX ? 0 : thisPlayer.x-tileLength*halfX;
+    var min_y = thisPlayer.y<tileLength*halfY ? 0 : thisPlayer.y-tileLength*halfY;
+    var max_x = min_x+tileLength*numTiles_x;
+    var max_y = min_y+tileLength*numTiles_y;
+
+    var mov_x = max_x - min_x;
+    var mov_y = max_y - min_y;
+
     if (isNaN(delta) || delta <= 0) {
         return;
     }
     else {
-        var distX = mouse.clientX - (thisPlayer.x);
-        var distY = mouse.clientY - (thisPlayer.y);
+        var distX = mouse.clientX - (thisPlayer.x-mov_x/2);
+        var distY = mouse.clientY - (thisPlayer.y-mov_y/2);
     }
 
     if (distX !== 0 && distY !== 0) {
         angle = Math.atan2(distX, distY*-1);
-        thisPlayer.x -= (((thisPlayer.x - 10/2) - mouse.clientX)/thisPlayer.speed);
-        thisPlayer.y -= (((thisPlayer.y - 10/2) - mouse.clientY)/thisPlayer.speed);
+        thisPlayer.x -= (((thisPlayer.x - mov_x/2) - mouse.clientX)/thisPlayer.speed);
+        thisPlayer.y -= (((thisPlayer.y - mov_y/2) - mouse.clientY)/thisPlayer.speed);
     }
 }
 
@@ -327,7 +340,7 @@ function gameLoop() {
     drawPlayerWindow();
     //drawPickups();
     // drawPlayers();
-    drawPlayer();
+    // drawPlayer();
     drawLeaderboard();
     drawScore();
     drawCurrentPowerup();
