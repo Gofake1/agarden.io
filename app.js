@@ -87,8 +87,6 @@ function drawSprite(img, x, y, w, h, alpha) {
 
 // MAKE SURE TO SEPARATE STUFF OUT LATER!!!!!
 function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
-
-    tl = board_tileLength;
     // Red Farmer
     board[3][8] = 1;
     board[3][9] = 1;
@@ -108,49 +106,27 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
 
     for (var y = 0; y < gridHeight; y++) {
         for (var x = 0; x < gridWidth; x++) {
-<<<<<<< HEAD
-            if (x*tl>=xmin-tl && x*tl<xmax && y*tl>=ymin-tl && y*tl<ymax) {
-                ctx.strokeRect(x*tl-xmin, y*tl-ymin, tl, tl);
+            xLength = x*board_tileLength;
+            yLength = y*board_tileLength;
+            if (xLength>=xmin-board_tileLength && xLength<xmax && yLength>=ymin-board_tileLength && yLength<ymax) {
+                ctx.strokeRect(xLength-xmin, yLength-ymin, board_tileLength, board_tileLength);
                 switch (board[y][x]) {
                     case (0): // DIRT
-                        drawSprite_exact(dirt, x*tl-xmin, y*tl-ymin, tl, tl, 1);
+                        drawSprite(dirt, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, 1);
                         break;
                     case (1): // RED PLANT
                         ctx.fillStyle = 'red';
-                        ctx.fillRect(x*tl-xmin, y*tl-ymin, tl-1, tl-1);
-                        drawSprite_exact(plant, x*tl-xmin, y*tl-ymin, tl, tl, .6);
+                        ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength-1, board_tileLength-1);
+                        drawSprite(plant, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, 0.6);
                         break;
                     case (2): // PURPLE PLANT
                         ctx.fillStyle = 'purple';
-                        ctx.fillRect(x*tl-xmin, y*tl-ymin, tl-1, tl-1);
-                        drawSprite_exact(plant, x*tl-xmin, y*tl-ymin, tl, tl, .6);
+                        ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength-1, board_tileLength-1);
+                        drawSprite(plant, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, 0.6);
                         break;
                     default: // UNKNOWN
                         ctx.fillStyle = 'black';
-                        ctx.fillRect(x*tl-xmin, y*tl-ymin, tl, tl);
-=======
-            fooX = x*tileLength;
-            fooY = y*tileLength;
-            if (fooX>=xmin-tileLength && fooX<xmax && fooY>=ymin-tileLength && fooY<ymax) {
-                ctx.strokeRect(fooX-xmin, fooY-ymin, tileLength, tileLength);
-                switch (board[y][x]) {
-                    case (0): // DIRT
-                        drawSprite(dirt, fooX-xmin, fooY-ymin, tileLength, tileLength, 1);
-                        break;
-                    case (1): // RED PLANT
-                        ctx.fillStyle = 'red';
-                        ctx.fillRect(fooX-xmin, fooY-ymin, tileLength-1, tileLength-1);
-                        drawSprite(plant, fooX-xmin, fooY-ymin, tileLength, tileLength, 0.6);
-                        break;
-                    case (2): // PURPLE PLANT
-                        ctx.fillStyle = 'purple';
-                        ctx.fillRect(fooX-xmin, fooY-ymin, tileLength-1, tileLength-1);
-                        drawSprite(plant, fooX-xmin, fooY-ymin, tileLength, tileLength, 0.6);
-                        break;
-                    default: // UNKNOWN
-                        ctx.fillStyle = 'black';
-                        ctx.fillRect(fooX-xmin, fooY-ymin, tileLength, tileLength);
->>>>>>> e5256453e1a9a95fc2e8e28c5180b59591b72190
+                        ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength, board_tileLength);
                         break;
                 }
             }
@@ -165,27 +141,12 @@ function drawOverlayer(xmin, ymin, xmax, ymax, board_tileLength) {
     overlayer[3][28] = 1;
     overlayer[4][29] = 1;
     overlayer[7][7] = 1;
-<<<<<<< HEAD
-    overlayer[4][8] = 'H';
-
-    for (var y = 0; y < gridHeight; y++) 
-    {
-        for (var x = 0; x < gridWidth; x++) 
-        {
-            if (x*board_tileLength>=xmin-tl && x*tl<xmax && y*tl>=ymin-tl && y*tl<ymax)
-            {
-                switch (overlayer[y][x]) 
-                {
-                    case (0):
-                        break;
-=======
     overlayer[4][8] = 2;
 
     for (var y = 0; y < gridHeight; y++) {
         for (var x = 0; x < gridWidth; x++) {
-            if (x*tileLength>=xmin-tl && x*tl<xmax && y*tl>=ymin-tl && y*tl<ymax) {
+            if (x*board_tileLength>=xmin-tl && x*tl<xmax && y*tl>=ymin-tl && y*tl<ymax) {
                 switch (overlayer[y][x]) {
->>>>>>> e5256453e1a9a95fc2e8e28c5180b59591b72190
                     case (1):
                         drawSprite(waterBucket, x*tl-xmin+tl/9, y*tl-ymin+tl/9, tl*3/4, tl*3/4, 1);
                         break;
@@ -283,21 +244,9 @@ function mouseInput(mouse) {
 function playerMove() {
     updateBoardVars();
 
-<<<<<<< HEAD
-    var mov = 2*(board_tileLength/2.25)
-
-    if (isNaN(delta) || delta <= 0) {
-        return;
-    }
-    else {
-        var distX = mouseX - (thisPlayer.x-mov/2);
-        var distY = mouseY - (thisPlayer.y-mov/2);
-    }
-=======
-    var mov = 2*(tileLength/2.25);
+    var mov = 2*(board_tileLength/2.25);
     var distX = mouseX - (thisPlayer.x-mov/2);
     var distY = mouseY - (thisPlayer.y-mov/2);
->>>>>>> e5256453e1a9a95fc2e8e28c5180b59591b72190
 
     if (distX !== 0 && distY !== 0) {
         console.log('mouseX');
@@ -325,16 +274,11 @@ function keyInput() {
 function drawViewport() {
     updateBoardVars();
 
-<<<<<<< HEAD
     // Draw that board!
     drawGrid(min_x, min_y, max_x, max_y, board_tileLength);
     drawOverlayer(min_x, min_y, max_x, max_y, board_tileLength);
 
     // And the player too!
-=======
-    drawGrid(min_x, min_y, max_x, max_y, tileLength);
-    drawOverlayer(min_x, min_y, max_x, max_y, tileLength);
->>>>>>> e5256453e1a9a95fc2e8e28c5180b59591b72190
     drawPlayer(min_x, min_y);
 }
 
