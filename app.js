@@ -256,32 +256,37 @@ function drawPlayer(xmin, ymin) {
 }
 
 // Handles mouse movement
-// http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
 function mouseInput(mouse) {
     mouse_x = mouse.clientX;
     mouse_y = mouse.clientY;
 }
 
+// Moves the player
 function playerMove(){
     updateBoardVars();
 
-    var mov_x = max_x - min_x;
-    var mov_y = max_y - min_y;
+    var mov = 2*(tileLength/2.25)
 
     if (isNaN(delta) || delta <= 0) {
         return;
     }
     else {
-        var distX = mouse_x - (thisPlayer.x-mov_x/2);
-        var distY = mouse_y - (thisPlayer.y-mov_y/2);
+        var distX = mouse_x - (thisPlayer.x-mov/2);
+        var distY = mouse_y - (thisPlayer.y-mov/2);
     }
 
     if (distX !== 0 && distY !== 0) {
-        console.log(distX);
-
+        console.log('mouseX');
+        console.log(mouse_x);
+        console.log('mouseY');
+        console.log(mouse_y);
+        console.log('playerX');
+        console.log(thisPlayer.x);
+        console.log('playerY');
+        console.log(thisPlayer.y);
         angle = Math.atan2(distX, distY*-1);
-        thisPlayer.x -= (((thisPlayer.x - mov_x/2) - mouse_x)/thisPlayer.speed);
-        thisPlayer.y -= (((thisPlayer.y - mov_y/2) - mouse_y)/thisPlayer.speed);
+        thisPlayer.x -= (((thisPlayer.x - mov/2) - mouse_x)/thisPlayer.speed);
+        thisPlayer.y -= (((thisPlayer.y - mov/2) - mouse_y)/thisPlayer.speed);
     }
 }
 
