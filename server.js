@@ -48,7 +48,7 @@ app.get('/', function(req, res) {
 
 io.on('connection', function(socket) {
     var type = socket.handshake.query.type;
-    console.log('A user connected', type);
+    console.log('A user connected ' + type);
     socket.emit('setup', {
 
     });

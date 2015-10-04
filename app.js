@@ -42,14 +42,20 @@ var gridWidth = 100;
 var numTiles_x_start = 20;
 var numTiles_x_max = 30;
 
-// number of visible tiles (width)
+// Number of visible tiles (width)
 var numTiles_x = numTiles_x_start;
 var tileLength = window.innerWidth / numTiles_x;
 
-//  Global variables
+// Global variables
 var board = Board(gridHeight, gridWidth, 0);
 var overlayer = Board(gridHeight, gridWidth, 0);
 var leaderboard = [];
+
+// Sprites
+var dirt = new Image();
+var plant = new Image();
+var waterBucket = new Image();
+var house = new Image();
 
 document.addEventListener('mousemove', mouseInput, false);
 
@@ -71,21 +77,17 @@ function drawSprite(xpos, ypos, src, scalar, offset, alpha) {
 
 // This function will draw an image in the exact dimensions we want.
 // It will be useful for resizing tiles as the window resizes
-function drawSprite_exact(src, x, y, w, h, alpha)
-{
-    var sprite = new Image();
-    sprite.src = src;
-    sprite.onload = function()
+function drawSprite_exact(img, x, y, w, h, alpha) {
+    img.onload = function()
     //ctx.globalAlpha = alpha; // The site doesn't work with this line for me
     {
-        ctx.drawImage(sprite, x, y, w, h);
+        ctx.drawImage(img, x, y, w, h);
     }
     ctx.globalAlpha = 1;
 }
 
 // MAKE SURE TO SEPARATE STUFF OUT LATER!!!!!
-function drawGrid(xmin, ymin, xmax, ymax, tileLength)
-{
+function drawGrid(xmin, ymin, xmax, ymax, tileLength) {
     // Red Farmer
     board[3][8] = 1;
     board[3][9] = 1;
@@ -103,40 +105,35 @@ function drawGrid(xmin, ymin, xmax, ymax, tileLength)
     board[36][72] = 2;
     board[35][71] = 2;
 
-    for (var y = 0; y < gridHeight; y++)
-    {
-        for (var x = 0; x < gridWidth; x++)
-        {
-            if (x*tileLength>=xmin-tileLength && x*tileLength<xmax && y*tileLength>=ymin-tileLength && y*tileLength<ymax)
-            {
+    for (var y = 0; y < gridHeight; y++) {
+        for (var x = 0; x < gridWidth; x++) {
+            if (x*tileLength>=xmin-tileLength && x*tileLength<xmax && y*tileLength>=ymin-tileLength && y*tileLength<ymax) {
                 ctx.strokeRect(x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength);
-                switch (board[y][x]) 
-                {
-                case (0): // DIRT
-                    drawSprite_exact('sprites/dirt.jpg', x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength, 1);
-                    break;
-                case (1): // RED PLANT
-                    ctx.fillStyle = 'red';
-                    ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength-1, tileLength-1);
-                    drawSprite_exact('sprites/plant.png', x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength, .6);
-                    break;
-                case (2): // PURPLE PLANT
-                    ctx.fillStyle = 'purple';
-                    ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength-1, tileLength-1);
-                    drawSprite_exact('sprites/plant.png', x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength, .6);
-                    break;
-                default: // UNKNOWN
-                    ctx.fillStyle = 'black';
-                    ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength);
-                    break;
+                switch (board[y][x]) {
+                    case (0): // DIRT
+                        drawSprite_exact(dirt, x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength, 1);
+                        break;
+                    case (1): // RED PLANT
+                        ctx.fillStyle = 'red';
+                        ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength-1, tileLength-1);
+                        drawSprite_exact(plant, x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength, .6);
+                        break;
+                    case (2): // PURPLE PLANT
+                        ctx.fillStyle = 'purple';
+                        ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength-1, tileLength-1);
+                        drawSprite_exact(plant, x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength, .6);
+                        break;
+                    default: // UNKNOWN
+                        ctx.fillStyle = 'black';
+                        ctx.fillRect(x*tileLength-xmin, y*tileLength-ymin, tileLength, tileLength);
+                        break;
                 }
             }
         }
     }
 }
 
-function drawOverlayer(xmin, ymin, xmax, ymax, tileLength)
-{
+function drawOverlayer(xmin, ymin, xmax, ymax, tileLength) {
     // Temp variable to curb ridiculously long lines
     var tl = tileLength;
     // 'w' could stand for water, currently just testing to see if it works
@@ -149,21 +146,21 @@ function drawOverlayer(xmin, ymin, xmax, ymax, tileLength)
     {
         for (var x = 0; x < gridWidth; x++) 
         {
-        	if (x*tileLength>=xmin-tl && x*tl<xmax && y*tl>=ymin-tl && y*tl<ymax)
+            if (x*tileLength>=xmin-tl && x*tl<xmax && y*tl>=ymin-tl && y*tl<ymax)
             {
-	            switch (overlayer[y][x]) 
-	            {
-	                case (0):
-	                    break;
-	                case (1):
-                        drawSprite_exact('sprites/water_bucket.png', x*tl-xmin+tl/9, y*tl-ymin+tl/9, tl*3/4, tl*3/4, 1);
-	                    break;
-	                case ('H'):
-						// This is the case where the tile is a house space
-						drawSprite_exact( 'sprites/house.png',x*tl-xmin, y*tl-ymin, tl, tl, 1);
-						break;
-	            }
-	        }
+                switch (overlayer[y][x]) 
+                {
+                    case (0):
+                        break;
+                    case (1):
+                        drawSprite_exact(waterBucket, x*tl-xmin+tl/9, y*tl-ymin+tl/9, tl*3/4, tl*3/4, 1);
+                        break;
+                    case ('H'):
+                        // This is the case where the tile is a house space
+                        drawSprite_exact(house, x*tl-xmin, y*tl-ymin, tl, tl, 1);
+                        break;
+                }
+            }
         }
     }
 }
@@ -228,10 +225,10 @@ function drawCurrentPowerup() {
 
 // Draws this specific player as opposed to the opposing players
 function drawPlayer(xmin, ymin) {
-	ctx.beginPath();
-	ctx.arc(thisPlayer.x-xmin, thisPlayer.y-ymin, tileLength/2.25, 0, 2*Math.PI, false);
-	ctx.fillStyle = thisPlayer.color;
-	ctx.fill();
+    ctx.beginPath();
+    ctx.arc(thisPlayer.x-xmin, thisPlayer.y-ymin, tileLength/2.25, 0, 2*Math.PI, false);
+    ctx.fillStyle = thisPlayer.color;
+    ctx.fill();
 }
 
 // Handles mouse movement
@@ -258,11 +255,9 @@ function keyInput() {
 
 }
 
-
-
 // This function will dynamically follow the player, drawing the board
 // around him/her as he moves in realtime
-function drawPlayerWindow()  {
+function drawPlayerWindow() {
     var numTiles_y = window.innerHeight / tileLength + 1;
     var halfX = numTiles_x / 2;
     var halfY = numTiles_y / 2;
@@ -284,7 +279,14 @@ function drawPlayerWindow()  {
 // This function will be used to load images prior to their use
 // so that there is no draw delay
 // Draw delay obscures the leaderboard and other text overlay
-function init_images() {
+function initImages() {
+    dirt.src = 'sprites/dirt.jpg';
+    plant.src = 'sprites/plant.png';
+    waterBucket.src = 'sprites/water_bucket.png';
+    house.src = 'sprites/house.png';
+}
+
+function initSocket(socket) {
 
 }
 
@@ -339,15 +341,15 @@ function gameLoop() {
 }
 
 function init() {
-	// Fill the canvas with green
-	ctx.fillStyle = 'green';
-	ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
+    // Fill the canvas with green
+    ctx.fillStyle = 'green';
+    ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
     // document.getElementById('play-again').addEventListener('click', function() {
     //     reset();
     // });
     // reset();
-    lastTime = Date.now();
-    // init_images();
+    initImages();
+    initSocket(socket);
     gameLoop();
 }
 
