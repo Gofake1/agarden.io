@@ -62,7 +62,7 @@ var mouseY = 0;
 // Updates global variables for board drawing
 function updateBoardVars() {
     // Number of visible tiles
-    numTiles_y = window.innerHeight / board_tileLength + 1;
+    numTiles_y = window.innerHeight / board_tileLength;
     halfX = numTiles_x / 2;
     halfY = numTiles_y / 2;
 
@@ -74,15 +74,15 @@ function updateBoardVars() {
     // X
     if (xPos < board_tileLength*halfX)
     	vizmin_x = 0;
-    else if (xPos > board_tileLength*gridWidth - board_tileLength*halfX)
-    	vizmin_x = board_tileLength*gridWidth - board_tileLength*halfX;
+    else if (xPos > board_tileLength*gridWidth - board_tileLength*2*halfX)
+    	vizmin_x = board_tileLength*gridWidth - board_tileLength*2*halfX;
     else
     	vizmin_x = xPos-board_tileLength*halfX;
     // Y
     if (yPos < board_tileLength*halfY)
     	vizmin_y = 0;
-    else if (yPos > board_tileLength*gridWidth - board_tileLength*halfY)
-    	vizmin_y = board_tileLength*gridWidth - board_tileLength*halfY;
+    else if (yPos > board_tileLength*gridHeight - board_tileLength*2*halfY)
+    	vizmin_y = board_tileLength*gridHeight - board_tileLength*2*halfY;
     else
     	vizmin_y = yPos-board_tileLength*halfY;
 
@@ -240,6 +240,7 @@ function drawPlayer(xmin, ymin) {
     // Convert player pos to board pos
     var xPos = thisPlayer.x / objective_tileLength * board_tileLength;
     var yPos = thisPlayer.y / objective_tileLength * board_tileLength;
+    console.log(xPos + " : " + yPos);
 
     ctx.beginPath();
     ctx.arc(xPos-xmin, yPos-ymin, board_tileLength/2.25, 0, 2*Math.PI, false);
