@@ -74,14 +74,14 @@ function updateBoardVars() {
     // X
     if (xPos < board_tileLength*halfX)
     	vizmin_x = 0;
-    else if (xPos > board_tileLength*gridWidth - board_tileLength*2*halfX)
+    else if (xPos > board_tileLength*gridWidth - board_tileLength*halfX)
     	vizmin_x = board_tileLength*gridWidth - board_tileLength*2*halfX;
     else
     	vizmin_x = xPos-board_tileLength*halfX;
     // Y
     if (yPos < board_tileLength*halfY)
     	vizmin_y = 0;
-    else if (yPos > board_tileLength*gridHeight - board_tileLength*2*halfY)
+    else if (yPos > board_tileLength*gridHeight - board_tileLength*halfY)
     	vizmin_y = board_tileLength*gridHeight - board_tileLength*2*halfY;
     else
     	vizmin_y = yPos-board_tileLength*halfY;
