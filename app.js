@@ -39,10 +39,10 @@ var objective_xboard = gridWidth*objective_tileLength;
 var objective_yboard = gridHeight*objective_tileLength;
 
 // Record the board's visible bounds
-var min_x = thisPlayer.x<board_tileLength*halfX ? 0 : thisPlayer.x-board_tileLength*halfX;
-var min_y = thisPlayer.y<board_tileLength*halfY ? 0 : thisPlayer.y-board_tileLength*halfY;
-var max_x = min_x+board_tileLength*numTiles_x;
-var max_y = min_y+board_tileLength*numTiles_y;
+var vizmin_x = thisPlayer.x<board_tileLength*halfX ? 0 : thisPlayer.x-board_tileLength*halfX;
+var vizmin_y = thisPlayer.y<board_tileLength*halfY ? 0 : thisPlayer.y-board_tileLength*halfY;
+var vizmax_x = vizmin_x+board_tileLength*numTiles_x;
+var vizmax_y = vizmin_y+board_tileLength*numTiles_y;
 
 // Global variables
 var board = Board(gridHeight, gridWidth, 0);
@@ -71,10 +71,23 @@ function updateBoardVars() {
     var yPos = thisPlayer.y / objective_tileLength * board_tileLength;
 
     // Record the board's visible bounds
-    min_x = xPos<board_tileLength*halfX ? 0 : xPos-board_tileLength*halfX;
-    min_y = yPos<board_tileLength*halfY ? 0 : yPos-board_tileLength*halfY;
-    max_x = min_x+board_tileLength*numTiles_x;
-    max_y = min_y+board_tileLength*numTiles_y;
+    // X
+    if (xPos < board_tileLength*halfX)
+    	vizmin_x = 0;
+    else if (xPos > board_tileLength*gridWidth - board_tileLength*halfX)
+    	vizmin_x = board_tileLength*gridWidth - board_tileLength*halfX;
+    else
+    	vizmin_x = xPos-board_tileLength*halfX;
+    // Y
+    if (yPos < board_tileLength*halfY)
+    	vizmin_y = 0;
+    else if (yPos > board_tileLength*gridWidth - board_tileLength*halfY)
+    	vizmin_y = board_tileLength*gridWidth - board_tileLength*halfY;
+    else
+    	vizmin_y = yPos-board_tileLength*halfY;
+
+    vizmax_x = vizmin_x+board_tileLength*numTiles_x;
+    vizmax_y = vizmin_y+board_tileLength*numTiles_y;
 }
 
 // This function will draw an image in the exact dimensions we want.
@@ -242,11 +255,18 @@ function mouseInput(mouse) {
 
 // Moves the player
 function playerMove() {
+
+	// This should not work, vizmin_x and vizmin_y are still out of scope
     updateBoardVars();
 
+    // mov is the player diameter
     var mov = 2*(board_tileLength/2.25);
-    var distX = mouseX - (thisPlayer.x-mov/2);
-    var distY = mouseY - (thisPlayer.y-mov/2);
+    // distances in x and y of mouse from player, player pos needs to be converted to 
+    // reflect relative board vision (thisPlayer.x is objective position)
+    relPosX = thisPlayer.x / objective_tileLength * board_tileLength - vizmin_x;
+    relPosY = thisPlayer.y / objective_tileLength * board_tileLength - vizmin_y;
+    var distX = mouseX - (relPosX-mov/2);
+    var distY = mouseY - (relPosY-mov/2);
 
     if (distX !== 0 && distY !== 0) {
         console.log('mouseX');
@@ -259,8 +279,8 @@ function playerMove() {
         console.log(thisPlayer.y);
         angle = Math.atan2(distX, distY*-1);
 
-        thisPlayer.x -= (((thisPlayer.x - mov/2) - mouseX)/thisPlayer.speed);
-        thisPlayer.y -= (((thisPlayer.y - mov/2) - mouseY)/thisPlayer.speed);
+        thisPlayer.x -= (((relPosX - mov/2) - mouseX)/thisPlayer.speed);
+        thisPlayer.y -= (((relPosY - mov/2) - mouseY)/thisPlayer.speed);
     }
 }
 
@@ -274,12 +294,14 @@ function keyInput() {
 function drawViewport() {
     updateBoardVars();
 
+    // This should not be working. vizmin_x and vizmin_y are out of scope here
+
     // Draw that board!
-    drawGrid(min_x, min_y, max_x, max_y, board_tileLength);
-    drawOverlayer(min_x, min_y, max_x, max_y, board_tileLength);
+    drawGrid(vizmin_x, vizmin_y, vizmax_x, vizmax_y, board_tileLength);
+    drawOverlayer(vizmin_x, vizmin_y, vizmax_x, vizmax_y, board_tileLength);
 
     // And the player too!
-    drawPlayer(min_x, min_y);
+    drawPlayer(vizmin_x, vizmin_y);
 }
 
 // This function will be used to load images prior to their use
