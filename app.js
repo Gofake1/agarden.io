@@ -12,7 +12,7 @@ var Board = function(numRows, numCols, value) {
     return this.array;
 };
 
-var thisPlayer = {x:0, y:0, speed:25, color:'blue', score:0};
+var thisPlayer = {x:0, y:0, speed:125, color:'blue', score:0};
 var otherPlayers = [];
 
 var canvas = document.getElementById('canvas');
