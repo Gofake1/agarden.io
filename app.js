@@ -28,16 +28,21 @@ var numTiles_x_max = 30;
 
 // Number of visible tiles (width)
 var numTiles_x = numTiles_x_start;
-var numTiles_y = window.innerHeight / tileLength + 1;
-var tileLength = window.innerWidth / numTiles_x;
+var numTiles_y = window.innerHeight / board_tileLength + 1;
+var board_tileLength = window.innerWidth / numTiles_x;
 var halfX = numTiles_x / 2;
 var halfY = numTiles_y / 2;
 
+// For syncing player movement with board
+var objective_tileLength = 20;
+var objective_xboard = gridWidth*objective_tileLength;
+var objective_yboard = gridHeight*objective_tileLength;
+
 // Record the board's visible bounds
-var min_x = thisPlayer.x<tileLength*halfX ? 0 : thisPlayer.x-tileLength*halfX;
-var min_y = thisPlayer.y<tileLength*halfY ? 0 : thisPlayer.y-tileLength*halfY;
-var max_x = min_x+tileLength*numTiles_x;
-var max_y = min_y+tileLength*numTiles_y;
+var vizmin_x = thisPlayer.x<board_tileLength*halfX ? 0 : thisPlayer.x-board_tileLength*halfX;
+var vizmin_y = thisPlayer.y<board_tileLength*halfY ? 0 : thisPlayer.y-board_tileLength*halfY;
+var vizmax_x = vizmin_x+board_tileLength*numTiles_x;
+var vizmax_y = vizmin_y+board_tileLength*numTiles_y;
 
 // Game variables
 var board = Board(gridHeight, gridWidth, 0);
@@ -57,16 +62,33 @@ var mouseY = 0;
 
 // Updates global variables for board drawing
 function updateBoardVars() {
-    // Record the board's visible bounds
-    min_x = thisPlayer.x<tileLength*halfX ? 0 : thisPlayer.x-tileLength*halfX;
-    min_y = thisPlayer.y<tileLength*halfY ? 0 : thisPlayer.y-tileLength*halfY;
-    max_x = min_x+tileLength*numTiles_x;
-    max_y = min_y+tileLength*numTiles_y;
-
     // Number of visible tiles
-    numTiles_y = window.innerHeight / tileLength + 1;
+    numTiles_y = window.innerHeight / board_tileLength;
     halfX = numTiles_x / 2;
     halfY = numTiles_y / 2;
+
+    // Relate player objective scale to drawing scale
+    var xPos = thisPlayer.x / objective_tileLength * board_tileLength;
+    var yPos = thisPlayer.y / objective_tileLength * board_tileLength;
+
+    // Record the board's visible bounds
+    // X
+    if (xPos < board_tileLength*halfX)
+    	vizmin_x = 0;
+    else if (xPos > board_tileLength*gridWidth - board_tileLength*halfX)
+    	vizmin_x = board_tileLength*gridWidth - board_tileLength*2*halfX;
+    else
+    	vizmin_x = xPos-board_tileLength*halfX;
+    // Y
+    if (yPos < board_tileLength*halfY)
+    	vizmin_y = 0;
+    else if (yPos > board_tileLength*gridHeight - board_tileLength*halfY)
+    	vizmin_y = board_tileLength*gridHeight - board_tileLength*2*halfY;
+    else
+    	vizmin_y = yPos-board_tileLength*halfY;
+
+    vizmax_x = vizmin_x+board_tileLength*numTiles_x;
+    vizmax_y = vizmin_y+board_tileLength*numTiles_y;
 }
 
 // This function will draw an image in the exact dimensions we want.
@@ -78,7 +100,7 @@ function drawSprite(img, x, y, w, h, alpha) {
 }
 
 // MAKE SURE TO SEPARATE STUFF OUT LATER!!!!!
-function drawGrid(xmin, ymin, xmax, ymax, tileLength) {
+function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
     // Red Farmer
     board[3][8] = 1;
     board[3][9] = 1;
@@ -98,27 +120,27 @@ function drawGrid(xmin, ymin, xmax, ymax, tileLength) {
 
     for (var y = 0; y < gridHeight; y++) {
         for (var x = 0; x < gridWidth; x++) {
-            fooX = x*tileLength;
-            fooY = y*tileLength;
-            if (fooX>=xmin-tileLength && fooX<xmax && fooY>=ymin-tileLength && fooY<ymax) {
-                ctx.strokeRect(fooX-xmin, fooY-ymin, tileLength, tileLength);
+            xLength = x*board_tileLength;
+            yLength = y*board_tileLength;
+            if (xLength>=xmin-board_tileLength && xLength<xmax && yLength>=ymin-board_tileLength && yLength<ymax) {
+                ctx.strokeRect(xLength-xmin, yLength-ymin, board_tileLength, board_tileLength);
                 switch (board[y][x]) {
                     case (0): // DIRT
-                        drawSprite(dirt, fooX-xmin, fooY-ymin, tileLength, tileLength, 1);
+                        drawSprite(dirt, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, 1);
                         break;
                     case (1): // RED PLANT
                         ctx.fillStyle = 'red';
-                        ctx.fillRect(fooX-xmin, fooY-ymin, tileLength-1, tileLength-1);
-                        drawSprite(plant, fooX-xmin, fooY-ymin, tileLength, tileLength, 0.6);
+                        ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength-1, board_tileLength-1);
+                        drawSprite(plant, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, 0.6);
                         break;
                     case (2): // PURPLE PLANT
                         ctx.fillStyle = 'purple';
-                        ctx.fillRect(fooX-xmin, fooY-ymin, tileLength-1, tileLength-1);
-                        drawSprite(plant, fooX-xmin, fooY-ymin, tileLength, tileLength, 0.6);
+                        ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength-1, board_tileLength-1);
+                        drawSprite(plant, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, 0.6);
                         break;
                     default: // UNKNOWN
                         ctx.fillStyle = 'black';
-                        ctx.fillRect(fooX-xmin, fooY-ymin, tileLength, tileLength);
+                        ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength, board_tileLength);
                         break;
                 }
             }
@@ -126,9 +148,9 @@ function drawGrid(xmin, ymin, xmax, ymax, tileLength) {
     }
 }
 
-function drawOverlayer(xmin, ymin, xmax, ymax, tileLength) {
+function drawOverlayer(xmin, ymin, xmax, ymax, board_tileLength) {
     // Temp variable to curb ridiculously long lines
-    var tl = tileLength;
+    var tl = board_tileLength;
     // 'w' could stand for water, currently just testing to see if it works
     overlayer[3][28] = 1;
     overlayer[4][29] = 1;
@@ -137,7 +159,7 @@ function drawOverlayer(xmin, ymin, xmax, ymax, tileLength) {
 
     for (var y = 0; y < gridHeight; y++) {
         for (var x = 0; x < gridWidth; x++) {
-            if (x*tileLength>=xmin-tl && x*tl<xmax && y*tl>=ymin-tl && y*tl<ymax) {
+            if (x*board_tileLength>=xmin-tl && x*tl<xmax && y*tl>=ymin-tl && y*tl<ymax) {
                 switch (overlayer[y][x]) {
                     case (1):
                         drawSprite(waterBucket, x*tl-xmin+tl/9, y*tl-ymin+tl/9, tl*3/4, tl*3/4, 1);
@@ -216,8 +238,13 @@ function drawCurrentPowerup() {
 
 // Draws this specific player as opposed to the opposing players
 function drawPlayer(xmin, ymin) {
+    // Convert player pos to board pos
+    var xPos = thisPlayer.x / objective_tileLength * board_tileLength;
+    var yPos = thisPlayer.y / objective_tileLength * board_tileLength;
+    console.log(xPos + " : " + yPos);
+
     ctx.beginPath();
-    ctx.arc(thisPlayer.x-xmin, thisPlayer.y-ymin, tileLength/2.25, 0, 2*Math.PI, false);
+    ctx.arc(xPos-xmin, yPos-ymin, board_tileLength/2.25, 0, 2*Math.PI, false);
     ctx.fillStyle = thisPlayer.color;
     ctx.fill();
 }
@@ -239,11 +266,18 @@ function mouseInput(mouse) {
 
 // Moves the player
 function playerMove() {
+
+	// This should not work, vizmin_x and vizmin_y are still out of scope
     updateBoardVars();
 
-    var mov = 2*(tileLength/2.25);
-    var distX = mouseX - (thisPlayer.x-mov/2);
-    var distY = mouseY - (thisPlayer.y-mov/2);
+    // mov is the player diameter
+    var mov = 2*(board_tileLength/2.25);
+    // distances in x and y of mouse from player, player pos needs to be converted to 
+    // reflect relative board vision (thisPlayer.x is objective position)
+    relPosX = thisPlayer.x / objective_tileLength * board_tileLength - vizmin_x;
+    relPosY = thisPlayer.y / objective_tileLength * board_tileLength - vizmin_y;
+    var distX = mouseX - (relPosX-mov/2);
+    var distY = mouseY - (relPosY-mov/2);
 
     if (distX !== 0 && distY !== 0) {
         console.log('mouseX');
@@ -256,8 +290,8 @@ function playerMove() {
         console.log(thisPlayer.y);
         angle = Math.atan2(distX, distY*-1);
 
-        thisPlayer.x -= (((thisPlayer.x - mov/2) - mouseX)/thisPlayer.speed);
-        thisPlayer.y -= (((thisPlayer.y - mov/2) - mouseY)/thisPlayer.speed);
+        thisPlayer.x -= (((relPosX - mov/2) - mouseX)/thisPlayer.speed);
+        thisPlayer.y -= (((relPosY - mov/2) - mouseY)/thisPlayer.speed);
     }
 }
 
@@ -266,9 +300,14 @@ function playerMove() {
 function drawViewport() {
     updateBoardVars();
 
-    drawGrid(min_x, min_y, max_x, max_y, tileLength);
-    drawOverlayer(min_x, min_y, max_x, max_y, tileLength);
-    drawPlayer(min_x, min_y);
+    // This should not be working. vizmin_x and vizmin_y are out of scope here
+
+    // Draw that board!
+    drawGrid(vizmin_x, vizmin_y, vizmax_x, vizmax_y, board_tileLength);
+    drawOverlayer(vizmin_x, vizmin_y, vizmax_x, vizmax_y, board_tileLength);
+
+    // And the player too!
+    drawPlayer(vizmin_x, vizmin_y);
 }
 
 // This function will be used to load images prior to their use
