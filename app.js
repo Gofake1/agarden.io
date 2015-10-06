@@ -39,7 +39,7 @@ var min_y = thisPlayer.y<tileLength*halfY ? 0 : thisPlayer.y-tileLength*halfY;
 var max_x = min_x+tileLength*numTiles_x;
 var max_y = min_y+tileLength*numTiles_y;
 
-// Global variables
+// Game variables
 var board = Board(gridHeight, gridWidth, 0);
 var overlayer = Board(gridHeight, gridWidth, 0);
 var leaderboard = [];
@@ -50,7 +50,8 @@ var plant = new Image();
 var waterBucket = new Image();
 var house = new Image();
 
-document.addEventListener('mousemove', mouseInput, false);
+window.addEventListener('keypress', keyInput, false);
+window.addEventListener('mousemove', mouseInput, false);
 var mouseX = 0;
 var mouseY = 0;
 
@@ -221,6 +222,15 @@ function drawPlayer(xmin, ymin) {
     ctx.fill();
 }
 
+// Handles keyboard input
+function keyInput(key) {
+    // Use powerup
+    if (key.keyCode == 32) {
+
+    }
+    alert(key.keyCode);
+}
+
 // Handles mouse movement
 function mouseInput(mouse) {
     mouseX = mouse.clientX;
@@ -249,11 +259,6 @@ function playerMove() {
         thisPlayer.x -= (((thisPlayer.x - mov/2) - mouseX)/thisPlayer.speed);
         thisPlayer.y -= (((thisPlayer.y - mov/2) - mouseY)/thisPlayer.speed);
     }
-}
-
-// Handles keyboard input
-function keyInput() {
-
 }
 
 // This function will dynamically follow the player, drawing the board

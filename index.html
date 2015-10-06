@@ -56,7 +56,7 @@
             </div>
         </div>
     </div>
-    <canvas id="canvas"></canvas>
+    <canvas id="canvas" tabindex="1"></canvas>
     <script type="text/javascript">
         $(document).ready(function() {
             $('#startScreen').modal();
@@ -64,9 +64,9 @@
 
         // TODO: Trigger game screen modal when player dies
         // For the demo, clicking anywhere triggers the game over modal
-        $('#canvas').click(function() {
-            $('#gameoverScreen').modal();
-        });
+        // $('#canvas').click(function() {
+        //     $('#gameoverScreen').modal();
+        // });
     </script>
     <script type="text/javascript" src="app.js"></script>
 </body>
