@@ -12,7 +12,7 @@ var Board = function(numRows, numCols, value) {
     return this.array;
 };
 
-var thisPlayer = {x:0, y:0, speed:125, color:'blue', score:0};
+var thisPlayer = {x:0, y:0, name:'Guest', speed:125, color:'blue', score:0};
 var otherPlayers = [];
 
 var canvas = document.getElementById('canvas');
@@ -47,7 +47,7 @@ var vizmax_y = vizmin_y+board_tileLength*numTiles_y;
 // Game variables
 var board = Board(gridHeight, gridWidth, 0);
 var overlayer = Board(gridHeight, gridWidth, 0);
-var leaderboard = [];
+var leaderboard = ['Gofake1', 'Guest'];
 
 // Sprites
 var dirt = new Image();
@@ -188,8 +188,11 @@ function drawLeaderboard() {
     ctx.textAlign = 'left';
     ctx.fillText('Leaderboard', window.innerWidth-190, 40);
 
-    leaderboard.forEach(function() {
-        // Print player and score
+    var newLineHeight = 50;
+    leaderboard.forEach(function(value, index) {
+        newLineHeight += 20;
+        var rank = index+1;
+        ctx.fillText(rank+'. '+value, window.innerWidth-230, newLineHeight);
     });
 }
 
@@ -241,7 +244,7 @@ function drawPlayer(xmin, ymin) {
     // Convert player pos to board pos
     var xPos = thisPlayer.x / objective_tileLength * board_tileLength;
     var yPos = thisPlayer.y / objective_tileLength * board_tileLength;
-    console.log(xPos + " : " + yPos);
+    //console.log(xPos + " : " + yPos);
 
     ctx.beginPath();
     ctx.arc(xPos-xmin, yPos-ymin, board_tileLength/2.25, 0, 2*Math.PI, false);
@@ -279,14 +282,14 @@ function playerMove() {
     var distY = mouseY - (relPosY-mov/2);
 
     if (distX !== 0 && distY !== 0) {
-        console.log('mouseX');
-        console.log(mouseX);
-        console.log('mouseY');
-        console.log(mouseY);
-        console.log('playerX');
-        console.log(thisPlayer.x);
-        console.log('playerY');
-        console.log(thisPlayer.y);
+        // console.log('mouseX');
+        // console.log(mouseX);
+        // console.log('mouseY');
+        // console.log(mouseY);
+        // console.log('playerX');
+        // console.log(thisPlayer.x);
+        // console.log('playerY');
+        // console.log(thisPlayer.y);
         angle = Math.atan2(distX, distY*-1);
 
         thisPlayer.x -= (((relPosX - mov/2) - mouseX)/thisPlayer.speed);
