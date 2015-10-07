@@ -56,7 +56,7 @@ var waterBucket = new Image();
 var house = new Image();
 
 window.addEventListener('keypress', keyInput, false);
-window.addEventListener('mousemove', mouseInput, false);
+window.addEventListener('click', mouseClick, false);
 var mouseX = 0;
 var mouseY = 0;
 
@@ -258,7 +258,6 @@ function drawPlayer(xmin, ymin) {
     // Convert player pos to board pos
     var xPos = thisPlayer.x / objective_tileLength * board_tileLength;
     var yPos = thisPlayer.y / objective_tileLength * board_tileLength;
-    //console.log(xPos + " : " + yPos);
 
     ctx.beginPath();
     ctx.arc(xPos-xmin, yPos-ymin, board_tileLength/2.25, 0, 2*Math.PI, false);
@@ -271,6 +270,13 @@ function keyInput(key) {
     // Use powerup
     if (key.keyCode == 32) {
         alert('Powerup used!');
+    }
+}
+
+// Determines if the mouse is clicked
+function mouseClick(mouse) {
+    if (mouse.button == 0) {
+        window.addEventListener('mousemove', mouseInput, false);
     }
 }
 
