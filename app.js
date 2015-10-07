@@ -12,7 +12,7 @@ var Board = function(numRows, numCols, value) {
     return this.array;
 };
 
-var thisPlayer = {x:0, y:0, name:'Guest', speed:125, color:'blue', score:0};
+var thisPlayer = {x:0, y:0, name:'Guest', speed:125, color:'blue', score:0, powerup:0};
 var otherPlayers = [];
 
 var canvas = document.getElementById('canvas');
@@ -220,7 +220,21 @@ function drawCurrentPowerup() {
     ctx.fillStyle = 'white';
     ctx.font = '20px Arial';
     ctx.textAlign = 'left';
-    ctx.fillText('Current powerup:', 15, 40);
+
+    // create the powerup string
+    var powstring = "Current Powerup: ";
+    switch (thisPlayer.powerup)
+    {
+    case(0):
+    	// No powerup
+    	powstring += "--";
+    	break;
+    case(1):
+    	// water bucket
+    	powstring += "Water Bucket";
+    	break;
+    }
+    ctx.fillText(powstring, 15, 40);
 }
 
 // TODO: Make this dynamic
@@ -328,9 +342,35 @@ function initSocket(socket) {
     });
 }
 
+// Picks up whatever item the player is standing on
+// if the player is standing
+function processOverlayer()
+{
+	// thisPlayer.x = the current objective position of the player
+	xTile = Math.floor(thisPlayer.x / objective_tileLength);
+	yTile = Math.floor(thisPlayer.y / objective_tileLength);
+
+	// The object of the tile you are currently standing on
+	var current = overlayer[yTile][xTile];
+	switch (current)
+	{
+	case(0):
+		// Empty, do nothing
+		break;
+	case(1):
+		// water bucket
+		thisPlayer.powerup = 1;
+		break;
+	}
+	thisPlayer.powerup = current;
+
+	overlayer[yTile][xTile] = 0;
+}
+
+
 // Calls all needed object update functions
 function update(dt) {
-
+	processOverlayer();
 }
 
 // I'm not sure if we need to use render() for player movement, the tutorial only seems to use it for rotations
