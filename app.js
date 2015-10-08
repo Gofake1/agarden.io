@@ -12,7 +12,7 @@ var Board = function(numRows, numCols, value) {
     return this.array;
 };
 
-var thisPlayer = {x:0, y:0, name:'Guest', speed:125, color:'blue', score:0, powerup:0};
+var thisPlayer = {x:80, y:80, name:'Guest', speed:125, color:'blue', score:0, powerup:0};
 var otherPlayers = [];
 
 var canvas = document.getElementById('canvas');
@@ -117,6 +117,11 @@ function getName() {
             var pname = document.getElementById("pname").value;
             //console.log(pname);
             leaderboard.push(pname);
+
+            // TODO:
+            // WERE GOING TO WANT TO REMOVE THIS AFTER THE DEMO
+            setInterval(processBoard, 1000);
+
 }
 
 // This function will draw an image in the exact dimensions we want.
@@ -162,7 +167,7 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
 function drawOverlayer(xmin, ymin, xmax, ymax, board_tileLength) {
     // Temp variable to curb ridiculously long lines
     var tl = board_tileLength;
-
+    // For each tile
     for (var y = 0; y < gridHeight; y++) {
         for (var x = 0; x < gridWidth; x++) {
             if (x*board_tileLength>=xmin-tl && x*tl<xmax && y*tl>=ymin-tl && y*tl<ymax) {
@@ -382,7 +387,44 @@ function processOverlayer()
 	}
 
 	overlayer[yTile][xTile] = 0;
-	console.log("Current Tile Contents: " + overlayer[yTile][xTile]);
+}
+
+// Handles a single plant expansion
+function expandPlant(b, type, x, y)
+{
+	b[y][x] = type;
+	for (var i=-1; i<=1; i+=2)
+		for (var j=-1; j<=1; j+=2)
+			if (board[y+i][x+j] == 0)
+				b[y+i][x+j] = type;
+}
+
+
+// Process the board's plant expansion (rudimentery for vert prototype)
+function processBoard()
+{
+	newBoard = Board(gridHeight, gridWidth, 0);
+	for (var y = 0; y < gridHeight; y++) {
+        for (var x = 0; x < gridWidth; x++) {
+            xLength = x*board_tileLength;
+            yLength = y*board_tileLength;
+            switch (board[y][x]) {
+                case (0): // DIRT
+                	// Board is already full of zeros, no need for operation
+                    break;
+                case (1): // RED PLANT
+                	expandPlant(newBoard,1,x,y);
+                    break;
+                case (2): // PURPLE PLANT
+                	expandPlant(newBoard,1,x,y);
+                    break;
+                default: // UNKNOWN
+                    break;
+                
+            }
+        }
+    }
+    board = newBoard;
 }
 
 
