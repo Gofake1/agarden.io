@@ -56,7 +56,6 @@ var waterBucket = new Image();
 var house = new Image();
 
 window.addEventListener('keypress', keyInput, false);
-window.addEventListener('click', mouseClick, false);
 var mouseX = 0;
 var mouseY = 0;
 
@@ -93,9 +92,9 @@ function updateBoardVars() {
 
 // Gets the player's entered name
 function getName() {
-            var pname = document.getElementById("pname").value;
-            console.log(pname);
-            leaderboard.push(pname);
+    var pname = document.getElementById("pname").value;
+    leaderboard.push(pname);
+    window.addEventListener('mousemove', mouseInput, false);
 }
 
 // This function will draw an image in the exact dimensions we want.
@@ -280,13 +279,6 @@ function keyInput(key) {
     }
 }
 
-// Determines if the mouse is clicked
-function mouseClick(mouse) {
-    if (mouse.button == 0) {
-        window.addEventListener('mousemove', mouseInput, false);
-    }
-}
-
 // Handles mouse movement
 function mouseInput(mouse) {
     mouseX = mouse.clientX;
@@ -405,6 +397,8 @@ function gameLoop() {
     drawScore();
     drawCurrentPowerup();
     playerMove();
+
+    console.log("plant growth");
   
     var now = Date.now();
     var dt = (now - lastTime) / 1000.0;
