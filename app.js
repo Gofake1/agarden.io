@@ -47,7 +47,7 @@ var vizmax_y = vizmin_y+board_tileLength*numTiles_y;
 // Game variables
 var board = Board(gridHeight, gridWidth, 0);
 var overlayer = Board(gridHeight, gridWidth, 0);
-var leaderboard = ['Gofake1', 'Guest'];
+var leaderboard = [];
 
 // Sprites
 var dirt = new Image();
@@ -89,6 +89,13 @@ function updateBoardVars() {
 
     vizmax_x = vizmin_x+board_tileLength*numTiles_x;
     vizmax_y = vizmin_y+board_tileLength*numTiles_y;
+}
+
+// Gets the player's entered name
+function getName() {
+            var pname = document.getElementById("pname").value;
+            console.log(pname);
+            leaderboard.push(pname);
 }
 
 // This function will draw an image in the exact dimensions we want.
