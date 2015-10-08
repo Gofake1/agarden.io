@@ -45,7 +45,9 @@ var vizmax_x = vizmin_x+board_tileLength*numTiles_x;
 var vizmax_y = vizmin_y+board_tileLength*numTiles_y;
 
 // Game variables
+var initGrowthAlpha = 0.8;
 var board = Board(gridHeight, gridWidth, 0);
+var plantRanks = Board(gridHeight, gridWidth, 0);
     // Red Farmer
     board[3][8] = 1;
     board[3][9] = 1;
@@ -62,6 +64,22 @@ var board = Board(gridHeight, gridWidth, 0);
     board[36][72] = 2;
     board[35][71] = 2;
 
+     // Red Farmer
+    plantRanks[3][8] = initGrowthAlpha;
+    plantRanks[3][9] = initGrowthAlpha;
+    plantRanks[4][8] = initGrowthAlpha;
+    plantRanks[5][8] = initGrowthAlpha;
+    plantRanks[4][9] = initGrowthAlpha;
+    plantRanks[5][9] = initGrowthAlpha;
+    plantRanks[3][10] = initGrowthAlpha;
+    // Purple Farmer
+    plantRanks[35][70] = initGrowthAlpha;
+    plantRanks[36][70] = initGrowthAlpha;
+    plantRanks[37][70] = initGrowthAlpha;
+    plantRanks[36][71] = initGrowthAlpha;
+    plantRanks[36][72] = initGrowthAlpha;
+    plantRanks[35][71] = initGrowthAlpha;
+
 var overlayer = Board(gridHeight, gridWidth, 0);
     overlayer[3][28] = 1;
     overlayer[4][29] = 1;
@@ -75,8 +93,6 @@ var dirt = new Image();
 var plant = new Image();
 var waterBucket = new Image();
 var house = new Image();
-
-var growthAlpha = 0.8;
 
 window.addEventListener('keypress', keyInput, false);
 var mouseX = 0;
@@ -149,12 +165,12 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
                     case (1): // RED PLANT
                         ctx.fillStyle = 'red';
                         ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength-1, board_tileLength-1);
-                        drawSprite(plant, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, growthAlpha); //0.6);
+                        drawSprite(plant, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, plantRanks[y][x]); //0.6);
                         break;
                     case (2): // PURPLE PLANT
                         ctx.fillStyle = 'purple';
                         ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength-1, board_tileLength-1);
-                        drawSprite(plant, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, 0.6);
+                        drawSprite(plant, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, plantRanks[y][x]);
                         break;
                     default: // UNKNOWN
                         ctx.fillStyle = 'black';
@@ -389,13 +405,31 @@ function processOverlayer()
 // Handles a single plant expansion
 function expandPlant(b, type, x, y)
 {
+    grow = 0;
 	b[y][x] = type;
-	for (var i=-1; i<=1; i+=2)
-		for (var j=-1; j<=1; j+=2)
-			if (board[y+i][x+j] == 0)
+	for (var i=-1; i<=1; i+=2) {
+		for (var j=-1; j<=1; j+=2) {
+            if (y+i>50 || y+i<0 || x+j>100 || x+j<0) {
+                // do nothing, out of bounds
+            }
+			else if (board[y+i][x+j] == 0 && grow == 0) {
 				b[y+i][x+j] = type;
+                plantRanks[y+i][x+j] = 0.6;
+                grow = 1;
+            }
+            else if(plantRanks[y+i][x+j] > 0.5) {
+                plantRanks[y+i][x+j] -= 0.1;
+            }
+        }
+    }
 }
 
+// Basic plant growth handling
+function plantGrowth() {
+    if (growthAlpha > 0.5) {
+        growthAlpha -= 0.1; 
+    }
+}
 
 // Process the board's plant expansion (rudimentery for vert prototype)
 function processBoard()
@@ -413,7 +447,7 @@ function processBoard()
                 	expandPlant(newBoard,1,x,y);
                     break;
                 case (2): // PURPLE PLANT
-                	expandPlant(newBoard,1,x,y);
+                	expandPlant(newBoard,2,x,y);
                     break;
                 default: // UNKNOWN
                     break;
@@ -441,16 +475,6 @@ function render(ctx) {
 
     // restore the old context
     ctx.restore();
-}
-
-// Basic plant growth handling
-function plantGrowth() {
-    if (growthAlpha > 0.5) {
-        growthAlpha -= 0.1; 
-    }
-    else {
-        console.log("oh baby");
-    }
 }
 
 function gameLoop() {
