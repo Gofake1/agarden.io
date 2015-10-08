@@ -328,14 +328,6 @@ function playerMove() {
     var distY = mouseY - (relPosY-mov/2);
 
     if (distX !== 0 && distY !== 0) {
-        // console.log('mouseX');
-        // console.log(mouseX);
-        // console.log('mouseY');
-        // console.log(mouseY);
-        // console.log('playerX');
-        // console.log(thisPlayer.x);
-        // console.log('playerY');
-        // console.log(thisPlayer.y);
         angle = Math.atan2(distX, distY*-1);
 
         thisPlayer.x -= (((relPosX - mov/2) - mouseX)/thisPlayer.speed);
