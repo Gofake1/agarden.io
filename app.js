@@ -410,7 +410,7 @@ function expandPlant(b, type, x, y)
 	b[y][x] = type;
 	for (var i=-1; i<=1; i+=2) {
 		for (var j=-1; j<=1; j+=2) {
-            if (y+i>50 || y+i<0 || x+i>100 || x+i<0) {
+            if (y+i>50 || y+i<0 || x+j>100 || x+j<0) {
                 // do nothing, out of bounds
             }
 			else if (board[y+i][x+j] == 0 && grow == 0) {
@@ -418,7 +418,7 @@ function expandPlant(b, type, x, y)
                 plantRanks[y+i][x+j] = 0.6;
                 grow = 1;
             }
-            else if(plantRanks[y+i][x+i] > 0.5) {
+            else if(plantRanks[y+i][x+j] > 0.5) {
                 plantRanks[y+i][x+i] -= 0.1;
             }
         }
