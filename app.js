@@ -144,12 +144,11 @@ function getName() {
     var pname = document.getElementById("pname").value;
     // TODO:
     // WERE GOING TO WANT TO REMOVE THIS AFTER THE DEMO
-    //setInterval(processBoard, 1000);
+    window.setInterval(processBoard, 10000);
+    //window.setInterval(plantGrowth, 5000);
+
     window.addEventListener('mousemove', mouseInput, false);
     socket.emit('newPlayer', {name: pname});
-    // TODO:
-    // WERE GOING TO WANT TO REMOVE THIS AFTER THE DEMO
-    window.setInterval(plantGrowth, 5000);
 }
 
 // This function will draw an image in the exact dimensions we want.
