@@ -22,7 +22,8 @@ var thisPlayer = {
     powerup:0
 };
 
-var otherPlayers = [];
+//var otherPlayers = [];
+var allPlayers = [];
 
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
@@ -141,14 +142,14 @@ function updateBoardVars() {
 // Gets the player's entered name
 function getName() {
     var pname = document.getElementById("pname").value;
-    //console.log(pname);
-    leaderboard.push(pname);
-
+    // TODO:
+    // WERE GOING TO WANT TO REMOVE THIS AFTER THE DEMO
+    //setInterval(processBoard, 1000);
+    window.addEventListener('mousemove', mouseInput, false);
+    socket.emit('newPlayer', {name: pname});
     // TODO:
     // WERE GOING TO WANT TO REMOVE THIS AFTER THE DEMO
     window.setInterval(plantGrowth, 5000);
-    
-    window.addEventListener('mousemove', mouseInput, false);
 }
 
 // This function will draw an image in the exact dimensions we want.
@@ -380,28 +381,31 @@ function initImages() {
 }
 
 function initSocket(socket) {
-    socket.on('init', function(playerData) {
-        player = playerData;
+    socket.on('playerCreated', function(data) {
+        thisPlayer = data;
+    });
+
+    socket.on('setup', function(data) {
+        allPlayers = data.users;
+        leaderboard = data.leaderboard;
     });
 }
 
 // Picks up whatever item the player is standing on
 // if the player is standing
-function processOverlayer()
-{
+function processOverlayer() {
 	// thisPlayer.x = the current objective position of the player
 	xTile = Math.floor(thisPlayer.x / objective_tileLength);
 	yTile = Math.floor(thisPlayer.y / objective_tileLength);
 
 	// The object of the tile you are currently standing on
 	current = overlayer[yTile][xTile];
-	switch (current)
-	{
+	switch (current) {
 	case(0):
 		// Empty, do nothing
 		break;
 	case(1):
-		// water bucket
+		// Water bucket
 		thisPlayer.powerup = 1;
         overlayer[yTile][xTile] = 0;
 		break;
@@ -414,8 +418,7 @@ function processOverlayer()
 }
 
 // Handles a single plant expansion
-function expandPlant(b, type, x, y)
-{
+function expandPlant(b, type, x, y) {
     grow = 0;
 	b[y][x] = type;
 	for (var i=-1; i<=1; i+=2) {
@@ -423,7 +426,7 @@ function expandPlant(b, type, x, y)
             if (y+i>50 || y+i<0 || x+j>100 || x+j<0) {
                 // do nothing, out of bounds
             }
-			else if (board[y+i][x+j] == 0 && grow == 0) {
+			else if (board[y+i][x+j] === 0 && grow === 0) {
 				b[y+i][x+j] = type;
                 plantRanks[y+i][x+j] = 0.6;
                 grow = 1;
@@ -475,19 +478,6 @@ function update(dt) {
 	processOverlayer();
 }
 
-// I'm not sure if we need to use render() for player movement, the tutorial only seems to use it for rotations
-// Calls all needed object rendering functions
-// http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
-function render(ctx) {
-    // save the current context so we can set options without touching all the other rendered objects
-    ctx.save();
-
-    // draw image
-
-    // restore the old context
-    ctx.restore();
-}
-
 function gameLoop() {
     drawViewport();
     drawLeaderboard();
@@ -498,7 +488,6 @@ function gameLoop() {
     var now = Date.now();
     var dt = (now - lastTime) / 1000.0;
     update(dt);
-    render(ctx);
     lastTime = now;
     requestAnimationFrame(gameLoop);
 }
