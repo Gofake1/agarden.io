@@ -115,15 +115,15 @@ function updateBoardVars() {
 
 // Gets the player's entered name
 function getName() {
-            var pname = document.getElementById("pname").value;
-            //console.log(pname);
-            leaderboard.push(pname);
+    var pname = document.getElementById("pname").value;
+    //console.log(pname);
+    leaderboard.push(pname);
 
-            // TODO:
-            // WERE GOING TO WANT TO REMOVE THIS AFTER THE DEMO
-            //setInterval(processBoard, 1000);
-            window.addEventListener('mousemove', mouseInput, false);
-            window.setInterval(plantGrowth, 5000);
+    // TODO:
+    // WERE GOING TO WANT TO REMOVE THIS AFTER THE DEMO
+    window.setInterval(plantGrowth, 5000);
+    
+    window.addEventListener('mousemove', mouseInput, false);
 }
 
 // This function will draw an image in the exact dimensions we want.
