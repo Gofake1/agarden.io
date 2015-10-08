@@ -46,7 +46,28 @@ var vizmax_y = vizmin_y+board_tileLength*numTiles_y;
 
 // Game variables
 var board = Board(gridHeight, gridWidth, 0);
+    // Red Farmer
+    board[3][8] = 1;
+    board[3][9] = 1;
+    board[4][8] = 1;
+    board[5][8] = 1;
+    board[4][9] = 1;
+    board[5][9] = 1;
+    board[3][10] = 1;
+    // Purple Farmer
+    board[35][70] = 2;
+    board[36][70] = 2;
+    board[37][70] = 2;
+    board[36][71] = 2;
+    board[36][72] = 2;
+    board[35][71] = 2;
+
 var overlayer = Board(gridHeight, gridWidth, 0);
+    overlayer[3][28] = 1;
+    overlayer[4][29] = 1;
+    overlayer[7][7] = 1;
+    overlayer[4][8] = 2;
+
 var leaderboard = [];
 
 // Sprites
@@ -107,23 +128,6 @@ function drawSprite(img, x, y, w, h, alpha) {
 
 // MAKE SURE TO SEPARATE STUFF OUT LATER!!!!!
 function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
-    // Red Farmer
-    board[3][8] = 1;
-    board[3][9] = 1;
-    board[4][8] = 1;
-    board[5][8] = 1;
-    board[4][9] = 1;
-    board[5][9] = 1;
-    board[3][10] = 1;
-
-    // Purple Farmer
-    board[35][70] = 2;
-    board[36][70] = 2;
-    board[37][70] = 2;
-    board[36][71] = 2;
-    board[36][72] = 2;
-    board[35][71] = 2;
-
     for (var y = 0; y < gridHeight; y++) {
         for (var x = 0; x < gridWidth; x++) {
             xLength = x*board_tileLength;
@@ -157,11 +161,6 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
 function drawOverlayer(xmin, ymin, xmax, ymax, board_tileLength) {
     // Temp variable to curb ridiculously long lines
     var tl = board_tileLength;
-    // 'w' could stand for water, currently just testing to see if it works
-    overlayer[3][28] = 1;
-    overlayer[4][29] = 1;
-    overlayer[7][7] = 1;
-    overlayer[4][8] = 2;
 
     for (var y = 0; y < gridHeight; y++) {
         for (var x = 0; x < gridWidth; x++) {
@@ -220,7 +219,7 @@ function drawCurrentPowerup() {
     ctx.globalAlpha = 0.4;
     ctx.strokeRect(10, 10, 250, 50);
     ctx.fillStyle = 'black';
-    ctx.fillRect(10, 10, 250, 50);
+    ctx.fillRect(10, 10, 300, 50);
 
     ctx.globalAlpha = 0.9;
     ctx.fillStyle = 'white';
@@ -238,6 +237,9 @@ function drawCurrentPowerup() {
     case(1):
     	// water bucket
     	powstring += "Water Bucket";
+    	break;
+    default:
+    	powstring += "ERROR!!!";
     	break;
     }
     ctx.fillText(powstring, 15, 40);
@@ -276,6 +278,7 @@ function keyInput(key) {
     // Use powerup
     if (key.keyCode == 32) {
         alert('Powerup used!');
+        thisPlayer.powerup = 0;
     }
 }
 
@@ -356,7 +359,7 @@ function processOverlayer()
 	yTile = Math.floor(thisPlayer.y / objective_tileLength);
 
 	// The object of the tile you are currently standing on
-	var current = overlayer[yTile][xTile];
+	current = overlayer[yTile][xTile];
 	switch (current)
 	{
 	case(0):
@@ -366,10 +369,12 @@ function processOverlayer()
 		// water bucket
 		thisPlayer.powerup = 1;
 		break;
+	default:
+		break;
 	}
-	thisPlayer.powerup = current;
 
 	overlayer[yTile][xTile] = 0;
+	console.log("Current Tile Contents: " + overlayer[yTile][xTile]);
 }
 
 
