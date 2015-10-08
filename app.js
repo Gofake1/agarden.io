@@ -263,9 +263,6 @@ function drawCurrentPowerup() {
     	// water bucket
     	powstring += "Water Bucket";
     	break;
-    case(2):
-        powstring += "THE FRIGGIN HOUSE!!!"
-        break;
     default:
     	powstring += "ERROR!!!";
     	break;
@@ -396,15 +393,14 @@ function processOverlayer()
 	case(1):
 		// water bucket
 		thisPlayer.powerup = 1;
+        overlayer[yTile][xTile] = 0;
 		break;
     case(2):
-        thisPlayer.powerup = 2;
+        // This is the house
+        break;
 	default:
 		break;
 	}
-
-	overlayer[yTile][xTile] = 0;
-
 }
 
 // Handles a single plant expansion
