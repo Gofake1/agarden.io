@@ -12,7 +12,17 @@ var Board = function(numRows, numCols, value) {
     return this.array;
 };
 
-var thisPlayer = {x:80, y:80, name:'Guest', speed:125, color:'blue', score:0, powerup:0};
+var thisPlayer = {
+    x:80,
+    y:80,
+    name:'Guest',
+    speed:125,
+    color:'blue',
+    score:0,
+    powerup:0
+};
+
+//var otherPlayers = [];
 var allPlayers = [];
 
 var canvas = document.getElementById('canvas');
@@ -95,8 +105,8 @@ var waterBucket = new Image();
 var house = new Image();
 
 window.addEventListener('keypress', keyInput, false);
-var mouseX = 0;
-var mouseY = 0;
+var mouseX = null;
+var mouseY = null;
 
 // Updates global variables for board drawing
 function updateBoardVars() {
@@ -134,12 +144,11 @@ function getName() {
     var pname = document.getElementById("pname").value;
     // TODO:
     // WERE GOING TO WANT TO REMOVE THIS AFTER THE DEMO
-    //setInterval(processBoard, 1000);
+    window.setInterval(processBoard, 10000);
+    //window.setInterval(plantGrowth, 5000);
+
     window.addEventListener('mousemove', mouseInput, false);
     socket.emit('newPlayer', {name: pname});
-    // TODO:
-    // WERE GOING TO WANT TO REMOVE THIS AFTER THE DEMO
-    window.setInterval(plantGrowth, 5000);
 }
 
 // This function will draw an image in the exact dimensions we want.
@@ -241,9 +250,9 @@ function drawScore() {
 
 function drawCurrentPowerup() {
     ctx.globalAlpha = 0.4;
-    ctx.strokeRect(10, 10, 250, 50);
+    ctx.strokeRect(10, 10, 300, 50);
     ctx.fillStyle = 'black';
-    ctx.fillRect(10, 10, 400, 50);
+    ctx.fillRect(10, 10, 300, 50);
 
     ctx.globalAlpha = 0.9;
     ctx.fillStyle = 'white';
@@ -314,24 +323,25 @@ function mouseInput(mouse) {
 
 // Moves the player
 function playerMove() {
+    if (mouseX !== null) {
+    	// This should not work, vizmin_x and vizmin_y are still out of scope
+        updateBoardVars();
 
-	// This should not work, vizmin_x and vizmin_y are still out of scope
-    updateBoardVars();
+        // mov is the player diameter
+        var mov = 2*(board_tileLength/2.25);
+        // distances in x and y of mouse from player, player pos needs to be converted to 
+        // reflect relative board vision (thisPlayer.x is objective position)
+        relPosX = thisPlayer.x / objective_tileLength * board_tileLength - vizmin_x;
+        relPosY = thisPlayer.y / objective_tileLength * board_tileLength - vizmin_y;
+        var distX = mouseX - (relPosX-mov/2);
+        var distY = mouseY - (relPosY-mov/2);
 
-    // mov is the player diameter
-    var mov = 2*(board_tileLength/2.25);
-    // distances in x and y of mouse from player, player pos needs to be converted to 
-    // reflect relative board vision (thisPlayer.x is objective position)
-    relPosX = thisPlayer.x / objective_tileLength * board_tileLength - vizmin_x;
-    relPosY = thisPlayer.y / objective_tileLength * board_tileLength - vizmin_y;
-    var distX = mouseX - (relPosX-mov/2);
-    var distY = mouseY - (relPosY-mov/2);
+        if (distX !== 0 && distY !== 0) {
+            angle = Math.atan2(distX, distY*-1);
 
-    if (distX !== 0 && distY !== 0) {
-        angle = Math.atan2(distX, distY*-1);
-
-        thisPlayer.x -= (((relPosX - mov/2) - mouseX)/thisPlayer.speed);
-        thisPlayer.y -= (((relPosY - mov/2) - mouseY)/thisPlayer.speed);
+            thisPlayer.x -= (((relPosX - mov/2) - mouseX)/thisPlayer.speed);
+            thisPlayer.y -= (((relPosY - mov/2) - mouseY)/thisPlayer.speed);
+        }
     }
 }
 
