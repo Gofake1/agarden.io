@@ -76,7 +76,10 @@ var plant = new Image();
 var waterBucket = new Image();
 var house = new Image();
 
+var growthAlpha = 0.8;
+
 window.addEventListener('keypress', keyInput, false);
+window.setInterval(plantGrowth, 5000);
 var mouseX = 0;
 var mouseY = 0;
 
@@ -141,7 +144,7 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
                     case (1): // RED PLANT
                         ctx.fillStyle = 'red';
                         ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength-1, board_tileLength-1);
-                        drawSprite(plant, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, 0.6);
+                        drawSprite(plant, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, growthAlpha); //0.6);
                         break;
                     case (2): // PURPLE PLANT
                         ctx.fillStyle = 'purple';
@@ -374,7 +377,7 @@ function processOverlayer()
 	}
 
 	overlayer[yTile][xTile] = 0;
-	console.log("Current Tile Contents: " + overlayer[yTile][xTile]);
+	// console.log("Current Tile Contents: " + overlayer[yTile][xTile]);
 }
 
 
@@ -396,14 +399,22 @@ function render(ctx) {
     ctx.restore();
 }
 
+// Basic plant growth handling
+function plantGrowth() {
+    if (growthAlpha > 0.5) {
+        growthAlpha -= 0.1; 
+    }
+    else {
+        console.log("oh baby");
+    }
+}
+
 function gameLoop() {
     drawViewport();
     drawLeaderboard();
     drawScore();
     drawCurrentPowerup();
     playerMove();
-
-    console.log("plant growth");
   
     var now = Date.now();
     var dt = (now - lastTime) / 1000.0;
