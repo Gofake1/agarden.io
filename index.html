@@ -27,15 +27,14 @@
                 </div>
                 <div class="modal-body">
                     <span>
-                        <form>
+                        <form id="nameEntry">
                             <label for="pname">Player Name: </label>
                             <input type="text" id="pname" name="pname" value="Guest">
-                            <input type="submit" value="Enter">
                         </form>
                     </span>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Play</button>
+                    <button type="submit" form="nameEntry" class="btn btn-default" data-dismiss="modal" onclick="getName()">Play</button>
                 </div>
             </div>
         </div>
@@ -61,6 +60,14 @@
         $(document).ready(function() {
             $('#startScreen').modal();
         });
+
+        // Gets the player's entered name
+        // We should probably pass a flag from here to tell the client to start listening for mouse movement
+        // Currently it will start tracking mouse movement when we click to enter a name
+        function getName() {
+            var pname = document.getElementById("pname").value;
+            console.log(pname);
+        }
 
         // TODO: Trigger game screen modal when player dies
         // For the demo, clicking anywhere triggers the game over modal
