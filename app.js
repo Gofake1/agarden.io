@@ -114,9 +114,10 @@ function updateBoardVars() {
 
 // Gets the player's entered name
 function getName() {
-            var pname = document.getElementById("pname").value;
-            //console.log(pname);
-            leaderboard.push(pname);
+    var pname = document.getElementById("pname").value;
+    //console.log(pname);
+    thisPlayer.name = pname;
+    leaderboard.push(pname);
 }
 
 // This function will draw an image in the exact dimensions we want.
@@ -285,7 +286,7 @@ function keyInput(key) {
 
 // Determines if the mouse is clicked
 function mouseClick(mouse) {
-    if (mouse.button == 0) {
+    if (mouse.button === 0) {
         window.addEventListener('mousemove', mouseInput, false);
     }
 }
@@ -360,21 +361,19 @@ function initSocket(socket) {
 
 // Picks up whatever item the player is standing on
 // if the player is standing
-function processOverlayer()
-{
+function processOverlayer() {
 	// thisPlayer.x = the current objective position of the player
 	xTile = Math.floor(thisPlayer.x / objective_tileLength);
 	yTile = Math.floor(thisPlayer.y / objective_tileLength);
 
 	// The object of the tile you are currently standing on
 	current = overlayer[yTile][xTile];
-	switch (current)
-	{
+	switch (current) {
 	case(0):
 		// Empty, do nothing
 		break;
 	case(1):
-		// water bucket
+		// Water bucket
 		thisPlayer.powerup = 1;
 		break;
 	default:
@@ -382,26 +381,13 @@ function processOverlayer()
 	}
 
 	overlayer[yTile][xTile] = 0;
-	console.log("Current Tile Contents: " + overlayer[yTile][xTile]);
+	// console.log("Current Tile Contents: " + overlayer[yTile][xTile]);
 }
 
 
 // Calls all needed object update functions
 function update(dt) {
 	processOverlayer();
-}
-
-// I'm not sure if we need to use render() for player movement, the tutorial only seems to use it for rotations
-// Calls all needed object rendering functions
-// http://www.html5gamedev.de/2013/07/29/basic-movement-follow-and-face-mouse-with-easing/
-function render(ctx) {
-    // save the current context so we can set options without touching all the other rendered objects
-    ctx.save();
-
-    // draw image
-
-    // restore the old context
-    ctx.restore();
 }
 
 function gameLoop() {
@@ -414,7 +400,6 @@ function gameLoop() {
     var now = Date.now();
     var dt = (now - lastTime) / 1000.0;
     update(dt);
-    render(ctx);
     lastTime = now;
     requestAnimationFrame(gameLoop);
 }
