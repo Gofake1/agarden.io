@@ -64,6 +64,7 @@ io.on('connection', function(socket) {
             //board:board,
             //powerups:powerups
         });
+        io.emit('newJoin', leaderboard);
     });
 
     socket.on('0', function() { // Heartbeat

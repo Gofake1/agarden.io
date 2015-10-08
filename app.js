@@ -245,7 +245,7 @@ function drawScore() {
     ctx.fillStyle = 'white';
     ctx.font = '20px Arial';
     ctx.textAlign = 'left';
-    ctx.fillText('Score: ', 15, window.innerHeight-30);
+    ctx.fillText('Score: '+thisPlayer.score, 15, window.innerHeight-30);
 }
 
 function drawCurrentPowerup() {
@@ -261,8 +261,7 @@ function drawCurrentPowerup() {
 
     // create the powerup string
     var powstring = "Current Powerup: ";
-    switch (thisPlayer.powerup)
-    {
+    switch (thisPlayer.powerup) {
     case(0):
     	// No powerup
     	powstring += "--";
@@ -378,6 +377,10 @@ function initSocket(socket) {
     socket.on('setup', function(data) {
         allPlayers = data.users;
         leaderboard = data.leaderboard;
+    });
+
+    socket.on('newJoin', function(data) {
+        leaderboard = data;
     });
 }
 
