@@ -27,38 +27,47 @@ var powerups = Board(gridWidth, gridHeight, 0);
 var leaderboard = [];
 
 // TODO: check that name, position, color are unique
-function addPlayer(name) {
+function addNewPlayer(id, name) {
     color = '#'+(Math.random().toString(16)+'000000').slice(2,8);
     // TODO: check if start position is valid
     x = Math.floor(Math.random()*gridWidth*tileLength);
     y = Math.floor(Math.random()*gridHeight*tileLength);
-    users.push( { name: name, x: x, y: y, color: color } );
+    newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, score:0, powerup:0 };
+    users.push(newPlayer);
+    leaderboard.push(name); // Remove this later
+    return newPlayer;
 }
 
 function gameLoop() {
-    if (users.length > 0) {
-        users.sort(function(a, b) { return b.score - a.score; });
-    }
+    // TODO: update leaderboard
+    // if (users.length > 0) {
+    //     users.sort(function(a, b) { return b.score - a.score; });
+    // }
+
     // TODO: calculate plant growth
 }
 
 app.get('/', function(req, res) {
-    res.sendFile(__dirname + '/index.html');
+    res.sendFile(__dirname+'/index.html');
 });
 
 io.on('connection', function(socket) {
-    var type = socket.handshake.query.type;
-    console.log('A user connected ' + type);
-    socket.emit('setup', {
+    console.log('A user connected');
 
-    });
-
-    socket.on('disconnect', function() {
-        console.log('A user disconnected');
+    socket.on('newPlayer', function(data) {
+        console.log('New player created: '+data.name);
+        newPlayer = addNewPlayer(socket.id, data.name);
+        socket.emit('playerCreated', newPlayer);
+        socket.emit('setup', {
+            users:users,
+            leaderboard:leaderboard
+            //board:board,
+            //powerups:powerups
+        });
     });
 
     socket.on('0', function() { // Heartbeat
-
+        // TODO: kick a player if haven't received a heartbeat in a while
     });
 
     socket.on('1', function() { // Till
@@ -67,6 +76,12 @@ io.on('connection', function(socket) {
 
     socket.on('2', function() { // Use power up
 
+    });
+
+    socket.on('disconnect', function() {
+        console.log('A user disconnected');
+        // users.remove()
+        socket.disconnect();
     });
 });
 

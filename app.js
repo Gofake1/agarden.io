@@ -12,8 +12,8 @@ var Board = function(numRows, numCols, value) {
     return this.array;
 };
 
-var thisPlayer = {x:0, y:0, name:'Guest', speed:125, color:'blue', score:0, powerup:0};
-var otherPlayers = [];
+var thisPlayer = {x:80, y:80, name:'Guest', speed:125, color:'blue', score:0, powerup:0};
+var allPlayers = [];
 
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
@@ -77,7 +77,6 @@ var waterBucket = new Image();
 var house = new Image();
 
 window.addEventListener('keypress', keyInput, false);
-window.addEventListener('click', mouseClick, false);
 var mouseX = 0;
 var mouseY = 0;
 
@@ -115,9 +114,13 @@ function updateBoardVars() {
 // Gets the player's entered name
 function getName() {
     var pname = document.getElementById("pname").value;
-    //console.log(pname);
-    thisPlayer.name = pname;
-    leaderboard.push(pname);
+    //leaderboard.push(pname);
+
+    // TODO:
+    // WERE GOING TO WANT TO REMOVE THIS AFTER THE DEMO
+    //setInterval(processBoard, 1000);
+    window.addEventListener('mousemove', mouseInput, false);
+    socket.emit('newPlayer', {name: pname});
 }
 
 // This function will draw an image in the exact dimensions we want.
@@ -163,7 +166,7 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
 function drawOverlayer(xmin, ymin, xmax, ymax, board_tileLength) {
     // Temp variable to curb ridiculously long lines
     var tl = board_tileLength;
-
+    // For each tile
     for (var y = 0; y < gridHeight; y++) {
         for (var x = 0; x < gridWidth; x++) {
             if (x*board_tileLength>=xmin-tl && x*tl<xmax && y*tl>=ymin-tl && y*tl<ymax) {
@@ -221,7 +224,7 @@ function drawCurrentPowerup() {
     ctx.globalAlpha = 0.4;
     ctx.strokeRect(10, 10, 250, 50);
     ctx.fillStyle = 'black';
-    ctx.fillRect(10, 10, 300, 50);
+    ctx.fillRect(10, 10, 400, 50);
 
     ctx.globalAlpha = 0.9;
     ctx.fillStyle = 'white';
@@ -240,6 +243,9 @@ function drawCurrentPowerup() {
     	// water bucket
     	powstring += "Water Bucket";
     	break;
+    case(2):
+        powstring += "THE FRIGGIN HOUSE!!!";
+        break;
     default:
     	powstring += "ERROR!!!";
     	break;
@@ -281,13 +287,6 @@ function keyInput(key) {
     if (key.keyCode == 32) {
         alert('Powerup used!');
         thisPlayer.powerup = 0;
-    }
-}
-
-// Determines if the mouse is clicked
-function mouseClick(mouse) {
-    if (mouse.button === 0) {
-        window.addEventListener('mousemove', mouseInput, false);
     }
 }
 
@@ -354,8 +353,13 @@ function initImages() {
 }
 
 function initSocket(socket) {
-    socket.on('init', function(playerData) {
-        player = playerData;
+    socket.on('playerCreated', function(data) {
+        thisPlayer = data;
+    });
+
+    socket.on('setup', function(data) {
+        allPlayers = data.users;
+        leaderboard = data.leaderboard;
     });
 }
 
@@ -376,12 +380,52 @@ function processOverlayer() {
 		// Water bucket
 		thisPlayer.powerup = 1;
 		break;
+    case(2):
+        thisPlayer.powerup = 2;
+        break;
 	default:
 		break;
 	}
 
 	overlayer[yTile][xTile] = 0;
-	// console.log("Current Tile Contents: " + overlayer[yTile][xTile]);
+}
+
+// Handles a single plant expansion
+function expandPlant(b, type, x, y)
+{
+	b[y][x] = type;
+	for (var i=-1; i<=1; i+=2)
+		for (var j=-1; j<=1; j+=2)
+			if (board[y+i][x+j] === 0)
+				b[y+i][x+j] = type;
+}
+
+
+// Process the board's plant expansion (rudimentery for vert prototype)
+function processBoard()
+{
+	newBoard = Board(gridHeight, gridWidth, 0);
+	for (var y = 0; y < gridHeight; y++) {
+        for (var x = 0; x < gridWidth; x++) {
+            xLength = x*board_tileLength;
+            yLength = y*board_tileLength;
+            switch (board[y][x]) {
+                case (0): // DIRT
+                	// Board is already full of zeros, no need for operation
+                    break;
+                case (1): // RED PLANT
+                	expandPlant(newBoard,1,x,y);
+                    break;
+                case (2): // PURPLE PLANT
+                	expandPlant(newBoard,1,x,y);
+                    break;
+                default: // UNKNOWN
+                    break;
+                
+            }
+        }
+    }
+    board = newBoard;
 }
 
 
@@ -396,6 +440,8 @@ function gameLoop() {
     drawScore();
     drawCurrentPowerup();
     playerMove();
+
+    //console.log("plant growth");
   
     var now = Date.now();
     var dt = (now - lastTime) / 1000.0;
