@@ -120,6 +120,7 @@ function getName() {
             // TODO:
             // WERE GOING TO WANT TO REMOVE THIS AFTER THE DEMO
             //setInterval(processBoard, 1000);
+            window.addEventListener('mousemove', mouseInput, false);
 }
 
 // This function will draw an image in the exact dimensions we want.
@@ -223,7 +224,7 @@ function drawCurrentPowerup() {
     ctx.globalAlpha = 0.4;
     ctx.strokeRect(10, 10, 250, 50);
     ctx.fillStyle = 'black';
-    ctx.fillRect(10, 10, 300, 50);
+    ctx.fillRect(10, 10, 400, 50);
 
     ctx.globalAlpha = 0.9;
     ctx.fillStyle = 'white';
@@ -244,6 +245,7 @@ function drawCurrentPowerup() {
     	break;
     case(2):
         powstring += "THE FRIGGIN HOUSE!!!"
+        break;
     default:
     	powstring += "ERROR!!!";
     	break;
