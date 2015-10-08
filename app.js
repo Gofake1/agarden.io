@@ -12,7 +12,16 @@ var Board = function(numRows, numCols, value) {
     return this.array;
 };
 
-var thisPlayer = {x:80, y:80, name:'Guest', speed:125, color:'blue', score:0, powerup:0};
+var thisPlayer = {
+    x:80,
+    y:80,
+    name:'Guest',
+    speed:125,
+    color:'blue',
+    score:0,
+    powerup:0
+};
+
 var otherPlayers = [];
 
 var canvas = document.getElementById('canvas');
@@ -95,8 +104,8 @@ var waterBucket = new Image();
 var house = new Image();
 
 window.addEventListener('keypress', keyInput, false);
-var mouseX = 0;
-var mouseY = 0;
+var mouseX = null;
+var mouseY = null;
 
 // Updates global variables for board drawing
 function updateBoardVars() {
@@ -241,9 +250,9 @@ function drawScore() {
 
 function drawCurrentPowerup() {
     ctx.globalAlpha = 0.4;
-    ctx.strokeRect(10, 10, 250, 50);
+    ctx.strokeRect(10, 10, 300, 50);
     ctx.fillStyle = 'black';
-    ctx.fillRect(10, 10, 400, 50);
+    ctx.fillRect(10, 10, 300, 50);
 
     ctx.globalAlpha = 0.9;
     ctx.fillStyle = 'white';
@@ -314,32 +323,34 @@ function mouseInput(mouse) {
 
 // Moves the player
 function playerMove() {
+    if (mouseX != null)
+    {
+    	// This should not work, vizmin_x and vizmin_y are still out of scope
+        updateBoardVars();
 
-	// This should not work, vizmin_x and vizmin_y are still out of scope
-    updateBoardVars();
+        // mov is the player diameter
+        var mov = 2*(board_tileLength/2.25);
+        // distances in x and y of mouse from player, player pos needs to be converted to 
+        // reflect relative board vision (thisPlayer.x is objective position)
+        relPosX = thisPlayer.x / objective_tileLength * board_tileLength - vizmin_x;
+        relPosY = thisPlayer.y / objective_tileLength * board_tileLength - vizmin_y;
+        var distX = mouseX - (relPosX-mov/2);
+        var distY = mouseY - (relPosY-mov/2);
 
-    // mov is the player diameter
-    var mov = 2*(board_tileLength/2.25);
-    // distances in x and y of mouse from player, player pos needs to be converted to 
-    // reflect relative board vision (thisPlayer.x is objective position)
-    relPosX = thisPlayer.x / objective_tileLength * board_tileLength - vizmin_x;
-    relPosY = thisPlayer.y / objective_tileLength * board_tileLength - vizmin_y;
-    var distX = mouseX - (relPosX-mov/2);
-    var distY = mouseY - (relPosY-mov/2);
+        if (distX !== 0 && distY !== 0) {
+            // console.log('mouseX');
+            // console.log(mouseX);
+            // console.log('mouseY');
+            // console.log(mouseY);
+            // console.log('playerX');
+            // console.log(thisPlayer.x);
+            // console.log('playerY');
+            // console.log(thisPlayer.y);
+            angle = Math.atan2(distX, distY*-1);
 
-    if (distX !== 0 && distY !== 0) {
-        // console.log('mouseX');
-        // console.log(mouseX);
-        // console.log('mouseY');
-        // console.log(mouseY);
-        // console.log('playerX');
-        // console.log(thisPlayer.x);
-        // console.log('playerY');
-        // console.log(thisPlayer.y);
-        angle = Math.atan2(distX, distY*-1);
-
-        thisPlayer.x -= (((relPosX - mov/2) - mouseX)/thisPlayer.speed);
-        thisPlayer.y -= (((relPosY - mov/2) - mouseY)/thisPlayer.speed);
+            thisPlayer.x -= (((relPosX - mov/2) - mouseX)/thisPlayer.speed);
+            thisPlayer.y -= (((relPosY - mov/2) - mouseY)/thisPlayer.speed);
+        }
     }
 }
 
