@@ -419,7 +419,7 @@ function expandPlant(b, type, x, y)
                 grow = 1;
             }
             else if(plantRanks[y+i][x+j] > 0.5) {
-                plantRanks[y+i][x+i] -= 0.1;
+                plantRanks[y+i][x+j] -= 0.1;
             }
         }
     }
