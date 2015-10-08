@@ -119,7 +119,7 @@ function getName() {
 
             // TODO:
             // WERE GOING TO WANT TO REMOVE THIS AFTER THE DEMO
-            setInterval(processBoard, 1000);
+            //setInterval(processBoard, 1000);
 }
 
 // This function will draw an image in the exact dimensions we want.
@@ -242,6 +242,8 @@ function drawCurrentPowerup() {
     	// water bucket
     	powstring += "Water Bucket";
     	break;
+    case(2):
+        powstring += "THE FRIGGIN HOUSE!!!"
     default:
     	powstring += "ERROR!!!";
     	break;
@@ -373,6 +375,8 @@ function processOverlayer()
 		// water bucket
 		thisPlayer.powerup = 1;
 		break;
+    case(2):
+        thisPlayer.powerup = 2;
 	default:
 		break;
 	}
@@ -444,7 +448,7 @@ function gameLoop() {
     drawCurrentPowerup();
     playerMove();
 
-    console.log("plant growth");
+    //console.log("plant growth");
   
     var now = Date.now();
     var dt = (now - lastTime) / 1000.0;
