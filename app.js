@@ -450,19 +450,24 @@ function processBoard()
         for (var x = 0; x < gridWidth; x++) {
             xLength = x*board_tileLength;
             yLength = y*board_tileLength;
-            switch (board[y][x]) {
-                case (0): // DIRT
-                	// Board is already full of zeros, no need for operation
-                    break;
-                case (1): // RED PLANT
-                	expandPlant(newBoard,1,x,y);
-                    break;
-                case (2): // PURPLE PLANT
-                	expandPlant(newBoard,2,x,y);
-                    break;
-                default: // UNKNOWN
-                    break;
-                
+            if(x>100 || x<0 || y>50 || y<0) {
+               // do nothing, out of bounds
+            }
+            else{
+                 switch (board[y][x]) {
+                    case (0): // DIRT
+                        // Board is already full of zeros, no need for operation
+                        break;
+                    case (1): // RED PLANT
+                        expandPlant(newBoard,1,x,y);
+                        break;
+                    case (2): // PURPLE PLANT
+                        expandPlant(newBoard,2,x,y);
+                        break;
+                    default: // UNKNOWN
+                        break;
+                    
+                }
             }
         }
     }
