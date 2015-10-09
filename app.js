@@ -104,7 +104,6 @@ var plant = new Image();
 var waterBucket = new Image();
 var house = new Image();
 
-window.addEventListener('keypress', keyInput, false);
 var mouseX = null;
 var mouseY = null;
 
@@ -148,6 +147,7 @@ function getName() {
     //window.setInterval(plantGrowth, 5000);
 
     window.addEventListener('mousemove', mouseInput, false);
+    window.addEventListener('keypress', keyInput, false);
     socket.emit('newPlayer', {name: pname});
 }
 
@@ -380,6 +380,10 @@ function initSocket(socket) {
     });
 
     socket.on('newJoin', function(data) {
+        leaderboard = data;
+    });
+
+    socket.on('aDisconnect', function(data) {
         leaderboard = data;
     });
 }

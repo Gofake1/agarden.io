@@ -21,7 +21,7 @@ var gridWidth = 100;
 var tileLength = 15;
 
 // Global variables
-var users = [];
+var users = {};
 var board = Board(gridHeight, gridWidth, 0);
 var powerups = Board(gridWidth, gridHeight, 0);
 var leaderboard = [];
@@ -34,7 +34,7 @@ function addNewPlayer(id, name) {
     y = Math.floor(Math.random()*gridHeight*tileLength);
     newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, score:0, powerup:0 };
     users.push(newPlayer);
-    leaderboard.push(name); // Remove this later
+    leaderboard.push({id:name}); // Remove this later
     return newPlayer;
 }
 
@@ -81,8 +81,9 @@ io.on('connection', function(socket) {
 
     socket.on('disconnect', function() {
         console.log('A user disconnected');
-        // users.remove()
+        delete users[socket.id];
         socket.disconnect();
+        io.emit('aDisconnect', leaderboard);
     });
 });
 
