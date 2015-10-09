@@ -33,7 +33,7 @@ function addNewPlayer(id, name) {
     x = Math.floor(Math.random()*gridWidth*tileLength);
     y = Math.floor(Math.random()*gridHeight*tileLength);
     newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, score:0, powerup:0 };
-    users.push({id:newPlayer});
+    users[id] = newPlayer;
     leaderboard.push({id:name}); // Remove this later
     return newPlayer;
 }
