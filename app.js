@@ -420,7 +420,7 @@ function expandPlant(b, type, x, y) {
 	b[y][x] = type;
 	for (var i=-1; i<=1; i+=2) {
 		for (var j=-1; j<=1; j+=2) {
-            if (y+i>50 || y+i<0 || x+j>100 || x+j<0) {
+            if (y+i>gridHeight-1 || y+i<0 || x+j>gridWidth-1 || x+j<0) {
                 // do nothing, out of bounds
             }
 			else if (board[y+i][x+j] === 0 && grow === 0) {
