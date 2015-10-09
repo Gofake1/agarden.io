@@ -396,7 +396,7 @@ function processOverlayer() {
 	yTile = Math.floor(thisPlayer.y / objective_tileLength);
 
 	// The object of the tile you are currently standing on
-	if (thisPlayer.powerup == 0)
+	if (thisPlayer.powerup === 0)
 	{
 		current = overlayer[yTile][xTile];
 		switch (current) {
