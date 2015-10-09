@@ -22,37 +22,68 @@ var thisPlayer = {
     powerup:0
 };
 
-//var otherPlayers = [];
 var allPlayers = [];
+
+// var Map = {
+//     // Total number of tiles in game 
+//     gridHeight : 50,
+//     gridWidth : 100,
+//     board : Board(gridHeight, gridWidth, 0),
+//     overlayer : Board(gridHeight, gridWidth, 0)
+// }
+
+// var Viewport = {
+//     numTiles_x_start : 2,
+//     numTiles_x_max : 30,
+
+//     board_tileLength : window.innerWidth / numTiles_x,
+//     objective_tileLength : 20,
+
+//     numTiles_x : numTiles_x_start,
+//     numTiles_y : window.innerHeight / board_tileLength + 1,
+
+//     vizmin_x : null,
+//     vizmin_y : null,
+//     vizmax_x : null,
+//     vizmax_y : null
+// }
+
+
+// class Plant {
+//     this.stage = 1;
+//     this.health = 100;
+//     this.strength = 1;
+// }
+
+// class Game {
+//    
+//}
+
 
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 ctx.canvas.width = window.innerWidth;
 ctx.canvas.height = window.innerHeight;
 
-// Total number of tiles in game 
-var gridHeight = 50;
-var gridWidth = 100;
-var numTiles_x_start = 20;
-var numTiles_x_max = 30;
+var gridHeight = 50;    //
+var gridWidth = 100;    //
+
+var numTiles_x_start = 20;  //
+var numTiles_x_max = 30;    //
 
 // Number of visible tiles (width)
-var numTiles_x = numTiles_x_start;
-var numTiles_y = window.innerHeight / board_tileLength + 1;
-var board_tileLength = window.innerWidth / numTiles_x;
-var halfX = numTiles_x / 2;
-var halfY = numTiles_y / 2;
+var numTiles_x = numTiles_x_start;  //
+var numTiles_y = window.innerHeight / board_tileLength + 1; //
+var board_tileLength = window.innerWidth / numTiles_x;  //
 
 // For syncing player movement with board
-var objective_tileLength = 20;
-var objective_xboard = gridWidth*objective_tileLength;
-var objective_yboard = gridHeight*objective_tileLength;
+var objective_tileLength = 20;  //
 
 // Record the board's visible bounds
-var vizmin_x = thisPlayer.x<board_tileLength*halfX ? 0 : thisPlayer.x-board_tileLength*halfX;
-var vizmin_y = thisPlayer.y<board_tileLength*halfY ? 0 : thisPlayer.y-board_tileLength*halfY;
-var vizmax_x = vizmin_x+board_tileLength*numTiles_x;
-var vizmax_y = vizmin_y+board_tileLength*numTiles_y;
+var vizmin_x = null;    //    
+var vizmin_y = null;    //
+var vizmax_x = null;    //
+var vizmax_y = null;    //
 
 // Game variables
 var initGrowthAlpha = 0.8;
@@ -111,8 +142,6 @@ var mouseY = null;
 function updateBoardVars() {
     // Number of visible tiles
     numTiles_y = window.innerHeight / board_tileLength;
-    halfX = numTiles_x / 2;
-    halfY = numTiles_y / 2;
 
     // Relate player objective scale to drawing scale
     var xPos = thisPlayer.x / objective_tileLength * board_tileLength;
@@ -120,19 +149,19 @@ function updateBoardVars() {
 
     // Record the board's visible bounds
     // X
-    if (xPos < board_tileLength*halfX)
+    if (xPos < board_tileLength*numTiles_x / 2)
     	vizmin_x = 0;
-    else if (xPos > board_tileLength*gridWidth - board_tileLength*halfX)
-    	vizmin_x = board_tileLength*gridWidth - board_tileLength*2*halfX;
+    else if (xPos > board_tileLength*gridWidth - board_tileLength*numTiles_x / 2)
+    	vizmin_x = board_tileLength*gridWidth - board_tileLength*2*numTiles_x / 2;
     else
-    	vizmin_x = xPos-board_tileLength*halfX;
+    	vizmin_x = xPos-board_tileLength*numTiles_x / 2;
     // Y
-    if (yPos < board_tileLength*halfY)
+    if (yPos < board_tileLength*numTiles_y / 2)
     	vizmin_y = 0;
-    else if (yPos > board_tileLength*gridHeight - board_tileLength*halfY)
-    	vizmin_y = board_tileLength*gridHeight - board_tileLength*2*halfY;
+    else if (yPos > board_tileLength*gridHeight - board_tileLength*numTiles_y / 2)
+    	vizmin_y = board_tileLength*gridHeight - board_tileLength*2*numTiles_y / 2;
     else
-    	vizmin_y = yPos-board_tileLength*halfY;
+    	vizmin_y = yPos-board_tileLength*numTiles_y / 2;
 
     vizmax_x = vizmin_x+board_tileLength*numTiles_x;
     vizmax_y = vizmin_y+board_tileLength*numTiles_y;
@@ -277,22 +306,6 @@ function drawCurrentPowerup() {
     ctx.fillText(powstring, 15, 40);
 }
 
-// TODO: Make this dynamic
-// When we actually make this work we should probably draw a circle when a player connects
-// That player can then move their own circle around the game
-// function drawPlayers() {
-//     var i = 0;
-//     otherPlayers.forEach(function() {
-//         ctx.beginPath();
-//         ctx.arc(otherPlayers[i].x, otherPlayers[i].y, 10, 0, 2*Math.PI);
-//         ctx.fillStyle = otherPlayers[i].color;
-//         ctx.arc(x, y, 10, 0, 2*Math.PI, false);
-//         ctx.fillStyle = color;
-//         ctx.fill();
-//         i++;
-//     });
-// }
-
 // Draws this specific player as opposed to the opposing players
 function drawPlayer(xmin, ymin) {
     // Convert player pos to board pos
@@ -303,6 +316,21 @@ function drawPlayer(xmin, ymin) {
     ctx.arc(xPos-xmin, yPos-ymin, board_tileLength/2.25, 0, 2*Math.PI, false);
     ctx.fillStyle = thisPlayer.color;
     ctx.fill();
+}
+
+// This function will dynamically follow the player, drawing the board
+// around him/her as he moves in realtime
+function drawViewport() {
+    updateBoardVars();
+
+    // This should not be working. vizmin_x and vizmin_y are out of scope here
+
+    // Draw that board!
+    drawGrid(vizmin_x, vizmin_y, vizmax_x, vizmax_y, board_tileLength);
+    drawOverlayer(vizmin_x, vizmin_y, vizmax_x, vizmax_y, board_tileLength);
+
+    // And the player too!
+    drawPlayer(vizmin_x, vizmin_y);
 }
 
 // Handles keyboard input
@@ -342,21 +370,6 @@ function playerMove() {
             thisPlayer.y -= (((relPosY - mov/2) - mouseY)/thisPlayer.speed);
         }
     }
-}
-
-// This function will dynamically follow the player, drawing the board
-// around him/her as he moves in realtime
-function drawViewport() {
-    updateBoardVars();
-
-    // This should not be working. vizmin_x and vizmin_y are out of scope here
-
-    // Draw that board!
-    drawGrid(vizmin_x, vizmin_y, vizmax_x, vizmax_y, board_tileLength);
-    drawOverlayer(vizmin_x, vizmin_y, vizmax_x, vizmax_y, board_tileLength);
-
-    // And the player too!
-    drawPlayer(vizmin_x, vizmin_y);
 }
 
 // This function will be used to load images prior to their use
@@ -432,13 +445,6 @@ function expandPlant(b, type, x, y) {
                 plantRanks[y+i][x+j] -= 0.1;
             }
         }
-    }
-}
-
-// Basic plant growth handling
-function plantGrowth() {
-    if (growthAlpha > 0.5) {
-        growthAlpha -= 0.1; 
     }
 }
 
