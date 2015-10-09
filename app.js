@@ -392,21 +392,21 @@ function processOverlayer() {
 	yTile = Math.floor(thisPlayer.y / objective_tileLength);
 
 	// The object of the tile you are currently standing on
-	current = overlayer[yTile][xTile];
-	switch (current) {
-	case(0):
-		// Empty, do nothing
-		break;
-	case(1):
-		// Water bucket
-		thisPlayer.powerup = 1;
-        overlayer[yTile][xTile] = 0;
-		break;
-    case(2):
-        // This is the house
-        break;
-	default:
-		break;
+	if (thisPlayer.powerup == 0)
+	{
+		current = overlayer[yTile][xTile];
+		switch (current) {
+		case(0):
+			// Empty, do nothing
+			break;
+		case(1):
+			// Water bucket
+			thisPlayer.powerup = 1;
+	        overlayer[yTile][xTile] = 0;
+			break;
+		default:
+			break;
+		}
 	}
 }
 
