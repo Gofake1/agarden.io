@@ -140,6 +140,20 @@ function drawSprite(img, x, y, w, h, alpha) {
     ctx.globalAlpha = 1;
 }
 
+// Randomly place powerups at the start of the game
+// Currently places 5 water buckets only 
+function initOverlayer() {
+    var i = 0;
+    while (i < 5) {
+        var x = Math.floor(Math.random() * (gridWidth + 1));
+        var y = Math.floor(Math.random() * (gridHeight + 1));
+        if (board[y][x] === 0 && overlayer[y][x] === 0){
+            overlayer[y][x] = 1;
+            i++;
+        }
+    }
+}
+
 // MAKE SURE TO SEPARATE STUFF OUT LATER!!!!!
 function drawGrid(xmin, ymin, xmax, ymax, boardTileLength) {
     for (var y = 0; y < gridHeight; y++) {
@@ -222,9 +236,9 @@ function drawScore() {
 
 function drawCurrentPowerup() {
     ctx.globalAlpha = 0.4;
-    ctx.strokeRect(10, 10, 300, 50);
+    ctx.strokeRect(10, 10, 300, 55);
     ctx.fillStyle = 'black';
-    ctx.fillRect(10, 10, 300, 50);
+    ctx.fillRect(10, 10, 300, 55);
 
     ctx.globalAlpha = 0.9;
     ctx.fillStyle = 'white';
@@ -241,13 +255,13 @@ function drawCurrentPowerup() {
             powstring = 'Place farmhouse';
             break;
         case ('waterbucket'):
-            powstring += 'Water Bucket';
+            drawSprite(waterBucket, 175, 10, board_tileLength*3/4, board_tileLength*3/4, 1);
             break;
         default:
             powstring += 'ERROR!!!';
             break;
     }
-    ctx.fillText(powstring, 15, 40);
+    ctx.fillText(powstring, 15, 45);
 }
 
 // Draws this specific player as opposed to the opposing players
@@ -279,8 +293,8 @@ function drawViewport() {
 
 // Handles keyboard input
 function keyInput(key) {
-    // Use powerup
-    if (key.keyCode == 32 && thisPlayer.powerup !== '') {
+    // Use powerup on space or enter key
+    if ((key.keyCode == 13 || key.keyCode == 32) && thisPlayer.powerup !== '') {
         var xTile = Math.floor(thisPlayer.x / objective_tileLength);
         var yTile = Math.floor(thisPlayer.y / objective_tileLength);
         data = {id:thisPlayer.id, powerup:thisPlayer.powerup, x:xTile, y:yTile};
@@ -402,11 +416,16 @@ function expandPlant(b, type, x, y) {
             if (y+i>gridHeight-1 || y+i<0 || x+j>gridWidth-1 || x+j<0) {
                 // do nothing, out of bounds
             }
-            else if (board[y+i][x+j] === 0 && grow === 0) {
-                b[y+i][x+j] = type;
+
+            // Expand to a new tile
+			else if (board[y+i][x+j] === 0 && grow === 0) {
+				b[y+i][x+j] = type;
                 plantRanks[y+i][x+j] = 0.6;
                 grow = 1;
+                thisPlayer.score += 1;
             }
+
+            // Grow the plant
             else if(plantRanks[y+i][x+j] > 0.5) {
                 plantRanks[y+i][x+j] -= 0.1;
             }
@@ -469,6 +488,7 @@ function init() {
     // reset();
     initImages();
     initSocket(socket);
+    initOverlayer();
     gameLoop();
 }
 
