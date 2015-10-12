@@ -451,6 +451,7 @@ function expandPlant(b, type, x, y) {
 				b[y+i][x+j] = type;
                 plantRanks[y+i][x+j] = 0.6;
                 grow = 1;
+                thisPlayer.score += 1;
             }
             else if(plantRanks[y+i][x+j] > 0.5) {
                 plantRanks[y+i][x+j] -= 0.1;
