@@ -122,10 +122,6 @@ var plantRanks = Board(gridHeight, gridWidth, 0);
     plantRanks[35][71] = initGrowthAlpha;
 
 var overlayer = Board(gridHeight, gridWidth, 0);
-    overlayer[3][28] = 1;
-    overlayer[4][29] = 1;
-    overlayer[7][7] = 1;
-    overlayer[4][8] = 2;
 
 var leaderboard = [];
 
@@ -186,6 +182,21 @@ function drawSprite(img, x, y, w, h, alpha) {
     ctx.globalAlpha = alpha; // The site doesn't work with this line for me
     ctx.drawImage(img, x, y, w, h);
     ctx.globalAlpha = 1;
+}
+
+function initOverlayer() {
+
+    var i = 0;
+
+    while (i < 5) {
+        var x = Math.floor(Math.random() * (gridWidth + 1));
+        var y = Math.floor(Math.random() * (gridHeight + 1));
+        if (board[y][x] == 0 && overlayer[y][x] == 0){
+            overlayer[y][x] = 1;
+            i++;
+        }
+    }
+
 }
 
 // MAKE SURE TO SEPARATE STUFF OUT LATER!!!!!
@@ -511,6 +522,7 @@ function init() {
     // reset();
     initImages();
     initSocket(socket);
+    initOverlayer();
     gameLoop();
 }
 
