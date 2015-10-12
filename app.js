@@ -184,6 +184,9 @@ function drawSprite(img, x, y, w, h, alpha) {
     ctx.globalAlpha = 1;
 }
 
+
+// Randomly place powerups at the start of the game
+// Currently places 5 water buckets only 
 function initOverlayer() {
 
     var i = 0;
@@ -290,9 +293,9 @@ function drawScore() {
 
 function drawCurrentPowerup() {
     ctx.globalAlpha = 0.4;
-    ctx.strokeRect(10, 10, 300, 50);
+    ctx.strokeRect(10, 10, 300, 55);
     ctx.fillStyle = 'black';
-    ctx.fillRect(10, 10, 300, 50);
+    ctx.fillRect(10, 10, 300, 55);
 
     ctx.globalAlpha = 0.9;
     ctx.fillStyle = 'white';
@@ -308,13 +311,14 @@ function drawCurrentPowerup() {
     	break;
     case(1):
     	// water bucket
-    	powstring += "Water Bucket";
+        drawSprite(waterBucket, 175, 10, board_tileLength*3/4, board_tileLength*3/4, 1);
+    	//powstring += "Water Bucket";
     	break;
     default:
     	powstring += "ERROR!!!";
     	break;
     }
-    ctx.fillText(powstring, 15, 40);
+    ctx.fillText(powstring, 15, 45);
 }
 
 // Draws this specific player as opposed to the opposing players
@@ -346,8 +350,8 @@ function drawViewport() {
 
 // Handles keyboard input
 function keyInput(key) {
-    // Use powerup
-    if (key.keyCode == 32) {
+    // Use powerup, currently on the enter key
+    if (key.keyCode == 13) {
         alert('Powerup used!');
         thisPlayer.powerup = 0;
     }
@@ -447,12 +451,16 @@ function expandPlant(b, type, x, y) {
             if (y+i>gridHeight-1 || y+i<0 || x+j>gridWidth-1 || x+j<0) {
                 // do nothing, out of bounds
             }
+
+            // Expand to a new tile
 			else if (board[y+i][x+j] === 0 && grow === 0) {
 				b[y+i][x+j] = type;
                 plantRanks[y+i][x+j] = 0.6;
                 grow = 1;
                 thisPlayer.score += 1;
             }
+
+            // Grow the plant
             else if(plantRanks[y+i][x+j] > 0.5) {
                 plantRanks[y+i][x+j] -= 0.1;
             }
