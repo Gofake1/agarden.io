@@ -12,17 +12,7 @@ var Board = function(numRows, numCols, value) {
     return this.array;
 };
 
-var thisPlayer = {
-    x:80,
-    y:80,
-    name:'Guest',
-    speed:125,
-    color:'blue',
-    score:0,
-    powerup:0
-};
-
-var allPlayers = [];
+var thisPlayer = { x:80, y:80, name:'Guest', speed:125, color:'blue', score:0, powerup:'' };
 
 // var Map = {
 //     // Total number of tiles in game 
@@ -36,18 +26,17 @@ var allPlayers = [];
 //     numTiles_x_start : 2,
 //     numTiles_x_max : 30,
 
-//     board_tileLength : window.innerWidth / numTiles_x,
+//     boardTileLength : window.innerWidth / numTiles_x,
 //     objective_tileLength : 20,
 
 //     numTiles_x : numTiles_x_start,
-//     numTiles_y : window.innerHeight / board_tileLength + 1,
+//     numTiles_y : window.innerHeight / boardTileLength + 1,
 
 //     vizmin_x : null,
 //     vizmin_y : null,
 //     vizmax_x : null,
 //     vizmax_y : null
 // }
-
 
 // class Plant {
 //     this.stage = 1;
@@ -58,7 +47,6 @@ var allPlayers = [];
 // class Game {
 //    
 //}
-
 
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
@@ -73,8 +61,8 @@ var numTiles_x_max = 30;    //
 
 // Number of visible tiles (width)
 var numTiles_x = numTiles_x_start;  //
-var numTiles_y = window.innerHeight / board_tileLength + 1; //
-var board_tileLength = window.innerWidth / numTiles_x;  //
+var numTiles_y = window.innerHeight / boardTileLength + 1; //
+var boardTileLength = window.innerWidth / numTiles_x;  //
 
 // For syncing player movement with board
 var objective_tileLength = 20;  //
@@ -89,44 +77,8 @@ var vizmax_y = null;    //
 var initGrowthAlpha = 0.8;
 var board = Board(gridHeight, gridWidth, 0);
 var plantRanks = Board(gridHeight, gridWidth, 0);
-    // Red Farmer
-    board[3][8] = 1;
-    board[3][9] = 1;
-    board[4][8] = 1;
-    board[5][8] = 1;
-    board[4][9] = 1;
-    board[5][9] = 1;
-    board[3][10] = 1;
-    // Purple Farmer
-    board[35][70] = 2;
-    board[36][70] = 2;
-    board[37][70] = 2;
-    board[36][71] = 2;
-    board[36][72] = 2;
-    board[35][71] = 2;
-
-     // Red Farmer
-    plantRanks[3][8] = initGrowthAlpha;
-    plantRanks[3][9] = initGrowthAlpha;
-    plantRanks[4][8] = initGrowthAlpha;
-    plantRanks[5][8] = initGrowthAlpha;
-    plantRanks[4][9] = initGrowthAlpha;
-    plantRanks[5][9] = initGrowthAlpha;
-    plantRanks[3][10] = initGrowthAlpha;
-    // Purple Farmer
-    plantRanks[35][70] = initGrowthAlpha;
-    plantRanks[36][70] = initGrowthAlpha;
-    plantRanks[37][70] = initGrowthAlpha;
-    plantRanks[36][71] = initGrowthAlpha;
-    plantRanks[36][72] = initGrowthAlpha;
-    plantRanks[35][71] = initGrowthAlpha;
-
 var overlayer = Board(gridHeight, gridWidth, 0);
-    overlayer[3][28] = 1;
-    overlayer[4][29] = 1;
-    overlayer[7][7] = 1;
-    overlayer[4][8] = 2;
-
+var allPlayers = {};
 var leaderboard = [];
 
 // Sprites
@@ -141,30 +93,30 @@ var mouseY = null;
 // Updates global variables for board drawing
 function updateBoardVars() {
     // Number of visible tiles
-    numTiles_y = window.innerHeight / board_tileLength;
+    numTiles_y = window.innerHeight / boardTileLength;
 
     // Relate player objective scale to drawing scale
-    var xPos = thisPlayer.x / objective_tileLength * board_tileLength;
-    var yPos = thisPlayer.y / objective_tileLength * board_tileLength;
+    var xPos = thisPlayer.x / objective_tileLength * boardTileLength;
+    var yPos = thisPlayer.y / objective_tileLength * boardTileLength;
 
     // Record the board's visible bounds
     // X
-    if (xPos < board_tileLength*numTiles_x / 2)
-    	vizmin_x = 0;
-    else if (xPos > board_tileLength*gridWidth - board_tileLength*numTiles_x / 2)
-    	vizmin_x = board_tileLength*gridWidth - board_tileLength*2*numTiles_x / 2;
+    if (xPos < boardTileLength*numTiles_x / 2)
+        vizmin_x = 0;
+    else if (xPos > boardTileLength*gridWidth - boardTileLength*numTiles_x / 2)
+        vizmin_x = boardTileLength*gridWidth - boardTileLength*2*numTiles_x / 2;
     else
-    	vizmin_x = xPos-board_tileLength*numTiles_x / 2;
+        vizmin_x = xPos-boardTileLength*numTiles_x / 2;
     // Y
-    if (yPos < board_tileLength*numTiles_y / 2)
-    	vizmin_y = 0;
-    else if (yPos > board_tileLength*gridHeight - board_tileLength*numTiles_y / 2)
-    	vizmin_y = board_tileLength*gridHeight - board_tileLength*2*numTiles_y / 2;
+    if (yPos < boardTileLength*numTiles_y / 2)
+        vizmin_y = 0;
+    else if (yPos > boardTileLength*gridHeight - boardTileLength*numTiles_y / 2)
+        vizmin_y = boardTileLength*gridHeight - boardTileLength*2*numTiles_y / 2;
     else
-    	vizmin_y = yPos-board_tileLength*numTiles_y / 2;
+        vizmin_y = yPos-boardTileLength*numTiles_y / 2;
 
-    vizmax_x = vizmin_x+board_tileLength*numTiles_x;
-    vizmax_y = vizmin_y+board_tileLength*numTiles_y;
+    vizmax_x = vizmin_x+boardTileLength*numTiles_x;
+    vizmax_y = vizmin_y+boardTileLength*numTiles_y;
 }
 
 // Gets the player's entered name
@@ -189,30 +141,21 @@ function drawSprite(img, x, y, w, h, alpha) {
 }
 
 // MAKE SURE TO SEPARATE STUFF OUT LATER!!!!!
-function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
+function drawGrid(xmin, ymin, xmax, ymax, boardTileLength) {
     for (var y = 0; y < gridHeight; y++) {
         for (var x = 0; x < gridWidth; x++) {
-            xLength = x*board_tileLength;
-            yLength = y*board_tileLength;
-            if (xLength>=xmin-board_tileLength && xLength<xmax && yLength>=ymin-board_tileLength && yLength<ymax) {
-                ctx.strokeRect(xLength-xmin, yLength-ymin, board_tileLength, board_tileLength);
+            xLength = x*boardTileLength;
+            yLength = y*boardTileLength;
+            if (xLength>=xmin-boardTileLength && xLength<xmax && yLength>=ymin-boardTileLength && yLength<ymax) {
+                ctx.strokeRect(xLength-xmin, yLength-ymin, boardTileLength, boardTileLength);
                 switch (board[y][x]) {
-                    case (0): // DIRT
-                        drawSprite(dirt, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, 1);
+                    case (0): // Dirt
+                        drawSprite(dirt, xLength-xmin, yLength-ymin, boardTileLength, boardTileLength, 1);
                         break;
-                    case (1): // RED PLANT
-                        ctx.fillStyle = 'red';
-                        ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength-1, board_tileLength-1);
-                        drawSprite(plant, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, plantRanks[y][x]); //0.6);
-                        break;
-                    case (2): // PURPLE PLANT
-                        ctx.fillStyle = 'purple';
-                        ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength-1, board_tileLength-1);
-                        drawSprite(plant, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, plantRanks[y][x]);
-                        break;
-                    default: // UNKNOWN
-                        ctx.fillStyle = 'black';
-                        ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength, board_tileLength);
+                    default: // Player's color
+                        ctx.fillStyle = allPlayers[board[y][x]].color;
+                        ctx.fillRect(xLength-xmin, yLength-ymin, boardTileLength, boardTileLength);
+                        drawSprite(plant, xLength-xmin, yLength-ymin, boardTileLength, boardTileLength, plantRanks[y][x]);
                         break;
                 }
             }
@@ -220,19 +163,19 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
     }
 }
 
-function drawOverlayer(xmin, ymin, xmax, ymax, board_tileLength) {
+function drawOverlayer(xmin, ymin, xmax, ymax, boardTileLength) {
     // Temp variable to curb ridiculously long lines
-    var tl = board_tileLength;
+    var tl = boardTileLength;
     // For each tile
     for (var y = 0; y < gridHeight; y++) {
         for (var x = 0; x < gridWidth; x++) {
-            if (x*board_tileLength>=xmin-tl && x*tl<xmax && y*tl>=ymin-tl && y*tl<ymax) {
+            if (x*boardTileLength>=xmin-tl && x*tl<xmax && y*tl>=ymin-tl && y*tl<ymax) {
                 switch (overlayer[y][x]) {
                     case (1):
-                        drawSprite(waterBucket, x*tl-xmin+tl/9, y*tl-ymin+tl/9, tl*3/4, tl*3/4, 1);
+                        drawSprite(house, x*tl-xmin, y*tl-ymin, tl, tl, 1);
                         break;
                     case (2):
-                        drawSprite(house, x*tl-xmin, y*tl-ymin, tl, tl, 1);
+                        drawSprite(waterBucket, x*tl-xmin+tl/9, y*tl-ymin+tl/9, tl*3/4, tl*3/4, 1);
                         break;
                     default:
                         break;
@@ -289,19 +232,20 @@ function drawCurrentPowerup() {
     ctx.textAlign = 'left';
 
     // create the powerup string
-    var powstring = "Current Powerup: ";
+    var powstring = 'Current Powerup: ';
     switch (thisPlayer.powerup) {
-    case(0):
-    	// No powerup
-    	powstring += "--";
-    	break;
-    case(1):
-    	// water bucket
-    	powstring += "Water Bucket";
-    	break;
-    default:
-    	powstring += "ERROR!!!";
-    	break;
+        case (''):
+            powstring += '--';
+            break;
+        case ('house'):
+            powstring = 'Place farmhouse';
+            break;
+        case ('waterbucket'):
+            powstring += 'Water Bucket';
+            break;
+        default:
+            powstring += 'ERROR!!!';
+            break;
     }
     ctx.fillText(powstring, 15, 40);
 }
@@ -309,11 +253,11 @@ function drawCurrentPowerup() {
 // Draws this specific player as opposed to the opposing players
 function drawPlayer(xmin, ymin) {
     // Convert player pos to board pos
-    var xPos = thisPlayer.x / objective_tileLength * board_tileLength;
-    var yPos = thisPlayer.y / objective_tileLength * board_tileLength;
+    var xPos = thisPlayer.x / objective_tileLength * boardTileLength;
+    var yPos = thisPlayer.y / objective_tileLength * boardTileLength;
 
     ctx.beginPath();
-    ctx.arc(xPos-xmin, yPos-ymin, board_tileLength/2.25, 0, 2*Math.PI, false);
+    ctx.arc(xPos-xmin, yPos-ymin, boardTileLength/2.25, 0, 2*Math.PI, false);
     ctx.fillStyle = thisPlayer.color;
     ctx.fill();
 }
@@ -326,8 +270,8 @@ function drawViewport() {
     // This should not be working. vizmin_x and vizmin_y are out of scope here
 
     // Draw that board!
-    drawGrid(vizmin_x, vizmin_y, vizmax_x, vizmax_y, board_tileLength);
-    drawOverlayer(vizmin_x, vizmin_y, vizmax_x, vizmax_y, board_tileLength);
+    drawGrid(vizmin_x, vizmin_y, vizmax_x, vizmax_y, boardTileLength);
+    drawOverlayer(vizmin_x, vizmin_y, vizmax_x, vizmax_y, boardTileLength);
 
     // And the player too!
     drawPlayer(vizmin_x, vizmin_y);
@@ -336,9 +280,12 @@ function drawViewport() {
 // Handles keyboard input
 function keyInput(key) {
     // Use powerup
-    if (key.keyCode == 32) {
-        alert('Powerup used!');
-        thisPlayer.powerup = 0;
+    if (key.keyCode == 32 && thisPlayer.powerup !== '') {
+        var xTile = Math.floor(thisPlayer.x / objective_tileLength);
+        var yTile = Math.floor(thisPlayer.y / objective_tileLength);
+        data = {id:thisPlayer.id, powerup:thisPlayer.powerup, x:xTile, y:yTile};
+        socket.emit('2', data);
+        thisPlayer.powerup = '';
     }
 }
 
@@ -351,15 +298,15 @@ function mouseInput(mouse) {
 // Moves the player
 function playerMove() {
     if (mouseX !== null) {
-    	// This should not work, vizmin_x and vizmin_y are still out of scope
+        // This should not work, vizmin_x and vizmin_y are still out of scope
         updateBoardVars();
 
         // mov is the player diameter
-        var mov = 2*(board_tileLength/2.25);
+        var mov = 2*(boardTileLength/2.25);
         // distances in x and y of mouse from player, player pos needs to be converted to 
         // reflect relative board vision (thisPlayer.x is objective position)
-        relPosX = thisPlayer.x / objective_tileLength * board_tileLength - vizmin_x;
-        relPosY = thisPlayer.y / objective_tileLength * board_tileLength - vizmin_y;
+        relPosX = thisPlayer.x / objective_tileLength * boardTileLength - vizmin_x;
+        relPosY = thisPlayer.y / objective_tileLength * boardTileLength - vizmin_y;
         var distX = mouseX - (relPosX-mov/2);
         var distY = mouseY - (relPosY-mov/2);
 
@@ -390,54 +337,73 @@ function initSocket(socket) {
     socket.on('setup', function(data) {
         allPlayers = data.users;
         leaderboard = data.leaderboard;
+        board = data.board;
+        overlayer = data.overlayer;
     });
 
     socket.on('newJoin', function(data) {
-        leaderboard = data;
+        allPlayers[data.newPlayer.id] = data.newPlayer;
+        leaderboard = data.leaderboard;
     });
 
     socket.on('aDisconnect', function(data) {
-        leaderboard = data;
+        // TODO: remove disconnected player from local allPlayers
+    });
+
+    socket.on('powerupUsed', function(data) {
+        if (data.powerup == 'house') {
+            overlayer[data.y][data.x] = 1;
+        } else if (data.powerup == 'waterbucket') {
+            
+        }
+    });
+
+    socket.on('powerupSpawned', function(data) {
+        if (data.powerup == 'waterbucket') {
+            overlayer[data.x][data.y] = 2;
+        }
     });
 }
 
 // Picks up whatever item the player is standing on
 // if the player is standing
 function processOverlayer() {
-	// thisPlayer.x = the current objective position of the player
-	xTile = Math.floor(thisPlayer.x / objective_tileLength);
-	yTile = Math.floor(thisPlayer.y / objective_tileLength);
+    // thisPlayer.x = the current objective position of the player
+    var xTile = Math.floor(thisPlayer.x / objective_tileLength);
+    var yTile = Math.floor(thisPlayer.y / objective_tileLength);
 
-	// The object of the tile you are currently standing on
-	if (thisPlayer.powerup === 0)
-	{
-		current = overlayer[yTile][xTile];
-		switch (current) {
-		case(0):
-			// Empty, do nothing
-			break;
-		case(1):
-			// Water bucket
-			thisPlayer.powerup = 1;
-	        overlayer[yTile][xTile] = 0;
-			break;
-		default:
-			break;
-		}
-	}
+    // The object of the tile you are currently standing on
+    if (thisPlayer.powerup === 0) {
+        current = overlayer[yTile][xTile];
+        switch (current) {
+        case (0):
+            // Empty, do nothing
+            break;
+        case (1):
+            // House, do nothing
+            break;
+        case (2):
+            // Water bucket
+            thisPlayer.powerup = 'waterbucket';
+            overlayer[yTile][xTile] = 0;
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 // Handles a single plant expansion
 function expandPlant(b, type, x, y) {
     grow = 0;
-	b[y][x] = type;
-	for (var i=-1; i<=1; i+=2) {
-		for (var j=-1; j<=1; j+=2) {
+    b[y][x] = type;
+    for (var i=-1; i<=1; i+=2) {
+        for (var j=-1; j<=1; j+=2) {
             if (y+i>gridHeight-1 || y+i<0 || x+j>gridWidth-1 || x+j<0) {
                 // do nothing, out of bounds
             }
-			else if (board[y+i][x+j] === 0 && grow === 0) {
-				b[y+i][x+j] = type;
+            else if (board[y+i][x+j] === 0 && grow === 0) {
+                b[y+i][x+j] = type;
                 plantRanks[y+i][x+j] = 0.6;
                 grow = 1;
             }
@@ -449,30 +415,23 @@ function expandPlant(b, type, x, y) {
 }
 
 // Process the board's plant expansion (rudimentery for vert prototype)
-function processBoard()
-{
-	newBoard = Board(gridHeight, gridWidth, 0);
-	for (var y = 0; y < gridHeight; y++) {
+function processBoard() {
+    newBoard = Board(gridHeight, gridWidth, 0);
+    for (var y = 0; y < gridHeight; y++) {
         for (var x = 0; x < gridWidth; x++) {
-            xLength = x*board_tileLength;
-            yLength = y*board_tileLength;
-            if(x>100 || x<0 || y>50 || y<0) {
+            xLength = x*boardTileLength;
+            yLength = y*boardTileLength;
+            if (x>100 || x<0 || y>50 || y<0) {
                // do nothing, out of bounds
             }
-            else{
+            else {
                  switch (board[y][x]) {
                     case (0): // DIRT
                         // Board is already full of zeros, no need for operation
                         break;
-                    case (1): // RED PLANT
-                        expandPlant(newBoard,1,x,y);
+                    default: // TODO: grow plant for any player
+
                         break;
-                    case (2): // PURPLE PLANT
-                        expandPlant(newBoard,2,x,y);
-                        break;
-                    default: // UNKNOWN
-                        break;
-                    
                 }
             }
         }
@@ -480,10 +439,9 @@ function processBoard()
     board = newBoard;
 }
 
-
 // Calls all needed object update functions
 function update(dt) {
-	processOverlayer();
+    processOverlayer();
 }
 
 function gameLoop() {

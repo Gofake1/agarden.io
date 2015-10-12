@@ -21,10 +21,12 @@ var gridWidth = 100;
 var tileLength = 15;
 
 // Global variables
-var users = [];
-var board = Board(gridHeight, gridWidth, 0);
-var powerups = Board(gridWidth, gridHeight, 0);
+var users = {};
 var leaderboard = [];
+var board = Board(gridHeight, gridWidth, 0);
+var plantRanks = Board(gridHeight, gridWidth, 0);
+var overlayer = Board(gridHeight, gridWidth, 0);
+var powerups = Board(gridHeight, gridWidth, 0);
 
 // TODO: check that name, position, color are unique
 function addNewPlayer(id, name) {
@@ -32,8 +34,8 @@ function addNewPlayer(id, name) {
     // TODO: check if start position is valid
     x = Math.floor(Math.random()*gridWidth*tileLength);
     y = Math.floor(Math.random()*gridHeight*tileLength);
-    newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, score:0, powerup:0 };
-    users.push(newPlayer);
+    newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, score:0, powerup:'house' };
+    users[id] = newPlayer;
     leaderboard.push(name); // Remove this later
     return newPlayer;
 }
@@ -55,16 +57,16 @@ io.on('connection', function(socket) {
     console.log('A user connected');
 
     socket.on('newPlayer', function(data) {
-        console.log('New player created: '+data.name);
         newPlayer = addNewPlayer(socket.id, data.name);
         socket.emit('playerCreated', newPlayer);
         socket.emit('setup', {
             users:users,
-            leaderboard:leaderboard
-            //board:board,
+            leaderboard:leaderboard,
+            board:board,
+            overlayer:overlayer
             //powerups:powerups
         });
-        io.emit('newJoin', leaderboard);
+        io.emit('newJoin', {leaderboard: leaderboard, newPlayer: newPlayer});
     });
 
     socket.on('0', function() { // Heartbeat
@@ -75,8 +77,14 @@ io.on('connection', function(socket) {
 
     });
 
-    socket.on('2', function() { // Use power up
-
+    socket.on('2', function(data) { // Use power up
+        if (data.powerup == 'house') {
+            console.log('House placed at x:'+data.x+' and y:'+data.y);
+            overlayer[data.y][data.x] = data.id;
+        } else if (data.powerup == 'waterbucket') {
+            // 
+        }
+        io.emit('powerupUsed', data);
     });
 
     socket.on('disconnect', function() {
