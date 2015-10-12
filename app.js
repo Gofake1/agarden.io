@@ -140,20 +140,6 @@ function drawSprite(img, x, y, w, h, alpha) {
     ctx.globalAlpha = 1;
 }
 
-// Randomly place powerups at the start of the game
-// Currently places 5 water buckets only 
-function initOverlayer() {
-    var i = 0;
-    while (i < 5) {
-        var x = Math.floor(Math.random() * (gridWidth + 1));
-        var y = Math.floor(Math.random() * (gridHeight + 1));
-        if (board[y][x] === 0 && overlayer[y][x] === 0){
-            overlayer[y][x] = 1;
-            i++;
-        }
-    }
-}
-
 // MAKE SURE TO SEPARATE STUFF OUT LATER!!!!!
 function drawGrid(xmin, ymin, xmax, ymax, boardTileLength) {
     for (var y = 0; y < gridHeight; y++) {
@@ -488,7 +474,6 @@ function init() {
     // reset();
     initImages();
     initSocket(socket);
-    initOverlayer();
     gameLoop();
 }
 

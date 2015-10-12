@@ -28,6 +28,17 @@ var plantRanks = Board(gridHeight, gridWidth, 0);
 var overlayer = Board(gridHeight, gridWidth, 0);
 var powerups = Board(gridHeight, gridWidth, 0);
 
+// DEMO: random water buckets
+var i = 0;
+while (i < 15) {
+    var x = Math.floor(Math.random() * (gridWidth + 1));
+    var y = Math.floor(Math.random() * (gridHeight + 1));
+    if (board[y][x] === 0 && overlayer[y][x] === 0){
+        overlayer[y][x] = 2;
+        i++;
+    }
+}
+
 // TODO: check that name, position, color are unique
 function addNewPlayer(id, name) {
     color = '#'+(Math.random().toString(16)+'000000').slice(2,8);
