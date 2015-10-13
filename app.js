@@ -241,7 +241,7 @@ function drawCurrentPowerup() {
             powstring = 'Place farmhouse';
             break;
         case ('waterbucket'):
-            drawSprite(waterBucket, 175, 10, board_tileLength*3/4, board_tileLength*3/4, 1);
+            drawSprite(waterBucket, 175, 15, boardTileLength*3/4, boardTileLength*3/4, 1);
             break;
         default:
             powstring += 'ERROR!!!';
@@ -373,7 +373,7 @@ function processOverlayer() {
     var yTile = Math.floor(thisPlayer.y / objective_tileLength);
 
     // The object of the tile you are currently standing on
-    if (thisPlayer.powerup === 0) {
+    if (thisPlayer.powerup === '') {
         current = overlayer[yTile][xTile];
         switch (current) {
         case (0):
