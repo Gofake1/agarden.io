@@ -12,7 +12,15 @@ var Board = function(numRows, numCols, value) {
     return this.array;
 };
 
-var thisPlayer = { x:80, y:80, name:'Guest', speed:125, color:'blue', score:0, powerup:'' };
+var thisPlayer = {
+    x:80,
+    y:80,
+    name:'Guest',
+    speed:125,
+    color:'blue',
+    score:0,
+    powerup:''
+};
 
 // var Map = {
 //     // Total number of tiles in game 
@@ -232,16 +240,17 @@ function drawCurrentPowerup() {
     ctx.textAlign = 'left';
 
     // create the powerup string
-    var powstring = 'Current Powerup: ';
+    var powstring = ' Current Powerup: ';
     switch (thisPlayer.powerup) {
         case (''):
-            powstring += '--';
+            powstring += '  --';
             break;
         case ('house'):
-            powstring = 'Place farmhouse';
+            powstring = ' Place Farmhouse ';
+            drawSprite(house, 190, 17, 40, 40);
             break;
         case ('waterbucket'):
-            drawSprite(waterBucket, 175, 15, boardTileLength*3/4, boardTileLength*3/4, 1);
+            drawSprite(waterBucket, 185, 18, 40, 40);
             break;
         default:
             powstring += 'ERROR!!!';
@@ -280,7 +289,7 @@ function drawViewport() {
 // Handles keyboard input
 function keyInput(key) {
     // Use powerup on space or enter key
-    if ((key.keyCode == 13 || key.keyCode == 32) && thisPlayer.powerup !== '') {
+    if ((key.charCode == 13 || key.charCode == 32) && thisPlayer.powerup !== '') {
         var xTile = Math.floor(thisPlayer.x / objective_tileLength);
         var yTile = Math.floor(thisPlayer.y / objective_tileLength);
         data = {id:thisPlayer.id, powerup:thisPlayer.powerup, x:xTile, y:yTile};
