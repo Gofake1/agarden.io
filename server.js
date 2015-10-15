@@ -19,7 +19,7 @@ var Board = function(numRows, numCols, value) {
 var gridHeight = 50;
 var gridWidth = 100;
 var tileLength = 15;
-
+   
 // Global variables
 var users = {};
 var leaderboard = [];
@@ -50,6 +50,7 @@ function addNewPlayer(id, name) {
     leaderboard.push(name); // Remove this later
     return newPlayer;
 }
+
 
 function gameLoop() {
     // TODO: update leaderboard
@@ -92,8 +93,9 @@ io.on('connection', function(socket) {
         if (data.powerup == 'house') {
             console.log('House placed at x:'+data.x+' and y:'+data.y);
             overlayer[data.y][data.x] = data.id;
-        } else if (data.powerup == 'waterbucket') {
-            // 
+        } 
+        else if (data.powerup == 'waterbucket') {
+            //
         }
         io.emit('powerupUsed', data);
     });
@@ -103,6 +105,13 @@ io.on('connection', function(socket) {
         socket.disconnect();
         io.emit('aDisconnect', leaderboard);
     });
+
+    socket.on('powerupGrabbed', function(data) {
+        console.log('A user has picked up a powerup');
+        overlayer[data.y][data.x] = 0;
+        io.emit("boardUpdate", {overlayer:overlayer});
+    });
+
 });
 
 app.use(express.static(__dirname));

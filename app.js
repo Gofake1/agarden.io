@@ -22,10 +22,6 @@ var thisPlayer = {
     powerup:''
 };
 
-// A list that will hold the colors, names and any other info
-// that we need to record for other players
-
-
 // var Map = {
 //     // Total number of tiles in game 
 //     gridHeight : 50,
@@ -382,8 +378,12 @@ function initSocket(socket) {
 
     socket.on('powerupSpawned', function(data) {
         if (data.powerup == 'waterbucket') {
-            overlayer[data.x][data.y] = 2;
+            overlayer[data.y][data.x] = 2;
         }
+    });
+
+    socket.on('boardUpdate', function(data) {
+        overlayer = data.overlayer;
     });
 }
 
@@ -408,6 +408,7 @@ function processOverlayer() {
             // Water bucket
             thisPlayer.powerup = 'waterbucket';
             overlayer[yTile][xTile] = 0;
+            socket.emit('powerupGrabbed', {x:xTile, y:yTile});
             break;
         default:
             break;
