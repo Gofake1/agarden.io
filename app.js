@@ -276,16 +276,13 @@ function drawPlayer(xmin, ymin) {
 // around him/her as he moves in realtime
 function drawViewport() {
     // Draw this if the player is ready
-    if (thisPlayer.color != null)
-    {
+    if (thisPlayer.color !== null) {
         updateBoardVars();
         drawGrid(vizmin_x, vizmin_y, vizmax_x, vizmax_y, board_tileLength);
         drawOverlayer(vizmin_x, vizmin_y, vizmax_x, vizmax_y, board_tileLength);
         // And the player too!
         drawPlayer(vizmin_x, vizmin_y);
-    }
-    else
-    {
+    } else {
         numTiles_x = gridWidth * 0.5;
         updateBoardVars();
         drawGrid(0, 0, gridWidth*board_tileLength, gridHeight*board_tileLength, board_tileLength);
@@ -396,7 +393,7 @@ function initSocket(socket) {
         console.log('socket.on:boardUpdateAll');
         board = data.board;
         plantRanks = data.plantRanks;
-    })
+    });
 }
 
 // Picks up whatever item the player is standing on

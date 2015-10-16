@@ -92,16 +92,16 @@ function processBoard() {
                         // Board is already full of zeros, no need for operation
                         break;
                     case (1):
-
+                        break;
                     default: // TODO: grow plant for any player
-                        expandPlant(newBoard, board[y][x], x, y)
+                        expandPlant(newBoard, board[y][x], x, y);
                         break;
                 }
             }
         }
     }
     board = newBoard;
-    io.emit('boardUpdateAll', {board:board, plantRanks:plantRanks})
+    io.emit('boardUpdateAll', { board:board, plantRanks:plantRanks });
 }
 
 function gameLoop() {
