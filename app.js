@@ -382,8 +382,8 @@ function initSocket(socket) {
         }
     });
 
-    socket.on('boardUpdate', function(data) {
-        overlayer = data.overlayer;
+    socket.on('overlayerUpdate', function(data) {
+        overlayer[data.y][data.x]=0;
     });
 }
 

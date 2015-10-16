@@ -93,6 +93,7 @@ io.on('connection', function(socket) {
         if (data.powerup == 'house') {
             console.log('House placed at x:'+data.x+' and y:'+data.y);
             overlayer[data.y][data.x] = data.id;
+            io.emit("overlayerUpdate", {x:data.x, y:data.y, value:data.id});
         } 
         else if (data.powerup == 'waterbucket') {
             //
@@ -109,7 +110,7 @@ io.on('connection', function(socket) {
     socket.on('powerupGrabbed', function(data) {
         console.log('A user has picked up a powerup');
         overlayer[data.y][data.x] = 0;
-        io.emit("boardUpdate", {overlayer:overlayer});
+        io.emit("overlayerUpdate", {x:data.x, y:data.y, value:0});
     });
 
 });
