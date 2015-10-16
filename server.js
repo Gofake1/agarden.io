@@ -55,8 +55,8 @@ function addNewPlayer(id, name) {
 function expandPlant(newBoard, type, x, y) {
     grow = 0;
     newBoard[y][x] = type;
-    for (var i=-1; i<=1; i+=2) {
-        for (var j=-1; j<=1; j+=2) {
+    for (var i=-1; i<=1; i+=1) { /* i is to y */
+        for (var j=-1; j<=1; j+=1) { /* as j is to x */
             if (y+i>gridHeight-1 || y+i<0 || x+j>gridWidth-1 || x+j<0) {
                 // do nothing, out of bounds
             }
