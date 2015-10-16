@@ -133,9 +133,6 @@ function updateBoardVars() {
 function getName() {
     thisPlayer.name = document.getElementById("pname").value;
 
-    // Following line moved to server. Pending deletion
-    //    window.setInterval(processBoard, 10000);
-
     window.addEventListener('mousemove', mouseInput, false);
     window.addEventListener('keypress', keyInput, false);
     socket.emit('newPlayer', {name: thisPlayer.name});
@@ -427,57 +424,6 @@ function processOverlayer() {
         }
     }
 }
-
-// // Handles a single plant expansion
-// function expandPlant(b, type, x, y) {
-//     grow = 0;
-//     b[y][x] = type;
-//     for (var i=-1; i<=1; i+=2) {
-//         for (var j=-1; j<=1; j+=2) {
-//             if (y+i>gridHeight-1 || y+i<0 || x+j>gridWidth-1 || x+j<0) {
-//                 // do nothing, out of bounds
-//             }
-
-//             // Expand to a new tile
-// 			else if (board[y+i][x+j] === 0 && grow === 0) {
-// 				b[y+i][x+j] = type;
-//                 plantRanks[y+i][x+j] = 0.6;
-//                 grow = 1;
-//                 thisPlayer.score += 1;
-//             }
-
-//             // Grow the plant
-//             else if(plantRanks[y+i][x+j] > 0.5) {
-//                 plantRanks[y+i][x+j] -= 0.1;
-//             }
-//         }
-//     }
-// }
-
-// // Process the board's plant expansion (rudimentery for vert prototype)
-// function processBoard() {
-//     newBoard = Board(gridHeight, gridWidth, 0);
-//     for (var y = 0; y < gridHeight; y++) {
-//         for (var x = 0; x < gridWidth; x++) {
-//             xLength = x*board_tileLength;
-//             yLength = y*board_tileLength;
-//             if (x>100 || x<0 || y>50 || y<0) {
-//                // do nothing, out of bounds
-//             }
-//             else {
-//                  switch (board[y][x]) {
-//                     case (0): // DIRT
-//                         // Board is already full of zeros, no need for operation
-//                         break;
-//                     default: // TODO: grow plant for any player
-
-//                         break;
-//                 }
-//             }
-//         }
-//     }
-//     board = newBoard;
-// }
 
 // Calls all needed object update functions
 function update(dt) {
