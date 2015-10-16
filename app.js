@@ -161,7 +161,7 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
                     default: // Player's color
                         ctx.fillStyle = allPlayers[board[y][x]].color;
                         ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength, board_tileLength);
-                        drawSprite(plant, xLeng      th-xmin, yLength-ymin, board_tileLength, board_tileLength, plantRanks[y][x]);
+                        drawSprite(plant, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, plantRanks[y][x]);
                         break;
                 }
             }
