@@ -94,7 +94,7 @@ function processBoard() {
                     case (1):
 
                     default: // TODO: grow plant for any player
-                        expandPlant(newBoard, board[y][x], y, x)
+                        expandPlant(newBoard, board[y][x], x, y)
                         break;
                 }
             }
