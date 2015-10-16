@@ -13,9 +13,9 @@ var Board = function(numRows, numCols, value) {
 };
 
 var thisPlayer = {
-    x:80,
-    y:80,
-    name:'Guest',
+    x:null,
+    y:null,
+    name:'',
     speed:125,
     color:null,
     score:0,
@@ -132,10 +132,9 @@ function updateBoardVars() {
 // Gets the player's entered name
 function getName() {
     thisPlayer.name = document.getElementById("pname").value;
-    // TODO:
-    // WERE GOING TO WANT TO REMOVE THIS AFTER THE DEMO
-    window.setInterval(processBoard, 10000);
-    //window.setInterval(plantGrowth, 5000);
+
+    // Following line moved to server. Pending deletion
+    //    window.setInterval(processBoard, 10000);
 
     window.addEventListener('mousemove', mouseInput, false);
     window.addEventListener('keypress', keyInput, false);
@@ -301,7 +300,7 @@ function keyInput(key) {
     if ((key.charCode == 13 || key.charCode == 32) && thisPlayer.powerup !== '') {
         var xTile = Math.floor(thisPlayer.x / objective_tileLength);
         var yTile = Math.floor(thisPlayer.y / objective_tileLength);
-        data = {id:thisPlayer.id, powerup:thisPlayer.powerup, x:xTile, y:yTile};
+        data = {playerid:thisPlayer.id, powerup:thisPlayer.powerup, x:xTile, y:yTile};
         socket.emit('2', data);
         thisPlayer.powerup = '';
     }
@@ -349,10 +348,12 @@ function initImages() {
 
 function initSocket(socket) {
     socket.on('playerCreated', function(data) {
+        console.log('console.on:playerCreated');
         thisPlayer = data;
     });
 
     socket.on('setup', function(data) {
+        console.log('console.on:setup');
         allPlayers = data.users;
         leaderboard = data.leaderboard;
         board = data.board;
@@ -360,15 +361,18 @@ function initSocket(socket) {
     });
 
     socket.on('newJoin', function(data) {
+        console.log('socket.on:newJoin');
         allPlayers[data.newPlayer.id] = data.newPlayer;
         leaderboard = data.leaderboard;
     });
 
     socket.on('aDisconnect', function(data) {
+        console.log('socket.on:aDisconnect');
         // TODO: remove disconnected player from local allPlayers
     });
 
     socket.on('powerupUsed', function(data) {
+        console.log('socket.on:powerupUsed');
         if (data.powerup == 'house') {
             overlayer[data.y][data.x] = 1;
         } else if (data.powerup == 'waterbucket') {
@@ -377,14 +381,22 @@ function initSocket(socket) {
     });
 
     socket.on('powerupSpawned', function(data) {
+        console.log('socket.on:powerupSpaned');
         if (data.powerup == 'waterbucket') {
             overlayer[data.y][data.x] = 2;
         }
     });
 
     socket.on('overlayerUpdate', function(data) {
+        console.log('socket.on:overlayerUpdate');
         overlayer[data.y][data.x]=0;
     });
+
+    socket.on('boardUpdateAll', function(data) {
+        console.log('socket.on:boardUpdateAll');
+        board = data.board;
+        plantRanks = data.plantRanks;
+    })
 }
 
 // Picks up whatever item the player is standing on
@@ -416,56 +428,56 @@ function processOverlayer() {
     }
 }
 
-// Handles a single plant expansion
-function expandPlant(b, type, x, y) {
-    grow = 0;
-    b[y][x] = type;
-    for (var i=-1; i<=1; i+=2) {
-        for (var j=-1; j<=1; j+=2) {
-            if (y+i>gridHeight-1 || y+i<0 || x+j>gridWidth-1 || x+j<0) {
-                // do nothing, out of bounds
-            }
+// // Handles a single plant expansion
+// function expandPlant(b, type, x, y) {
+//     grow = 0;
+//     b[y][x] = type;
+//     for (var i=-1; i<=1; i+=2) {
+//         for (var j=-1; j<=1; j+=2) {
+//             if (y+i>gridHeight-1 || y+i<0 || x+j>gridWidth-1 || x+j<0) {
+//                 // do nothing, out of bounds
+//             }
 
-            // Expand to a new tile
-			else if (board[y+i][x+j] === 0 && grow === 0) {
-				b[y+i][x+j] = type;
-                plantRanks[y+i][x+j] = 0.6;
-                grow = 1;
-                thisPlayer.score += 1;
-            }
+//             // Expand to a new tile
+// 			else if (board[y+i][x+j] === 0 && grow === 0) {
+// 				b[y+i][x+j] = type;
+//                 plantRanks[y+i][x+j] = 0.6;
+//                 grow = 1;
+//                 thisPlayer.score += 1;
+//             }
 
-            // Grow the plant
-            else if(plantRanks[y+i][x+j] > 0.5) {
-                plantRanks[y+i][x+j] -= 0.1;
-            }
-        }
-    }
-}
+//             // Grow the plant
+//             else if(plantRanks[y+i][x+j] > 0.5) {
+//                 plantRanks[y+i][x+j] -= 0.1;
+//             }
+//         }
+//     }
+// }
 
-// Process the board's plant expansion (rudimentery for vert prototype)
-function processBoard() {
-    newBoard = Board(gridHeight, gridWidth, 0);
-    for (var y = 0; y < gridHeight; y++) {
-        for (var x = 0; x < gridWidth; x++) {
-            xLength = x*board_tileLength;
-            yLength = y*board_tileLength;
-            if (x>100 || x<0 || y>50 || y<0) {
-               // do nothing, out of bounds
-            }
-            else {
-                 switch (board[y][x]) {
-                    case (0): // DIRT
-                        // Board is already full of zeros, no need for operation
-                        break;
-                    default: // TODO: grow plant for any player
+// // Process the board's plant expansion (rudimentery for vert prototype)
+// function processBoard() {
+//     newBoard = Board(gridHeight, gridWidth, 0);
+//     for (var y = 0; y < gridHeight; y++) {
+//         for (var x = 0; x < gridWidth; x++) {
+//             xLength = x*board_tileLength;
+//             yLength = y*board_tileLength;
+//             if (x>100 || x<0 || y>50 || y<0) {
+//                // do nothing, out of bounds
+//             }
+//             else {
+//                  switch (board[y][x]) {
+//                     case (0): // DIRT
+//                         // Board is already full of zeros, no need for operation
+//                         break;
+//                     default: // TODO: grow plant for any player
 
-                        break;
-                }
-            }
-        }
-    }
-    board = newBoard;
-}
+//                         break;
+//                 }
+//             }
+//         }
+//     }
+//     board = newBoard;
+// }
 
 // Calls all needed object update functions
 function update(dt) {
