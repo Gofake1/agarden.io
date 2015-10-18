@@ -81,6 +81,7 @@ function expandPlant(newBoard, type, x, y) {
 // Process the board's plant expansion (rudimentery for vert prototype)
 function processBoard() {
     newBoard = Board(gridHeight, gridWidth, 0);
+    newBoard = board;
     for (var y = 0; y < gridHeight; y++) {
         for (var x = 0; x < gridWidth; x++) {
             if (x>100 || x<0 || y>50 || y<0) {
