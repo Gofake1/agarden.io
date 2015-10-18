@@ -135,6 +135,7 @@ function getName() {
 
     window.addEventListener('mousemove', mouseInput, false);
     window.addEventListener('keypress', keyInput, false);
+    window.addEventListener('click', mouseClick, false);
     socket.emit('newPlayer', {name: thisPlayer.name});
 }
 
@@ -155,6 +156,11 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
             if (xLength>=xmin-board_tileLength && xLength<xmax && yLength>=ymin-board_tileLength && yLength<ymax) {
                 ctx.strokeRect(xLength-xmin, yLength-ymin, board_tileLength, board_tileLength);
                 switch (board[y][x]) {
+                    // We can use characters to represent non-plant tiles
+                    case ('t'):
+                        ctx.fillStyle = 'black';
+                        ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength, board_tileLength);
+                        break;
                     case (0): // Dirt
                         drawSprite(dirt, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, 1);
                         break;
@@ -306,6 +312,16 @@ function mouseInput(mouse) {
     mouseY = mouse.clientY;
 }
 
+function mouseClick() {
+    xTile = Math.floor(thisPlayer.x / objective_tileLength);
+    yTile = Math.floor(thisPlayer.y / objective_tileLength);
+    if (board[yTile][xTile] == 0)
+    {
+        board[yTile][xTile] = 't';
+        socket.emit('tillLand', {x:xTile, y:yTile})
+    }
+}
+
 // Moves the player
 function playerMove() {
     if (mouseX !== null) {
@@ -390,6 +406,11 @@ function initSocket(socket) {
         console.log('socket.on:boardUpdateAll');
         board = data.board;
         plantRanks = data.plantRanks;
+    });
+
+    socket.on('boardUpdate', function(data) {
+        console.log('socket.on:boardUpdate');
+        board[data.y][data.x] = data.value;
     });
 }
 
