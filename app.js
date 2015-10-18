@@ -94,6 +94,7 @@ var dirt = new Image();
 var plant = new Image();
 var waterBucket = new Image();
 var house = new Image();
+var tilled = new Image();
 
 var mouseX = null;
 var mouseY = null;
@@ -158,8 +159,7 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
                 switch (board[y][x]) {
                     // We can use characters to represent non-plant tiles
                     case ('t'):
-                        ctx.fillStyle = 'black';
-                        ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength, board_tileLength);
+                        drawSprite(tilled, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, 1);
                         break;
                     case (0): // Dirt
                         drawSprite(dirt, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, 1);
@@ -354,6 +354,7 @@ function initImages() {
     plant.src = 'sprites/plant.png';
     waterBucket.src = 'sprites/water_bucket.png';
     house.src = 'sprites/house.png';
+    tilled.src = 'sprites/TilledLand.png';
 }
 
 function initSocket(socket) {
