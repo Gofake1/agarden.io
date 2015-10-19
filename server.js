@@ -61,7 +61,7 @@ function expandPlant(newBoard, type, x, y) {
             }
 
             // Expand to a new tile
-            else if (board[y+i][x+j] === 0 && grow === 0) {
+            else if (board[y+i][x+j] === 't' && grow === 0) {
                 newBoard[y+i][x+j] = type;
                 plantRanks[y+i][x+j] = 0.6;
                 grow = 1;
@@ -80,20 +80,22 @@ function expandPlant(newBoard, type, x, y) {
 // Process the board's plant expansion (rudimentery for vert prototype)
 function processBoard() {
     newBoard = Board(gridHeight, gridWidth, 0);
+    newBoard = board;
     for (var y = 0; y < gridHeight; y++) {
         for (var x = 0; x < gridWidth; x++) {
             if (x>100 || x<0 || y>50 || y<0) {
                // do nothing, out of bounds
             }
             else {
-                 switch (board[y][x]) {
+                switch (board[y][x]) {
                     case (0): // DIRT
                         // Board is already full of zeros, no need for operation
                         break;
                     case (1):
                         break;
                     default: // TODO: grow plant for any player
-                        expandPlant(newBoard, board[y][x], x, y);
+                        if (board[y][x] != 't')
+                            expandPlant(newBoard, board[y][x], x, y);
                         break;
                 }
             }
@@ -168,6 +170,12 @@ io.on('connection', function(socket) {
         console.log('A user has picked up a powerup');
         overlayer[data.y][data.x] = 0;
         io.emit("overlayerUpdate", {x:data.x, y:data.y, value:0});
+    });
+
+    socket.on('tillLand', function(data) {
+        console.log('socket.on:tillLand');
+        board[data.y][data.x] = 't';
+        io.emit("boardUpdate", {x:data.x, y:data.y, value:'t'});
     });
 
 });
