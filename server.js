@@ -26,7 +26,6 @@ var leaderboard = [];
 var board = Board(gridHeight, gridWidth, 0);
 var plantRanks = Board(gridHeight, gridWidth, 0);
 var overlayer = Board(gridHeight, gridWidth, 0);
-var powerups = Board(gridHeight, gridWidth, 0);
 
 // DEMO: random water buckets
 var i = 0;
@@ -111,7 +110,6 @@ function gameLoop() {
     // }
 
     // TODO: calculate plant growth
-
 }
 
 app.get('/', function(req, res) {
@@ -130,7 +128,6 @@ io.on('connection', function(socket) {
             leaderboard:leaderboard,
             board:board,
             overlayer:overlayer
-            //powerups:powerups
         });
         io.emit('newJoin', {leaderboard: leaderboard, newPlayer: newPlayer});
     });
@@ -150,7 +147,7 @@ io.on('connection', function(socket) {
             console.log('House placed at x:'+data.x+' and y:'+data.y);
             overlayer[data.y][data.x] = 1;
             board[data.y][data.x] = data.playerid;
-            io.emit("overlayerUpdate", {x:data.x, y:data.y, value:data.id});
+            io.emit('overlayerUpdate', {x:data.x, y:data.y, value:data.id});
         } 
         else if (data.powerup == 'waterbucket') {
             //
@@ -159,10 +156,11 @@ io.on('connection', function(socket) {
     });
 
     socket.on('disconnect', function() {
-        console.log('socket.on:disconnect');
         console.log('A user disconnected');
         socket.disconnect();
-        io.emit('aDisconnect', leaderboard);
+        // Remove player from users
+        delete users.socket.id;
+        io.emit('aDisconnect', users);
     });
 
     socket.on('powerupGrabbed', function(data) {

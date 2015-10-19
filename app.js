@@ -54,15 +54,15 @@ var thisPlayer = {
 
 // class Game {
 //    
-//}
+// }
 
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 ctx.canvas.width = window.innerWidth;
 ctx.canvas.height = window.innerHeight;
 
-var gridHeight = 50;    //
-var gridWidth = 100;    //
+var gridHeight = 50;   //
+var gridWidth = 100;   //
 
 var numTiles_x_start = 20;  //
 var numTiles_x_max = 30;    //
@@ -76,10 +76,10 @@ var board_tileLength = window.innerWidth / numTiles_x;  //
 var objective_tileLength = 20;  //
 
 // Record the board's visible bounds
-var vizmin_x = null;    //    
-var vizmin_y = null;    //
-var vizmax_x = null;    //
-var vizmax_y = null;    //
+var vizmin_x = null;   //    
+var vizmin_y = null;   //
+var vizmax_x = null;   //
+var vizmax_y = null;   //
 
 // Game variables
 var initGrowthAlpha = 0.8;
@@ -159,7 +159,9 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
                         drawSprite(dirt, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, 1);
                         break;
                     default: // Player's color
-                        ctx.fillStyle = allPlayers[board[y][x]].color;
+                        if (allPlayers[board[y][x]]) {
+                            ctx.fillStyle = allPlayers[board[y][x]].color;
+                        }
                         ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength, board_tileLength);
                         drawSprite(plant, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, plantRanks[y][x]);
                         break;
