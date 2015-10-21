@@ -296,9 +296,8 @@ function drawViewport() {
     }
 }
 
-// Handles keyboard input
+// Use powerup on space or enter key
 function keyInput(key) {
-    // Use powerup on space or enter key
     if ((key.charCode == 13 || key.charCode == 32) && thisPlayer.powerup !== '') {
         var xTile = Math.floor(thisPlayer.x / objective_tileLength);
         var yTile = Math.floor(thisPlayer.y / objective_tileLength);
@@ -308,19 +307,19 @@ function keyInput(key) {
     }
 }
 
-// Handles mouse movement
+// Set movement direction on mouse position
 function mouseInput(mouse) {
     mouseX = mouse.clientX;
     mouseY = mouse.clientY;
 }
 
+// Till land on mouse click
 function mouseClick() {
     xTile = Math.floor(thisPlayer.x / objective_tileLength);
     yTile = Math.floor(thisPlayer.y / objective_tileLength);
-    if (board[yTile][xTile] == 0)
-    {
+    if (board[yTile][xTile] === 0) {
         board[yTile][xTile] = 't';
-        socket.emit('tillLand', {x:xTile, y:yTile})
+        socket.emit('1', {x:xTile, y:yTile});
     }
 }
 
@@ -356,7 +355,7 @@ function initImages() {
     plant.src = 'sprites/plant.png';
     waterBucket.src = 'sprites/water_bucket.png';
     house.src = 'sprites/house.png';
-    tilled.src = 'sprites/TilledLand.png';
+    tilled.src = 'sprites/tilled.jpg';
 }
 
 function initSocket(socket) {

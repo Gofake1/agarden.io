@@ -71,7 +71,7 @@ function expandPlant(newBoard, type, x, y) {
 
                     // break out of the loops so we don't have lots of growth at once
                     // this didn't actually fix it, just seems to delay it until we hit the edge of tilled tiles
-                    j = 2, i = 2;
+                    j = 2; i = 2;
 
 
                     // Will have to accomodate for score keeping later
@@ -151,6 +151,8 @@ io.on('connection', function(socket) {
 
     socket.on('1', function() { // Till
         console.log('socket.on:1');
+        board[data.y][data.x] = 't';
+        io.emit("boardUpdate", {x:data.x, y:data.y, value:'t'});
     });
 
     socket.on('2', function(data) { // Use power up
@@ -171,7 +173,7 @@ io.on('connection', function(socket) {
         console.log('A user disconnected');
         socket.disconnect();
         // Remove player from users
-        delete users.socket.id;
+        delete users[socket.id];
         io.emit('aDisconnect', users);
     });
 
@@ -181,13 +183,6 @@ io.on('connection', function(socket) {
         overlayer[data.y][data.x] = 0;
         io.emit("overlayerUpdate", {x:data.x, y:data.y, value:0});
     });
-
-    socket.on('tillLand', function(data) {
-        console.log('socket.on:tillLand');
-        board[data.y][data.x] = 't';
-        io.emit("boardUpdate", {x:data.x, y:data.y, value:'t'});
-    });
-
 });
 
 setInterval(processBoard, 10000);
