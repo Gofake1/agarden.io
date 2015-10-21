@@ -52,7 +52,7 @@ function addNewPlayer(id, name) {
 
 // Handles a single plant expansion
 function expandPlant(newBoard, type, x, y) {
-    grow = 0;
+    //grow = 0;
     newBoard[y][x] = type;
     for (var i=-1; i<=1; i+=1) { /* i is to y */
         for (var j=-1; j<=1; j+=1) { /* as j is to x */
@@ -61,13 +61,22 @@ function expandPlant(newBoard, type, x, y) {
             }
 
             // Expand to a new tile
-            else if (board[y+i][x+j] === 't' && grow === 0) {
-                newBoard[y+i][x+j] = type;
-                plantRanks[y+i][x+j] = 0.6;
-                grow = 1;
-                j = 2, i = 2; // break out of the loops so we don't have lots of growth at once
-                // Will have to accomodate for score keeping later
-                // thisPlayer.score += 1;
+            else if (board[y+i][x+j] === 't') {
+                // you have a 50-50 chance of expanding onto a given tile
+                var rand = Math.random();
+                if (rand > 0.50) {
+                    newBoard[y+i][x+j] = type;
+                    plantRanks[y+i][x+j] = 0.6;
+                    //grow = 1;
+
+                    // break out of the loops so we don't have lots of growth at once
+                    // this didn't actually fix it, just seems to delay it until we hit the edge of tilled tiles
+                    j = 2, i = 2;
+
+
+                    // Will have to accomodate for score keeping later
+                    // thisPlayer.score += 1;
+                }
             }
 
             // Grow the plant
