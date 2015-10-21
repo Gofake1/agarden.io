@@ -50,6 +50,10 @@ function addNewPlayer(id, name) {
     return newPlayer;
 }
 
+function powerupWaterBucket(x, y) {
+    // TODO: implement area of effect
+}
+
 // Handles a single plant expansion
 function expandPlant(newBoard, type, x, y) {
     //grow = 0;
@@ -164,7 +168,8 @@ io.on('connection', function(socket) {
             io.emit('overlayerUpdate', {x:data.x, y:data.y, value:data.id});
         } 
         else if (data.powerup == 'waterbucket') {
-            //
+            console.log('Water bucket used');
+            powerupWaterBucket(data.x, data.y);
         }
         io.emit('powerupUsed', data);
     });
