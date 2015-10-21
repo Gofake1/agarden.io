@@ -65,6 +65,7 @@ function expandPlant(newBoard, type, x, y) {
                 newBoard[y+i][x+j] = type;
                 plantRanks[y+i][x+j] = 0.6;
                 grow = 1;
+                j = 2, i = 2; // break out of the loops so we don't have lots of growth at once
                 // Will have to accomodate for score keeping later
                 // thisPlayer.score += 1;
             }
