@@ -52,6 +52,7 @@ function addNewPlayer(id, name) {
 
 function powerupWaterBucket(x, y) {
     // TODO: implement area of effect
+
 }
 
 // Handles a single plant expansion
@@ -153,7 +154,7 @@ io.on('connection', function(socket) {
         // TODO: kick a player if haven't received a heartbeat in a while
     });
 
-    socket.on('1', function() { // Till
+    socket.on('1', function(data) { // Till
         console.log('socket.on:1');
         board[data.y][data.x] = 't';
         io.emit("boardUpdate", {x:data.x, y:data.y, value:'t'});
