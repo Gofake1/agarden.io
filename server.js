@@ -55,48 +55,50 @@ function powerupWaterBucket(x, y) {
 
 }
 
-function attackPlant(newBoard, attackingType, x, y) {
+function attackPlant(newBoard, attackingType, strength, x, y) {
     if (plantRanks[y][x] > .1) {
         // This plant is too strong to take over, attack
-        plantRanks[y][x] -= .4;
+        plantRanks[y][x] -= strength;
     }
-    else if (plantRanks[y][x] <= .1) {
+    else if (plantRanks[y][x] <= .15) {
         // This plant is weak, take it over
-        newBoard[y][x] = type;
+        newBoard[y][x] = attackingType;
     }
 }
 
 // Handles a single plant expansion
 function expandPlant(newBoard, type, x, y) {
+    
+    var expand_choice = Math.floor(Math.random() * 5);
+    var i; var j;
+    // Randomized switch guarantees only one expansion per iteration per plant
+    // Selects target tile
+    switch (expand_choice)
+    {
+    case(0):
+        i = -1; j = 0;
+        // Up
+        break;
+    case(1):
+        i = 0; j = -1;
+        // Left
+        break;
+    case(2):
+        i = 0; j = 0;
+        // Center (no action)
+        break;
+    case(3):
+        i = 0; j = 1;
+        // Right
+        break;
+    case(4):
+        i = 1; j = 0;
+        // Down
+        break;
+    }
+
     if (plantRanks[y][x] > .5)
     {
-        var expand_choice = Math.floor(Math.random() * 5);
-        var i; var j;
-        // Randomized switch guarantees only one expansion per iteration per plant
-        switch (expand_choice)
-        {
-        case(0):
-            i = -1; j = 0;
-            // Up
-            break;
-        case(1):
-            i = 0; j = -1;
-            // Left
-            break;
-        case(2):
-            i = 0; j = 0;
-            // Center (no action)
-            break;
-        case(3):
-            i = 0; j = 1;
-            // Right
-            break;
-        case(4):
-            i = 1; j = 0;
-            // Down
-            break;
-        }
-
         if (y+i>gridHeight-1 || y+i<0 || x+j>gridWidth-1 || x+j<0) {
             /* out of bounds, take no action */
         }
@@ -116,15 +118,13 @@ function expandPlant(newBoard, type, x, y) {
         }
         // The following two branches are not being taken for some reason
         // (Their console logging messages are never logged to the console)
-        else if (!isNaN(board[y+i][x+j]) && board[y+i][x+j] == type) {
+        else if (board[y+i][x+j] == type) {
             // This is a plant tile of the same player, retry
-            console.log("Same Player");
             expandPlant(newBoard, type, x+j, y+i);
         }
-        else if (!isNaN(board[y+i][x+j]) && board[y+i][x+j] > 0 && board[y+i][x+j] != type) {
+        else if (board[y+i][x+j] != type) {
             // This is a plant tile of a different player (to attack)
-            console.log("Attack! " + x + "," + y);
-            attackPlant(newBoard, type, x, y);
+            attackPlant(newBoard, type, plantRanks[y][x]-.1, x, y);
         }
     }
 }
@@ -134,7 +134,7 @@ function growPlant(newBoard, type, x, y) {
     // Add code for separating plant tiers (growing / fully grown)
     // Grow the plant
     if(plantRanks[y][x] <= 0.5) {
-        plantRanks[y][x] += 0.025;
+        plantRanks[y][x] += 0.03;
     }
 }
 
