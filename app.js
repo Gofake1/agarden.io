@@ -437,7 +437,7 @@ function processOverlayer() {
             // Water bucket
             thisPlayer.powerup = 'waterbucket';
             overlayer[yTile][xTile] = 0;
-            socket.emit('powerupGrabbed', {x:xTile, y:yTile});
+            socket.emit('3', {x:xTile, y:yTile});
             break;
         default:
             break;

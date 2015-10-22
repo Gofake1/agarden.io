@@ -55,6 +55,10 @@ function powerupWaterBucket(x, y) {
 
 }
 
+function powerupSeeds(x, y) {
+
+}
+
 // Handles a single plant expansion
 function expandPlant(newBoard, type, x, y) {
     //grow = 0;
@@ -172,7 +176,17 @@ io.on('connection', function(socket) {
             console.log('Water bucket used');
             powerupWaterBucket(data.x, data.y);
         }
+        else if (data.powerup == 'seeds') {
+            console.log('Seeds used');
+        }
         io.emit('powerupUsed', data);
+    });
+
+    socket.on('3', function(data) {
+        console.log('socket.on:3');
+        console.log('A user has picked up a powerup');
+        overlayer[data.y][data.x] = 0;
+        io.emit("overlayerUpdate", {x:data.x, y:data.y, value:0});
     });
 
     socket.on('disconnect', function() {
@@ -181,13 +195,6 @@ io.on('connection', function(socket) {
         // Remove player from users
         delete users[socket.id];
         io.emit('aDisconnect', users);
-    });
-
-    socket.on('powerupGrabbed', function(data) {
-        console.log('socket.on:powerupGrabbed');
-        console.log('A user has picked up a powerup');
-        overlayer[data.y][data.x] = 0;
-        io.emit("overlayerUpdate", {x:data.x, y:data.y, value:0});
     });
 });
 
