@@ -59,40 +59,86 @@ function powerupSeeds(x, y) {
 
 }
 
+function attackPlant(newBoard, attackingType, strength, x, y) {
+    if (plantRanks[y][x] > 0.1) {
+        // This plant is too strong to take over, attack
+        plantRanks[y][x] -= strength;
+    }
+    else if (plantRanks[y][x] <= 0.15) {
+        // This plant is weak, take it over
+        newBoard[y][x] = attackingType;
+    }
+}
+
 // Handles a single plant expansion
 function expandPlant(newBoard, type, x, y) {
-    //grow = 0;
-    newBoard[y][x] = type;
-    for (var i=-1; i<=1; i+=1) { /* i is to y */
-        for (var j=-1; j<=1; j+=1) { /* as j is to x */
-            if (y+i>gridHeight-1 || y+i<0 || x+j>gridWidth-1 || x+j<0) {
-                // do nothing, out of bounds
-            }
+    
+    var expand_choice = Math.floor(Math.random() * 5);
+    var i; var j;
+    // Randomized switch guarantees only one expansion per iteration per plant
+    // Selects target tile
+    switch (expand_choice)
+    {
+    case(0):
+        i = -1; j = 0;
+        // Up
+        break;
+    case(1):
+        i = 0; j = -1;
+        // Left
+        break;
+    case(2):
+        i = 0; j = 0;
+        // Center (no action)
+        break;
+    case(3):
+        i = 0; j = 1;
+        // Right
+        break;
+    case(4):
+        i = 1; j = 0;
+        // Down
+        break;
+    }
 
-            // Expand to a new tile
-            else if (board[y+i][x+j] === 't') {
-                // you have a 50-50 chance of expanding onto a given tile
-                var rand = Math.random();
-                if (rand > 0.50) {
-                    newBoard[y+i][x+j] = type;
-                    plantRanks[y+i][x+j] = 0.6;
-                    //grow = 1;
-
-                    // break out of the loops so we don't have lots of growth at once
-                    // this didn't actually fix it, just seems to delay it until we hit the edge of tilled tiles
-                    j = 2; i = 2;
-
-
-                    // Will have to accomodate for score keeping later
-                    // thisPlayer.score += 1;
-                }
-            }
-
-            // Grow the plant
-            else if(plantRanks[y+i][x+j] > 0.5) {
-                plantRanks[y+i][x+j] -= 0.1;
+    if (plantRanks[y][x] > 0.5)
+    {
+        if (y+i>gridHeight-1 || y+i<0 || x+j>gridWidth-1 || x+j<0) {
+            /* out of bounds, take no action */
+        }
+        else if (board[y+i][x+j] == 't') {
+            // Tilled land, expansion
+            // Don't do anything to alter the center tile
+            if (i !== 0 || j !== 0) {
+                // Expand plant
+                newBoard[y+i][x+j] = type;
+                plantRanks[y+i][x+j] = 0.1;    
+                // Will have to accomodate for score keeping later
             }
         }
+        else if (!isNaN(board[y+i][x+j]) && board[y+i][x+j] === 0) {
+            // This is a dirt tile, retry
+            expandPlant(newBoard, type, x+j, y+i);
+        }
+        // The following two branches are not being taken for some reason
+        // (Their console logging messages are never logged to the console)
+        else if (board[y+i][x+j] == type) {
+            // This is a plant tile of the same player, retry
+            expandPlant(newBoard, type, x+j, y+i);
+        }
+        else if (board[y+i][x+j] != type) {
+            // This is a plant tile of a different player (to attack)
+            attackPlant(newBoard, type, plantRanks[y][x]-0.1, x, y);
+        }
+    }
+}
+
+function growPlant(newBoard, type, x, y) {
+    // This should be in a different place (doesn't have to do with expansion)
+    // Add code for separating plant tiers (growing / fully grown)
+    // Grow the plant
+    if(plantRanks[y][x] <= 0.5) {
+        plantRanks[y][x] += 0.03;
     }
 }
 
@@ -115,6 +161,7 @@ function processBoard() {
                     default: // TODO: grow plant for any player
                         if (board[y][x] != 't')
                             expandPlant(newBoard, board[y][x], x, y);
+                            growPlant(newBoard, board[y][x], x, y);
                         break;
                 }
             }
@@ -170,6 +217,7 @@ io.on('connection', function(socket) {
             console.log('House placed at x:'+data.x+' and y:'+data.y);
             overlayer[data.y][data.x] = 1;
             board[data.y][data.x] = data.playerid;
+            plantRanks[data.y][data.x] = 0.5;
             io.emit('overlayerUpdate', {x:data.x, y:data.y, value:data.id});
         } 
         else if (data.powerup == 'waterbucket') {
@@ -198,7 +246,7 @@ io.on('connection', function(socket) {
     });
 });
 
-setInterval(processBoard, 10000);
+setInterval(processBoard, 1000);
 
 app.use(express.static(__dirname));
 http.listen(3000);
