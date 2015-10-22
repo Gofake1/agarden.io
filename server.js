@@ -55,50 +55,45 @@ function powerupWaterBucket(x, y) {
 
 }
 
+function attackPlant(newBoard, attackingType, x, y) {
+    if (plantRanks[y][x] > .1) {
+        // This plant is too strong to take over, attack
+        plantRanks[y][x] -= .4;
+    }
+    else if (plantRanks[y][x] <= .1) {
+        // This plant is weak, take it over
+        newBoard[y][x] = type;
+    }
+}
+
 // Handles a single plant expansion
 function expandPlant(newBoard, type, x, y) {
     if (plantRanks[y][x] > .5)
     {
-        var expand_choice = Math.floor(Math.random() * 9);
+        var expand_choice = Math.floor(Math.random() * 5);
         var i; var j;
         // Randomized switch guarantees only one expansion per iteration per plant
         switch (expand_choice)
         {
         case(0):
-            i = -1; j = -1;
-            // Top-Left
+            i = -1; j = 0;
+            // Up
             break;
         case(1):
-            i = -1; j = 0;
-            // Top-Mid
+            i = 0; j = -1;
+            // Left
             break;
         case(2):
-            i = -1; j = 1;
-            // Top-Right
+            i = 0; j = 0;
+            // Center (no action)
             break;
         case(3):
-            i = 0; j = -1;
-            // Mid-Right
+            i = 0; j = 1;
+            // Right
             break;
         case(4):
-            i = 0; j = 0;
-            // Mid-Mid (no action)
-            break;
-        case(5):
-            i = 0; j = 1;
-            // Mid-Right
-            break;
-        case(6):
-            i = 1; j = -1;
-            // Bot-Left
-            break;
-        case(7):
             i = 1; j = 0;
-            // Bot-Mid
-            break;
-        case(8):
-            i = 1; j = 1;
-            // Bot-Right
+            // Down
             break;
         }
 
@@ -106,6 +101,7 @@ function expandPlant(newBoard, type, x, y) {
             /* out of bounds, take no action */
         }
         else if (board[y+i][x+j] === 't') {
+            // Tilled land, expansion
             // Don't do anything to alter the center tile
             if (i!=0 || j!=0) {
                 // Expand plant
@@ -115,13 +111,21 @@ function expandPlant(newBoard, type, x, y) {
             }
         }
         else if (!isNaN(board[y+i][x+j]) && board[y+i][x+j] == 0) {
-            // This is a dirt tile, function failed, try again
-            expandPlant(newBoard, type, x, y);
+            // This is a dirt tile, retry
+            expandPlant(newBoard, type, x+j, y+i);
+        }
+        // The following two branches are not being taken for some reason
+        // (Their console logging messages are never logged to the console)
+        else if (!isNaN(board[y+i][x+j]) && board[y+i][x+j] == type) {
+            // This is a plant tile of the same player, retry
+            console.log("Same Player");
+            expandPlant(newBoard, type, x+j, y+i);
         }
         else if (!isNaN(board[y+i][x+j]) && board[y+i][x+j] > 0 && board[y+i][x+j] != type) {
-            // This is a plant tile to attack
+            // This is a plant tile of a different player (to attack)
+            console.log("Attack! " + x + "," + y);
+            attackPlant(newBoard, type, x, y);
         }
-
     }
 }
 
