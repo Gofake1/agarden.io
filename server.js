@@ -50,6 +50,17 @@ function addNewPlayer(id, name) {
     return newPlayer;
 }
 
+// Updates the order of the leaderboard
+function updateLeaderboard() {
+    // Get the highest score at the front of the array
+    // http://www.w3schools.com/jsref/jsref_sort.asp
+    if (users.length > 0) {
+        leaderboard.sort(function(a, b){return b.score - a.score});
+        console.log(leaderboard[0].score);
+    }
+
+}
+
 // Randomly places powerups
 function placePowerups() {
     // Generate random coordinates on the board
@@ -153,8 +164,13 @@ function expandPlant(newBoard, type, x, y) {
             if (i !== 0 || j !== 0) {
                 // Expand plant
                 newBoard[y+i][x+j] = type;
-                plantRanks[y+i][x+j] = 0.1;    
-                // Will have to accomodate for score keeping later
+                plantRanks[y+i][x+j] = 0.1;
+
+                // Score keeping
+                // Users who have left the game no longer earn points, but their plants can still expand
+                if (users[type]) {
+                    users[type].score++;
+                }
             }
         }
         else if (!isNaN(board[y+i][x+j]) && board[y+i][x+j] === 0) {
@@ -213,12 +229,8 @@ function processBoard() {
 }
 
 function gameLoop() {
-    // TODO: update leaderboard
-    // if (users.length > 0) {
-    //     users.sort(function(a, b) { return b.score - a.score; });
-    // }
-
-    // TODO: calculate plant growth
+    processBoard();
+    updateLeaderboard();
 }
 
 app.get('/', function(req, res) {
@@ -290,7 +302,6 @@ io.on('connection', function(socket) {
     });
 });
 
-setInterval(processBoard, 1000);
-
+setInterval(gameLoop, 1000);
 app.use(express.static(__dirname));
 http.listen(3000);
