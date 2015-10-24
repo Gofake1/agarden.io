@@ -26,17 +26,7 @@ var leaderboard = [];
 var board = Board(gridHeight, gridWidth, 0);
 var plantRanks = Board(gridHeight, gridWidth, 0);
 var overlayer = Board(gridHeight, gridWidth, 0);
-
-// DEMO: random water buckets
-var i = 0;
-while (i < 15) {
-    var x = Math.floor(Math.random() * (gridWidth + 1));
-    var y = Math.floor(Math.random() * (gridHeight + 1));
-    if (board[y][x] === 0 && overlayer[y][x] === 0){
-        overlayer[y][x] = 2;
-        i++;
-    }
-}
+var numPowerups = 0;
 
 // TODO: check that name, position, color are unique
 function addNewPlayer(id, name) {
@@ -50,33 +40,18 @@ function addNewPlayer(id, name) {
     return newPlayer;
 }
 
-// Randomly places powerups
-function placePowerups() {
-    // Generate random coordinates on the board
-    var randX = Math.floor(Math.random() * gridWidth);
-    var randY = Math.floor(Math.random() * gridHeight);
+// Randomly populates board with 15 powerups
+function addPowerups() {
+    var x = Math.floor(Math.random() * gridWidth);
+    var y = Math.floor(Math.random() * gridHeight);
+    var type = Math.floor(Math.random() * 3) + 2;
 
-    // TODO: Decide how many of each powerup we want out at a given time
-    // If we drop below this number place a powerup
-
-    // Water bucket
-    if (board[y][x] === 0 && overlayer[y][x] === 0){
-        overlayer[y][x] = 2;
-        i++;
+    if (numPowerups < 15) {
+        if (board[y][x] === 0 && overlayer[y][x] === 0) {
+            overlayer[y][x] = type;
+            numPowerups++;
+        }
     }
-
-    // Seeds
-    if (board[y][x] === 0 && overlayer[y][x] === 0){
-        overlayer[y][x] = 3;
-        i++;
-    }
-
-    // Boots
-    if (board[y][x] === 0 && overlayer[y][x] === 0){
-        overlayer[y][x] = 4;
-        i++;
-    }
-
 }
 
 // Gives a boost to a specific plant
@@ -92,7 +67,7 @@ function powerupSeeds(x, y) {
 
 // Temporarily makes a player move faster
 // Put here for consistency, though the server doesn't necessarily need to know about it
-// Could just be implemeneted in app.js 
+// Could just be implemented in app.js 
 function powerupBoots() {
 
     // Set player's speed higher for a set amount of time
@@ -113,37 +88,34 @@ function attackPlant(newBoard, attackingType, strength, x, y) {
 
 // Handles a single plant expansion
 function expandPlant(newBoard, type, x, y) {
-    
     var expand_choice = Math.floor(Math.random() * 5);
     var i; var j;
     // Randomized switch guarantees only one expansion per iteration per plant
     // Selects target tile
-    switch (expand_choice)
-    {
-    case(0):
-        i = -1; j = 0;
-        // Up
-        break;
-    case(1):
-        i = 0; j = -1;
-        // Left
-        break;
-    case(2):
-        i = 0; j = 0;
-        // Center (no action)
-        break;
-    case(3):
-        i = 0; j = 1;
-        // Right
-        break;
-    case(4):
-        i = 1; j = 0;
-        // Down
-        break;
+    switch (expand_choice) {
+        case(0):
+            i = -1; j = 0;
+            // Up
+            break;
+        case(1):
+            i = 0; j = -1;
+            // Left
+            break;
+        case(2):
+            i = 0; j = 0;
+            // Center (no action)
+            break;
+        case(3):
+            i = 0; j = 1;
+            // Right
+            break;
+        case(4):
+            i = 1; j = 0;
+            // Down
+            break;
     }
 
-    if (plantRanks[y][x] > 0.5)
-    {
+    if (plantRanks[y][x] > 0.5) {
         if (y+i>gridHeight-1 || y+i<0 || x+j>gridWidth-1 || x+j<0) {
             /* out of bounds, take no action */
         }
@@ -212,13 +184,17 @@ function processBoard() {
     io.emit('boardUpdateAll', { board:board, plantRanks:plantRanks });
 }
 
-function gameLoop() {
+function updateLeaderboard() {
     // TODO: update leaderboard
     // if (users.length > 0) {
     //     users.sort(function(a, b) { return b.score - a.score; });
     // }
+}
 
-    // TODO: calculate plant growth
+function gameLoop() {
+    processBoard();
+    addPowerups();
+    updateLeaderboard();
 }
 
 app.get('/', function(req, res) {
@@ -267,6 +243,7 @@ io.on('connection', function(socket) {
         }
         else if (data.powerup == 'seeds') {
             console.log('Seeds used');
+            powerupSeeds(data.x, data.y);
         }
         else if (data.power == 'boots') {
             console.log('Boots used');
@@ -279,18 +256,21 @@ io.on('connection', function(socket) {
         console.log('A user has picked up a powerup');
         overlayer[data.y][data.x] = 0;
         io.emit("overlayerUpdate", {x:data.x, y:data.y, value:0});
+        numPowerups--;
     });
 
     socket.on('disconnect', function() {
         console.log('A user disconnected');
         socket.disconnect();
         // Remove player from users
-        delete users[socket.id];
+        if (users[socket.id] !== null) {
+            delete users[socket.id];
+        }
         io.emit('aDisconnect', users);
     });
 });
 
-setInterval(processBoard, 1000);
+setInterval(gameLoop, 1000);
 
 app.use(express.static(__dirname));
 http.listen(3000);
