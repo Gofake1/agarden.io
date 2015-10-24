@@ -59,6 +59,16 @@ function powerupSeeds(x, y) {
 
 }
 
+// Temporarily makes a player move faster
+// Put here for consistency, though the server doesn't necessarily need to know about it
+// Could just be implemeneted in app.js 
+function powerupBoots() {
+
+    // Set player's speed higher for a set amount of time
+    // Thomas said something about a timer function he saw that would be helpful
+
+}
+
 function attackPlant(newBoard, attackingType, strength, x, y) {
     if (plantRanks[y][x] > 0.1) {
         // This plant is too strong to take over, attack
@@ -226,6 +236,9 @@ io.on('connection', function(socket) {
         }
         else if (data.powerup == 'seeds') {
             console.log('Seeds used');
+        }
+        else if (data.power == 'boots') {
+            console.log('Boots used');
         }
         io.emit('powerupUsed', data);
     });

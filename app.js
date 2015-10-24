@@ -390,6 +390,8 @@ function initSocket(socket) {
             overlayer[data.y][data.x] = 1;
         } else if (data.powerup == 'waterbucket') {
             
+        } else if (data.powerup == 'boots') {
+            
         }
     });
 
