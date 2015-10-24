@@ -442,6 +442,12 @@ function processOverlayer() {
             overlayer[yTile][xTile] = 0;
             socket.emit('3', {x:xTile, y:yTile});
             break;
+        case (3):
+            // Seeds
+            break;
+        case (4):
+            // Boots
+            break;
         default:
             break;
         }

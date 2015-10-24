@@ -50,11 +50,42 @@ function addNewPlayer(id, name) {
     return newPlayer;
 }
 
+// Randomly places powerups
+function placePowerups() {
+    // Generate random coordinates on the board
+    var randX = Math.floor(Math.random() * gridWidth);
+    var randY = Math.floor(Math.random() * gridHeight);
+
+    // TODO: Decide how many of each powerup we want out at a given time
+    // If we drop below this number place a powerup
+
+    // Water bucket
+    if (board[y][x] === 0 && overlayer[y][x] === 0){
+        overlayer[y][x] = 2;
+        i++;
+    }
+
+    // Seeds
+    if (board[y][x] === 0 && overlayer[y][x] === 0){
+        overlayer[y][x] = 3;
+        i++;
+    }
+
+    // Boots
+    if (board[y][x] === 0 && overlayer[y][x] === 0){
+        overlayer[y][x] = 4;
+        i++;
+    }
+
+}
+
+// Gives a boost to a specific plant
 function powerupWaterBucket(x, y) {
     // TODO: implement area of effect
 
 }
 
+// Gives an AOE boost to plants
 function powerupSeeds(x, y) {
 
 }
