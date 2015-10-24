@@ -3,3 +3,5 @@ water_bucket.png: http://vignette1.wikia.nocookie.net/thetekkit/images/d/d3/Wate
 dirt.jpg: http://img814.imageshack.us/img814/3640/dirt2q.jpg
 
 plant.png: http://orig09.deviantart.net/f1af/f/2012/028/b/2/b2858cc341e6bfdb19ba428500d60f74-d4nyld0.png
+
+boots.png: http://www.woodus.com/den/gallery/graphics/dq9ds/feet/bardic_boots.png
