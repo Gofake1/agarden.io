@@ -54,9 +54,13 @@ function addNewPlayer(id, name) {
 function updateLeaderboard() {
     // Get the highest score at the front of the array
     // http://www.w3schools.com/jsref/jsref_sort.asp
-    if (users.length > 0) {
-        leaderboard.sort(function(a, b){return b.score - a.score});
-        console.log(leaderboard[0].score);
+    if (Object.keys(users).length > 1) {
+        console.log('updating leaderboard');
+
+        // Keep getting TypeError: Cannot read property 'score' of undefined
+        // at users[b].score
+        leaderboard.sort(function(a, b){return users[b].score - users[a].score});
+        io.emit('leaderboardUpdate', leaderboard);
     }
 
 }
@@ -300,6 +304,7 @@ io.on('connection', function(socket) {
         delete users[socket.id];
         io.emit('aDisconnect', users);
     });
+
 });
 
 setInterval(gameLoop, 1000);
