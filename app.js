@@ -443,29 +443,33 @@ function processOverlayer() {
     if (thisPlayer.powerup === '') {
         current = overlayer[yTile][xTile];
         switch (current) {
-        case (0):
-            // Empty, do nothing
-            break;
-        case (1):
-            // House, do nothing
-            break;
-        case (2):
-            // Water bucket
-            thisPlayer.powerup = 'waterbucket';
-            break;
-        case (3):
-            // Seeds
-            thisPlayer.powerup = 'seeds';
-            break;
-        case (4):
-            // Boots
-            thisPlayer.powerup = 'boots';
-            break;
-        default:
-            break;
+            case (0):
+                // Empty, do nothing
+                break;
+            case (1):
+                // House, do nothing
+                break;
+            case (2):
+                // Water bucket
+                thisPlayer.powerup = 'waterbucket';
+                overlayer[yTile][xTile] = 0;
+                socket.emit('3', { x:xTile, y:yTile });
+                break;
+            case (3):
+                // Seeds
+                thisPlayer.powerup = 'seeds';
+                overlayer[yTile][xTile] = 0;
+                socket.emit('3', { x:xTile, y:yTile });
+                break;
+            case (4):
+                // Boots
+                thisPlayer.powerup = 'boots';
+                overlayer[yTile][xTile] = 0;
+                socket.emit('3', { x:xTile, y:yTile });
+                break;
+            default:
+                break;
         }
-        overlayer[yTile][xTile] = 0;
-        socket.emit('3', { x:xTile, y:yTile });
     }
 }
 
