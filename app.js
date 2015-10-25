@@ -430,6 +430,12 @@ function initSocket(socket) {
         console.log('socket.on:boardUpdate');
         board[data.y][data.x] = data.value;
     });
+
+    socket.on('leaderboardUpdate', function(data) {
+        console.log('socket.on:leaderboardUpdate');
+        leaderboard = data;
+        console.log(allPlayers[leaderboard[0]].score);
+    });
 }
 
 // Picks up whatever item the player is standing on

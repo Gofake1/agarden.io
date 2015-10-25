@@ -40,6 +40,21 @@ function addNewPlayer(id, name) {
     return newPlayer;
 }
 
+// Updates the order of the leaderboard
+function updateLeaderboard() {
+    // Get the highest score at the front of the array
+    // http://www.w3schools.com/jsref/jsref_sort.asp
+    if (Object.keys(users).length > 1) {
+        console.log('updating leaderboard');
+
+        // Keep getting TypeError: Cannot read property 'score' of undefined
+        // at users[b].score
+        leaderboard.sort(function(a, b){return users[b].score - users[a].score});
+        io.emit('leaderboardUpdate', leaderboard);
+    }
+
+}
+
 // Randomly populates board with 15 powerups
 function addPowerups() {
     if (numPowerups <= 15 && board[y][x] === 0 && overlayer[y][x] === 0) {
@@ -273,6 +288,7 @@ io.on('connection', function(socket) {
         }
         io.emit('aDisconnect', users);
     });
+
 });
 
 setInterval(gameLoop, 1000);
