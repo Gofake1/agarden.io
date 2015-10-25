@@ -42,15 +42,13 @@ function addNewPlayer(id, name) {
 
 // Randomly populates board with 15 powerups
 function addPowerups() {
-    var x = Math.floor(Math.random() * gridWidth);
-    var y = Math.floor(Math.random() * gridHeight);
-    var type = Math.floor(Math.random() * 3) + 2;
+    if (numPowerups <= 15 && board[y][x] === 0 && overlayer[y][x] === 0) {
+        var x = Math.floor(Math.random() * gridWidth);
+        var y = Math.floor(Math.random() * gridHeight);
+        var type = Math.floor(Math.random() * 3) + 2;
 
-    if (numPowerups < 15) {
-        if (board[y][x] === 0 && overlayer[y][x] === 0) {
-            overlayer[y][x] = type;
-            numPowerups++;
-        }
+        overlayer[y][x] = type;
+        numPowerups++;
     }
 }
 
