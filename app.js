@@ -93,6 +93,7 @@ var leaderboard = [];
 var dirt = new Image();
 var plant = new Image();
 var waterBucket = new Image();
+var boots = new Image();
 var house = new Image();
 var tilled = new Image();
 
@@ -192,6 +193,11 @@ function drawOverlayer(xmin, ymin, xmax, ymax, board_tileLength) {
                     case (2):
                         drawSprite(waterBucket, x*tl-xmin+tl/9, y*tl-ymin+tl/9, tl*3/4, tl*3/4, 1);
                         break;
+                    case (3):
+                        break;
+                    case (4):
+                        drawSprite(boots, x*tl-xmin, y*tl-ymin, tl, tl, 1);
+                        break;
                     default:
                         break;
                 }
@@ -258,6 +264,12 @@ function drawCurrentPowerup() {
             break;
         case ('waterbucket'):
             drawSprite(waterBucket, 185, 18, 40, 40);
+            break;
+        case ('seeds'):
+            drawSprite();
+            break;
+        case ('boots'):
+            drawSprite(boots, 185, 18, 40, 40);
             break;
         default:
             powstring += 'ERROR!!!';
@@ -355,6 +367,7 @@ function initImages() {
     dirt.src = 'sprites/dirt.jpg';
     plant.src = 'sprites/plant.png';
     waterBucket.src = 'sprites/water_bucket.png';
+    boots.src = 'sprites/boots.png';
     house.src = 'sprites/house.png';
     tilled.src = 'sprites/tilled.jpg';
 }
@@ -436,26 +449,32 @@ function processOverlayer() {
     if (thisPlayer.powerup === '') {
         current = overlayer[yTile][xTile];
         switch (current) {
-        case (0):
-            // Empty, do nothing
-            break;
-        case (1):
-            // House, do nothing
-            break;
-        case (2):
-            // Water bucket
-            thisPlayer.powerup = 'waterbucket';
-            overlayer[yTile][xTile] = 0;
-            socket.emit('3', {x:xTile, y:yTile});
-            break;
-        case (3):
-            // Seeds
-            break;
-        case (4):
-            // Boots
-            break;
-        default:
-            break;
+            case (0):
+                // Empty, do nothing
+                break;
+            case (1):
+                // House, do nothing
+                break;
+            case (2):
+                // Water bucket
+                thisPlayer.powerup = 'waterbucket';
+                overlayer[yTile][xTile] = 0;
+                socket.emit('3', { x:xTile, y:yTile });
+                break;
+            case (3):
+                // Seeds
+                thisPlayer.powerup = 'seeds';
+                overlayer[yTile][xTile] = 0;
+                socket.emit('3', { x:xTile, y:yTile });
+                break;
+            case (4):
+                // Boots
+                thisPlayer.powerup = 'boots';
+                overlayer[yTile][xTile] = 0;
+                socket.emit('3', { x:xTile, y:yTile });
+                break;
+            default:
+                break;
         }
     }
 }
