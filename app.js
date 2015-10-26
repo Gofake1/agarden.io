@@ -224,7 +224,14 @@ function drawLeaderboard() {
     leaderboard.forEach(function(value, index) {
         newLineHeight += 20;
         var rank = index+1;
-        ctx.fillText(rank+'. '+allPlayers[value].name, window.innerWidth-230, newLineHeight);
+        if (allPlayers[value] != null) {
+            ctx.fillText(rank+'. '+allPlayers[value].name, window.innerWidth-230, newLineHeight);
+            ctx.beginPath();
+            ctx.arc(window.innerWidth-50, newLineHeight-9, 9, 0, 2*Math.PI, false);
+            ctx.fillStyle = allPlayers[value].color;
+            ctx.fill();
+            ctx.fillStyle ='white';
+        }
     });
 }
 
@@ -310,12 +317,23 @@ function drawViewport() {
     }
 }
 
+function endSpeedBoost() {
+    thisPlayer.speed = 125;
+}
+
+function boostSpeed() {
+    thisPlayer.speed = 75;
+    setTimeout(endSpeedBoost, 10000);
+}
+
 // Use powerup on space or enter key
 function keyInput(key) {
     if ((key.charCode == 13 || key.charCode == 32) && thisPlayer.powerup !== '') {
         var xTile = Math.floor(thisPlayer.x / objective_tileLength);
         var yTile = Math.floor(thisPlayer.y / objective_tileLength);
         data = {playerid:thisPlayer.id, powerup:thisPlayer.powerup, x:xTile, y:yTile};
+        if (thisPlayer.powerup === 'boots')
+            boostSpeed();
         socket.emit('2', data);
         thisPlayer.powerup = '';
     }
