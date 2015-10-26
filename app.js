@@ -309,12 +309,23 @@ function drawViewport() {
     }
 }
 
+function endSpeedBoost() {
+    thisPlayer.speed = 125;
+}
+
+function boostSpeed() {
+    thisPlayer.speed = 75;
+    setTimeout(endSpeedBoost, 10000);
+}
+
 // Use powerup on space or enter key
 function keyInput(key) {
     if ((key.charCode == 13 || key.charCode == 32) && thisPlayer.powerup !== '') {
         var xTile = Math.floor(thisPlayer.x / objective_tileLength);
         var yTile = Math.floor(thisPlayer.y / objective_tileLength);
         data = {playerid:thisPlayer.id, powerup:thisPlayer.powerup, x:xTile, y:yTile};
+        if (thisPlayer.powerup === 'boots')
+            boostSpeed();
         socket.emit('2', data);
         thisPlayer.powerup = '';
     }
