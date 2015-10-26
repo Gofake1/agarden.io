@@ -13,12 +13,12 @@ var Board = function(numRows, numCols, value) {
 };
 
 var thisPlayer = {
+    id:null,
     x:null,
     y:null,
     name:'',
     speed:125,
     color:null,
-    score:0,
     powerup:''
 };
 
@@ -87,6 +87,7 @@ var board = Board(gridHeight, gridWidth, 0);
 var plantRanks = Board(gridHeight, gridWidth, 0);
 var overlayer = Board(gridHeight, gridWidth, 0);
 var allPlayers = {};
+var scores = {};
 var leaderboard = [];
 
 // Sprites
@@ -231,14 +232,14 @@ function drawLeaderboard() {
 function drawScore() {
     ctx.globalAlpha = 0.4;
     ctx.strokeRect(10, window.innerHeight-60, 250, 50);
-    ctx.fillStyle = "black";
+    ctx.fillStyle = 'black';
     ctx.fillRect(10, window.innerHeight-60, 250, 50);
 
     ctx.globalAlpha = 0.9;
     ctx.fillStyle = 'white';
     ctx.font = '20px Arial';
     ctx.textAlign = 'left';
-    ctx.fillText('Score: '+thisPlayer.score, 15, window.innerHeight-30);
+    ctx.fillText('Score: '+scores[thisPlayer.id], 15, window.innerHeight-30);
 }
 
 function drawCurrentPowerup() {
@@ -435,6 +436,10 @@ function initSocket(socket) {
         console.log('socket.on:leaderboardUpdate');
         leaderboard = data;
         //console.log(allPlayers[leaderboard[0]].score);
+    });
+
+    socket.on('scoreUpdate', function(data) {
+        scores = data;
     });
 }
 

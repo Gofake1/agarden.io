@@ -22,6 +22,7 @@ var tileLength = 15;
    
 // Global variables
 var users = {};
+var scores = {};
 var leaderboard = [];
 var board = Board(gridHeight, gridWidth, 0);
 var plantRanks = Board(gridHeight, gridWidth, 0);
@@ -34,8 +35,9 @@ function addNewPlayer(id, name) {
     // TODO: check if start position is valid
     x = Math.floor(Math.random()*gridWidth*tileLength);
     y = Math.floor(Math.random()*gridHeight*tileLength);
-    newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, score:0, powerup:'house' };
+    newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, powerup:'house' };
     users[id] = newPlayer;
+    scores[id] = 0;
     leaderboard.push(id); // Remove this later
     return newPlayer;
 }
@@ -49,10 +51,10 @@ function updateLeaderboard() {
 
         // Keep getting TypeError: Cannot read property 'score' of undefined
         // at users[b].score
-        leaderboard.sort(function(a, b) {return (users[b].score - users[a].score);});
+        // Moved scores from {users} to {scores}
+        leaderboard.sort(function(a, b) {return (scores[b]-scores[a]);});
         io.emit('leaderboardUpdate', leaderboard);
     }
-
 }
 
 // Randomly populates board with 15 powerups
@@ -143,7 +145,8 @@ function expandPlant(newBoard, type, x, y) {
                 // Users who have left the game no longer earn points, 
                 // but their plants can still expand
                 if (users[type]) {
-                    users[type].score++;
+                    scores[type]++;
+                    io.emit('scoreUpdate', scores);
                 }
             }
         }
