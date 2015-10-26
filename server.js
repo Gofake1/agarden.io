@@ -21,7 +21,7 @@ var gridWidth = 100;
 var tileLength = 15;
    
 // Global variables
-var users = {};
+var users = [];
 var leaderboard = [];
 var board = Board(gridHeight, gridWidth, 0);
 var plantRanks = Board(gridHeight, gridWidth, 0);
@@ -49,7 +49,11 @@ function updateLeaderboard() {
 
         // Keep getting TypeError: Cannot read property 'score' of undefined
         // at users[b].score
-        leaderboard.sort(function(a, b){return users[b].score - users[a].score});
+        users.sort(function(a, b){return b.score - a.score});
+        leaderboard = [];
+        for (user in users)
+            if (user != null)
+                leaderboard.push(user.name);
         io.emit('leaderboardUpdate', leaderboard);
     }
 
@@ -57,12 +61,11 @@ function updateLeaderboard() {
 
 // Randomly populates board with 15 powerups
 function addPowerups() {
-    if (numPowerups <= 15 && board[y][x] === 0 && overlayer[y][x] === 0) {
-        var x = Math.floor(Math.random() * gridWidth);
-        var y = Math.floor(Math.random() * gridHeight);
-        var type = Math.floor(Math.random() * 3) + 2;
-
-        overlayer[y][x] = type;
+    var x = Math.floor(Math.random() * gridWidth);
+    var y = Math.floor(Math.random() * gridHeight);
+    var puptype = Math.floor(Math.random() * 3) + 2;
+    if (numPowerups <= 15 && overlayer[y][x] === 0) {
+        overlayer[y][x] = puptype;
         numPowerups++;
     }
 }
@@ -141,7 +144,8 @@ function expandPlant(newBoard, type, x, y) {
                 plantRanks[y+i][x+j] = 0.1;
 
                 // Score keeping
-                // Users who have left the game no longer earn points, but their plants can still expand
+                // Users who have left the game no longer earn points, 
+                // but their plants can still expand
                 if (users[type]) {
                     users[type].score++;
                 }
@@ -151,8 +155,6 @@ function expandPlant(newBoard, type, x, y) {
             // This is a dirt tile, retry
             expandPlant(newBoard, type, x+j, y+i);
         }
-        // The following two branches are not being taken for some reason
-        // (Their console logging messages are never logged to the console)
         else if (board[y+i][x+j] == type) {
             // This is a plant tile of the same player, retry
             expandPlant(newBoard, type, x+j, y+i);
@@ -165,8 +167,6 @@ function expandPlant(newBoard, type, x, y) {
 }
 
 function growPlant(newBoard, type, x, y) {
-    // This should be in a different place (doesn't have to do with expansion)
-    // Add code for separating plant tiers (growing / fully grown)
     // Grow the plant
     if(plantRanks[y][x] <= 0.5) {
         plantRanks[y][x] += 0.03;
@@ -200,15 +200,6 @@ function processBoard() {
     }
     board = newBoard;
     io.emit('boardUpdateAll', { board:board, plantRanks:plantRanks });
-}
-
-function updateLeaderboard() {
-    // Get the highest score at the front of the array
-    // http://www.w3schools.com/jsref/jsref_sort.asp
-    if (users.length > 0) {
-        leaderboard.sort(function(a, b){ return b.score - a.score; });
-        console.log(leaderboard[0].score);
-    }
 }
 
 function gameLoop() {

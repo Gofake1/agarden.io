@@ -86,7 +86,7 @@ var initGrowthAlpha = 0.8;
 var board = Board(gridHeight, gridWidth, 0);
 var plantRanks = Board(gridHeight, gridWidth, 0);
 var overlayer = Board(gridHeight, gridWidth, 0);
-var allPlayers = {};
+var allPlayers = [];
 var leaderboard = [];
 
 // Sprites
@@ -434,7 +434,7 @@ function initSocket(socket) {
     socket.on('leaderboardUpdate', function(data) {
         console.log('socket.on:leaderboardUpdate');
         leaderboard = data;
-        console.log(allPlayers[leaderboard[0]].score);
+        //console.log(allPlayers[leaderboard[0]].score);
     });
 }
 
