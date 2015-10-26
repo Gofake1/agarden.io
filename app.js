@@ -86,7 +86,7 @@ var initGrowthAlpha = 0.8;
 var board = Board(gridHeight, gridWidth, 0);
 var plantRanks = Board(gridHeight, gridWidth, 0);
 var overlayer = Board(gridHeight, gridWidth, 0);
-var allPlayers = [];
+var allPlayers = {};
 var leaderboard = [];
 
 // Sprites
@@ -223,7 +223,7 @@ function drawLeaderboard() {
     leaderboard.forEach(function(value, index) {
         newLineHeight += 20;
         var rank = index+1;
-        ctx.fillText(rank+'. '+value, window.innerWidth-230, newLineHeight);
+        ctx.fillText(rank+'. '+allPlayers[value].name, window.innerWidth-230, newLineHeight);
     });
 }
 

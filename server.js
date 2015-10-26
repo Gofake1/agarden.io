@@ -21,7 +21,7 @@ var gridWidth = 100;
 var tileLength = 15;
    
 // Global variables
-var users = [];
+var users = {};
 var leaderboard = [];
 var board = Board(gridHeight, gridWidth, 0);
 var plantRanks = Board(gridHeight, gridWidth, 0);
@@ -36,7 +36,7 @@ function addNewPlayer(id, name) {
     y = Math.floor(Math.random()*gridHeight*tileLength);
     newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, score:0, powerup:'house' };
     users[id] = newPlayer;
-    leaderboard.push(name); // Remove this later
+    leaderboard.push(id); // Remove this later
     return newPlayer;
 }
 
@@ -49,11 +49,7 @@ function updateLeaderboard() {
 
         // Keep getting TypeError: Cannot read property 'score' of undefined
         // at users[b].score
-        users.sort(function(a, b){return b.score - a.score});
-        leaderboard = [];
-        for (user in users)
-            if (user != null)
-                leaderboard.push(user.name);
+        leaderboard.sort(function(a, b) {return (users[b].score - users[a].score);});
         io.emit('leaderboardUpdate', leaderboard);
     }
 
