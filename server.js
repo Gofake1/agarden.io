@@ -295,3 +295,6 @@ setInterval(gameLoop, 1000);
 
 app.use(express.static(__dirname));
 http.listen(3000);
+
+console.log("agarden.io server successfully started!");
+console.log("Listening on port 3000 ...");
