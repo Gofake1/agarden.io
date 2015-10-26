@@ -223,12 +223,14 @@ function drawLeaderboard() {
     leaderboard.forEach(function(value, index) {
         newLineHeight += 20;
         var rank = index+1;
-        ctx.fillText(rank+'. '+allPlayers[value].name, window.innerWidth-230, newLineHeight);
-        ctx.beginPath();
-        ctx.arc(window.innerWidth-50, newLineHeight-9, 9, 0, 2*Math.PI, false);
-        ctx.fillStyle = allPlayers[value].color;
-        ctx.fill();
-        ctx.fillStyle ='white';
+        if (allPlayers[value] != null) {
+            ctx.fillText(rank+'. '+allPlayers[value].name, window.innerWidth-230, newLineHeight);
+            ctx.beginPath();
+            ctx.arc(window.innerWidth-50, newLineHeight-9, 9, 0, 2*Math.PI, false);
+            ctx.fillStyle = allPlayers[value].color;
+            ctx.fill();
+            ctx.fillStyle ='white';
+        }
     });
 }
 
