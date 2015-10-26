@@ -224,7 +224,7 @@ function drawLeaderboard() {
     leaderboard.forEach(function(value, index) {
         newLineHeight += 20;
         var rank = index+1;
-        if (allPlayers[value] != null) {
+        if (allPlayers[value] !== undefined) {
             ctx.fillText(rank+'. '+allPlayers[value].name, window.innerWidth-230, newLineHeight);
             ctx.beginPath();
             ctx.arc(window.innerWidth-50, newLineHeight-9, 9, 0, 2*Math.PI, false);
@@ -400,6 +400,7 @@ function initSocket(socket) {
     socket.on('setup', function(data) {
         console.log('console.on:setup');
         allPlayers = data.users;
+        scores = data.scores;
         leaderboard = data.leaderboard;
         board = data.board;
         overlayer = data.overlayer;
@@ -407,13 +408,12 @@ function initSocket(socket) {
 
     socket.on('newJoin', function(data) {
         console.log('socket.on:newJoin');
-        allPlayers[data.newPlayer.id] = data.newPlayer;
-        leaderboard = data.leaderboard;
+        allPlayers[data.id] = data;
     });
 
     socket.on('aDisconnect', function(data) {
         console.log('socket.on:aDisconnect');
-        // TODO: remove disconnected player from local allPlayers
+        allPlayers = data;
     });
 
     socket.on('powerupUsed', function(data) {
