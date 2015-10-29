@@ -22,29 +22,36 @@ var thisPlayer = {
     powerup:''
 };
 
-// var Map = {
-//     // Total number of tiles in game 
-//     gridHeight : 50,
-//     gridWidth : 100,
-//     board : Board(gridHeight, gridWidth, 0),
-//     overlayer : Board(gridHeight, gridWidth, 0)
-// }
+var Map = {
+    // Total number of tiles in game 
+    gridHeight : 50,
+    gridWidth : 100,
+    board : null,
+    overlayer : null
+}
+// Initializations don't work within Map declaration
+Map.board = Board(Map.gridHeight, Map.gridWidth, 0);
+Map.overlayer = Board(Map.gridHeight, Map.gridWidth, 0);
 
-// var Viewport = {
-//     numTiles_x_start : 2,
-//     numTiles_x_max : 30,
 
-//     board_tileLength : window.innerWidth / numTiles_x,
-//     objective_tileLength : 20,
+var Viewport = {
+    // Start and end values are for viewport expansion
+    numTiles_x_start : 20,
+    numTiles_x_max : 30,
 
-//     numTiles_x : numTiles_x_start,
-//     numTiles_y : window.innerHeight / board_tileLength + 1,
+    // Number of visible tiles (width)
+    numTiles_x : this.numTiles_x_start,
+    board_tileLength : window.innerWidth / this.numTiles_x,
+    // For syncing player movement with Map.board
+    objective_tileLength : 20,
+    numTiles_y : window.innerHeight / this.board_tileLength + 1,
 
-//     vizmin_x : null,
-//     vizmin_y : null,
-//     vizmax_x : null,
-//     vizmax_y : null
-// }
+    // Record the Map.board's visible bounds
+    vizmin_x : null,
+    vizmin_y : null,
+    vizmax_x : null,
+    vizmax_y : null
+}
 
 // class Plant {
 //     this.stage = 1;
@@ -61,31 +68,9 @@ var ctx = canvas.getContext('2d');
 ctx.canvas.width = window.innerWidth;
 ctx.canvas.height = window.innerHeight;
 
-var gridHeight = 50;   //
-var gridWidth = 100;   //
-
-var numTiles_x_start = 20;  //
-var numTiles_x_max = 30;    //
-
-// Number of visible tiles (width)
-var numTiles_x = numTiles_x_start;  //
-var numTiles_y = window.innerHeight / board_tileLength + 1; //
-var board_tileLength = window.innerWidth / numTiles_x;  //
-
-// For syncing player movement with board
-var objective_tileLength = 20;  //
-
-// Record the board's visible bounds
-var vizmin_x = null;   //    
-var vizmin_y = null;   //
-var vizmax_x = null;   //
-var vizmax_y = null;   //
-
 // Game variables
 var initGrowthAlpha = 0.8;
-var board = Board(gridHeight, gridWidth, 0);
-var plantRanks = Board(gridHeight, gridWidth, 0);
-var overlayer = Board(gridHeight, gridWidth, 0);
+var plantRanks = Board(Map.gridHeight, Map.gridWidth, 0);
 var allPlayers = {};
 var scores = {};
 var leaderboard = [];
@@ -101,35 +86,35 @@ var tilled = new Image();
 var mouseX = null;
 var mouseY = null;
 
-// Updates global variables for board drawing
+// Updates global variables for Map.board drawing
 function updateBoardVars() {
-    board_tileLength = window.innerWidth / numTiles_x;
+    Viewport.board_tileLength = window.innerWidth / numTiles_x;
 
     // Number of visible tiles
-    numTiles_y = window.innerHeight / board_tileLength;
+    Viewport.numTiles_y = window.innerHeight / Viewport.board_tileLength;
 
     // Relate player objective scale to drawing scale
-    var xPos = thisPlayer.x / objective_tileLength * board_tileLength;
-    var yPos = thisPlayer.y / objective_tileLength * board_tileLength;
+    var xPos = thisPlayer.x / Viewport.objective_tileLength * Viewport.board_tileLength;
+    var yPos = thisPlayer.y / Viewport.objective_tileLength * Viewport.board_tileLength;
 
-    // Record the board's visible bounds
+    // Record the Map.board's visible bounds
     // X
-    if (xPos < board_tileLength*numTiles_x / 2)
-        vizmin_x = 0;
-    else if (xPos > board_tileLength*gridWidth - board_tileLength*numTiles_x / 2)
-        vizmin_x = board_tileLength*gridWidth - board_tileLength*2*numTiles_x / 2;
+    if (xPos < Viewport.board_tileLength*numTiles_x / 2)
+        Viewport.vizmin_x = 0;
+    else if (xPos > Viewport.board_tileLength*Map.gridWidth - Viewport.board_tileLength*numTiles_x / 2)
+        Viewport.vizmin_x = Viewport.board_tileLength*Map.gridWidth - Viewport.board_tileLength*2*numTiles_x / 2;
     else
-        vizmin_x = xPos-board_tileLength*numTiles_x / 2;
+        Viewport.vizmin_x = xPos-Viewport.board_tileLength*numTiles_x / 2;
     // Y
-    if (yPos < board_tileLength*numTiles_y / 2)
-        vizmin_y = 0;
-    else if (yPos > board_tileLength*gridHeight - board_tileLength*numTiles_y / 2)
-        vizmin_y = board_tileLength*gridHeight - board_tileLength*2*numTiles_y / 2;
+    if (yPos < Viewport.board_tileLength*Viewport.numTiles_y / 2)
+        Viewport.vizmin_y = 0;
+    else if (yPos > Viewport.board_tileLength*Map.gridHeight - Viewport.board_tileLength*Viewport.numTiles_y / 2)
+        Viewport.vizmin_y = Viewport.board_tileLength*Map.gridHeight - Viewport.board_tileLength*2*Viewport.numTiles_y / 2;
     else
-        vizmin_y = yPos-board_tileLength*numTiles_y / 2;
+        Viewport.vizmin_y = yPos-Viewport.board_tileLength*Viewport.numTiles_y / 2;
 
-    vizmax_x = vizmin_x+board_tileLength*numTiles_x;
-    vizmax_y = vizmin_y+board_tileLength*numTiles_y;
+    Viewport.vizmax_x = Viewport.vizmin_x+Viewport.board_tileLength*numTiles_x;
+    Viewport.vizmax_y = Viewport.vizmin_y+Viewport.board_tileLength*Viewport.numTiles_y;
 }
 
 // Gets the player's entered name
@@ -152,27 +137,27 @@ function drawSprite(img, x, y, w, h, alpha) {
 
 // MAKE SURE TO SEPARATE STUFF OUT LATER!!!!!
 function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
-    for (var y = 0; y < gridHeight; y++) {
-        for (var x = 0; x < gridWidth; x++) {
-            xLength = x*board_tileLength;
-            yLength = y*board_tileLength;
-            if (xLength>=xmin-board_tileLength && xLength<xmax && yLength>=ymin-board_tileLength && yLength<ymax) {
-                ctx.strokeRect(xLength-xmin, yLength-ymin, board_tileLength, board_tileLength);
-                switch (board[y][x]) {
+    for (var y = 0; y < Map.gridHeight; y++) {
+        for (var x = 0; x < Map.gridWidth; x++) {
+            xLength = x*Viewport.board_tileLength;
+            yLength = y*Viewport.board_tileLength;
+            if (xLength>=xmin-Viewport.board_tileLength && xLength<xmax && yLength>=ymin-Viewport.board_tileLength && yLength<ymax) {
+                ctx.strokeRect(xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength);
+                switch (Map.board[y][x]) {
                     // We can use characters to represent non-plant tiles
                     case ('t'):
-                        drawSprite(tilled, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, 1);
+                        drawSprite(tilled, xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength, 1);
                         break;
                     case (0): // Dirt
-                        drawSprite(dirt, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, 1);
+                        drawSprite(dirt, xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength, 1);
                         break;
                     default: // Player's color
-                        if (allPlayers[board[y][x]]) {
-                            ctx.fillStyle = allPlayers[board[y][x]].color;
+                        if (allPlayers[Map.board[y][x]]) {
+                            ctx.fillStyle = allPlayers[Map.board[y][x]].color;
                         }
-                        ctx.fillRect(xLength-xmin, yLength-ymin, board_tileLength, board_tileLength);
-                        drawSprite(tilled, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, 0.8 - (plantRanks[y][x])*1.5);
-                        drawSprite(plant, xLength-xmin, yLength-ymin, board_tileLength, board_tileLength, plantRanks[y][x]*0.75);
+                        ctx.fillRect(xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength);
+                        drawSprite(tilled, xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength, 0.8 - (plantRanks[y][x])*1.5);
+                        drawSprite(plant, xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength, plantRanks[y][x]*0.75);
                         break;
                 }
             }
@@ -182,12 +167,12 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
 
 function drawOverlayer(xmin, ymin, xmax, ymax, board_tileLength) {
     // Temp variable to curb ridiculously long lines
-    var tl = board_tileLength;
+    var tl = Viewport.board_tileLength;
     // For each tile
-    for (var y = 0; y < gridHeight; y++) {
-        for (var x = 0; x < gridWidth; x++) {
-            if (x*board_tileLength>=xmin-tl && x*tl<xmax && y*tl>=ymin-tl && y*tl<ymax) {
-                switch (overlayer[y][x]) {
+    for (var y = 0; y < Map.gridHeight; y++) {
+        for (var x = 0; x < Map.gridWidth; x++) {
+            if (x*Viewport.board_tileLength>=xmin-tl && x*tl<xmax && y*tl>=ymin-tl && y*tl<ymax) {
+                switch (Map.overlayer[y][x]) {
                     case (1):
                         drawSprite(house, x*tl-xmin, y*tl-ymin, tl, tl, 1);
                         break;
@@ -288,32 +273,32 @@ function drawCurrentPowerup() {
 
 // Draws this specific player as opposed to the opposing players
 function drawPlayer(xmin, ymin) {
-    // Convert player pos to board pos
-    var xPos = thisPlayer.x / objective_tileLength * board_tileLength;
-    var yPos = thisPlayer.y / objective_tileLength * board_tileLength;
+    // Convert player pos to Map.board pos
+    var xPos = thisPlayer.x / Viewport.objective_tileLength * Viewport.board_tileLength;
+    var yPos = thisPlayer.y / Viewport.objective_tileLength * Viewport.board_tileLength;
 
     ctx.beginPath();
-    ctx.arc(xPos-xmin, yPos-ymin, board_tileLength/2.25, 0, 2*Math.PI, false);
+    ctx.arc(xPos-xmin, yPos-ymin, Viewport.board_tileLength/2.25, 0, 2*Math.PI, false);
     ctx.fillStyle = thisPlayer.color;
     ctx.fill();
 }
 
-// This function will dynamically follow the player, drawing the board
+// This function will dynamically follow the player, drawing the Map.board
 // around him/her as he moves in realtime
 function drawViewport() {
     // Draw this if the player is ready
     if (thisPlayer.color !== null) {
         updateBoardVars();
-        drawGrid(vizmin_x, vizmin_y, vizmax_x, vizmax_y, board_tileLength);
-        drawOverlayer(vizmin_x, vizmin_y, vizmax_x, vizmax_y, board_tileLength);
+        drawGrid(Viewport.vizmin_x, Viewport.vizmin_y, Viewport.vizmax_x, Viewport.vizmax_y, Viewport.board_tileLength);
+        drawOverlayer(Viewport.vizmin_x, Viewport.vizmin_y, Viewport.vizmax_x, Viewport.vizmax_y, Viewport.board_tileLength);
         // And the player too!
-        drawPlayer(vizmin_x, vizmin_y);
+        drawPlayer(Viewport.vizmin_x, Viewport.vizmin_y);
     } else {
-        numTiles_x = gridWidth * 0.5;
+        numTiles_x = Map.gridWidth * 0.5;
         updateBoardVars();
-        drawGrid(0, 0, gridWidth*board_tileLength, gridHeight*board_tileLength, board_tileLength);
-        drawOverlayer(vizmin_x, vizmin_y, vizmax_x, vizmax_y, board_tileLength);
-        numTiles_x = numTiles_x_start;
+        drawGrid(0, 0, Map.gridWidth*Viewport.board_tileLength, Map.gridHeight*Viewport.board_tileLength, Viewport.board_tileLength);
+        drawOverlayer(Viewport.vizmin_x, Viewport.vizmin_y, Viewport.vizmax_x, Viewport.vizmax_y, Viewport.board_tileLength);
+        numTiles_x = Viewport.numTiles_x_start;
     }
 }
 
@@ -329,8 +314,8 @@ function boostSpeed() {
 // Use powerup on space or enter key
 function keyInput(key) {
     if ((key.charCode == 13 || key.charCode == 32) && thisPlayer.powerup !== '') {
-        var xTile = Math.floor(thisPlayer.x / objective_tileLength);
-        var yTile = Math.floor(thisPlayer.y / objective_tileLength);
+        var xTile = Math.floor(thisPlayer.x / Viewport.objective_tileLength);
+        var yTile = Math.floor(thisPlayer.y / Viewport.objective_tileLength);
         data = {playerid:thisPlayer.id, powerup:thisPlayer.powerup, x:xTile, y:yTile};
         if (thisPlayer.powerup === 'boots')
             boostSpeed();
@@ -347,10 +332,10 @@ function mouseInput(mouse) {
 
 // Till land on mouse click
 function mouseClick() {
-    xTile = Math.floor(thisPlayer.x / objective_tileLength);
-    yTile = Math.floor(thisPlayer.y / objective_tileLength);
-    if (board[yTile][xTile] === 0) {
-        board[yTile][xTile] = 't';
+    xTile = Math.floor(thisPlayer.x / Viewport.objective_tileLength);
+    yTile = Math.floor(thisPlayer.y / Viewport.objective_tileLength);
+    if (Map.board[yTile][xTile] === 0) {
+        Map.board[yTile][xTile] = 't';
         socket.emit('1', {x:xTile, y:yTile});
     }
 }
@@ -358,23 +343,23 @@ function mouseClick() {
 // Moves the player
 function playerMove() {
     if (mouseX !== null) {
-        // This should not work, vizmin_x and vizmin_y are still out of scope
+        // This should not work, Viewport.vizmin_x and Viewport.vizmin_y are still out of scope
         updateBoardVars();
 
         // mov is the player diameter
-        var mov = 2*(board_tileLength/2.25);
+        var mov = 2*(Viewport.board_tileLength/2.25);
         // distances in x and y of mouse from player, player pos needs to be converted to 
-        // reflect relative board vision (thisPlayer.x is objective position)
-        relPosX = thisPlayer.x / objective_tileLength * board_tileLength - vizmin_x;
-        relPosY = thisPlayer.y / objective_tileLength * board_tileLength - vizmin_y;
+        // reflect relative Map.board vision (thisPlayer.x is objective position)
+        relPosX = thisPlayer.x / Viewport.objective_tileLength * Viewport.board_tileLength - Viewport.vizmin_x;
+        relPosY = thisPlayer.y / Viewport.objective_tileLength * Viewport.board_tileLength - Viewport.vizmin_y;
         var distX = mouseX - (relPosX-mov/2);
         var distY = mouseY - (relPosY-mov/2);
 
         if (distX !== 0 && distY !== 0) {
             angle = Math.atan2(distX, distY*-1);
 
-            thisPlayer.x -= (((relPosX - mov/2) - mouseX + board_tileLength/2)/thisPlayer.speed);
-            thisPlayer.y -= (((relPosY - mov/2) - mouseY + board_tileLength/2)/thisPlayer.speed);
+            thisPlayer.x -= (((relPosX - mov/2) - mouseX + Viewport.board_tileLength/2)/thisPlayer.speed);
+            thisPlayer.y -= (((relPosY - mov/2) - mouseY + Viewport.board_tileLength/2)/thisPlayer.speed);
         }
     }
 }
@@ -402,8 +387,8 @@ function initSocket(socket) {
         allPlayers = data.users;
         scores = data.scores;
         leaderboard = data.leaderboard;
-        board = data.board;
-        overlayer = data.overlayer;
+        Map.board = data.board;
+        Map.overlayer = data.overlayer;
     });
 
     socket.on('newJoin', function(data) {
@@ -419,7 +404,7 @@ function initSocket(socket) {
     socket.on('powerupUsed', function(data) {
         console.log('socket.on:powerupUsed');
         if (data.powerup == 'house') {
-            overlayer[data.y][data.x] = 1;
+            Map.overlayer[data.y][data.x] = 1;
         } else if (data.powerup == 'waterbucket') {
             
         } else if (data.powerup == 'boots') {
@@ -430,24 +415,24 @@ function initSocket(socket) {
     socket.on('powerupSpawned', function(data) {
         console.log('socket.on:powerupSpaned');
         if (data.powerup == 'waterbucket') {
-            overlayer[data.y][data.x] = 2;
+            Map.overlayer[data.y][data.x] = 2;
         }
     });
 
     socket.on('overlayerUpdate', function(data) {
         console.log('socket.on:overlayerUpdate');
-        overlayer[data.y][data.x]=0;
+        Map.overlayer[data.y][data.x]=0;
     });
 
     socket.on('boardUpdateAll', function(data) {
         console.log('socket.on:boardUpdateAll');
-        board = data.board;
+        Map.board = data.board;
         plantRanks = data.plantRanks;
     });
 
     socket.on('boardUpdate', function(data) {
         console.log('socket.on:boardUpdate');
-        board[data.y][data.x] = data.value;
+        Map.board[data.y][data.x] = data.value;
     });
 
     socket.on('leaderboardUpdate', function(data) {
@@ -465,12 +450,12 @@ function initSocket(socket) {
 // if the player is standing
 function processOverlayer() {
     // thisPlayer.x = the current objective position of the player
-    var xTile = Math.floor(thisPlayer.x / objective_tileLength);
-    var yTile = Math.floor(thisPlayer.y / objective_tileLength);
+    var xTile = Math.floor(thisPlayer.x / Viewport.objective_tileLength);
+    var yTile = Math.floor(thisPlayer.y / Viewport.objective_tileLength);
 
     // The object of the tile you are currently standing on
     if (thisPlayer.powerup === '') {
-        current = overlayer[yTile][xTile];
+        current = Map.overlayer[yTile][xTile];
         switch (current) {
             case (0):
                 // Empty, do nothing
@@ -481,19 +466,19 @@ function processOverlayer() {
             case (2):
                 // Water bucket
                 thisPlayer.powerup = 'waterbucket';
-                overlayer[yTile][xTile] = 0;
+                Map.overlayer[yTile][xTile] = 0;
                 socket.emit('3', { x:xTile, y:yTile });
                 break;
             case (3):
                 // Seeds
                 thisPlayer.powerup = 'seeds';
-                overlayer[yTile][xTile] = 0;
+                Map.overlayer[yTile][xTile] = 0;
                 socket.emit('3', { x:xTile, y:yTile });
                 break;
             case (4):
                 // Boots
                 thisPlayer.powerup = 'boots';
-                overlayer[yTile][xTile] = 0;
+                Map.overlayer[yTile][xTile] = 0;
                 socket.emit('3', { x:xTile, y:yTile });
                 break;
             default:
