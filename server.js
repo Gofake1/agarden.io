@@ -229,9 +229,10 @@ function processBoard() {
                         growPlant(newBoard, x, y);
                         break;
                     case ('t'):
-                        // If tilled for more than 5 seconds, untill
-                        if (tilled[str(y)+str(x)].getMilliseconds() > Date.now().getMilliseconds() - 5000) {
+                        // If tilled for more than 8 seconds, untill
+                        if (Date.now() - tilled[y.toString()+x.toString()] > 8000) {
                             board[y][x] = 0;
+                            delete tilled[y.toString()+x.toString()];
                         }
                         break;
                 }
@@ -280,7 +281,7 @@ io.on('connection', function(socket) {
     socket.on('1', function(data) { // Till
         console.log('socket.on:1');
         board[data.y][data.x] = 't';
-        tilled[str(data.y)+str(data.x)] = new Date();
+        tilled[data.y.toString()+data.x.toString()] = new Date();
         io.emit("boardUpdate", {x:data.x, y:data.y, value:'t'});
     });
 
@@ -323,7 +324,6 @@ io.on('connection', function(socket) {
 
     socket.on('disconnect', function() {
         console.log('A user disconnected');
-        socket.disconnect();
         // Remove player from usersd
         if (users[socket.id] !== null) {
             // delete users[socket.id];
@@ -333,6 +333,7 @@ io.on('connection', function(socket) {
             users[socket.id].color = deadColor;
             users[socket.id].connected = false;
         }
+        socket.disconnect();
         io.emit('aDisconnect', users);
     });
 
