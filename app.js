@@ -21,13 +21,14 @@ var Plant = function(rank, pid, power) {
 };
 
 var thisPlayer = {
-    id:     null,
-    x:      null,
-    y:      null,
-    name:   '',
-    speed:  125,
-    color:  null,
-    powerup:''
+    id:       null,
+    x:        null,
+    y:        null,
+    name:     '',
+    speed:    125,
+    color:    null,
+    powerup:  '',
+    connected:true
 };
 
 var Map = {
@@ -70,6 +71,7 @@ var plants          = Board(Map.gridHeight, Map.gridWidth, 0);
 var allPlayers      = {};
 var scores          = {};
 var leaderboard     = [];
+var deadColor;
 
 // Sprites
 var dirt        = new Image();
@@ -208,10 +210,11 @@ function drawLeaderboard() {
     ctx.fillText('Leaderboard', window.innerWidth-190, 40);
 
     var newLineHeight = 50;
+    var rank;
     leaderboard.forEach(function(value, index) {
-        newLineHeight += 20;
-        var rank = index+1;
-        if (allPlayers[value] !== undefined) {
+        if (allPlayers[value].connected !== false && allPlayers[value].color !== deadColor) {
+            newLineHeight += 20;
+            rank = index+1;
             ctx.fillStyle = allPlayers[value].color;
             ctx.fillText(rank+'. '+allPlayers[value].name, window.innerWidth-230, newLineHeight);
             // ctx.beginPath();
@@ -221,6 +224,7 @@ function drawLeaderboard() {
             // ctx.fillStyle ='white';
         }
     });
+  
 }
 
 function drawScore() {
@@ -386,6 +390,7 @@ function initSocket(socket) {
         leaderboard   = data.leaderboard;
         Map.board     = data.board;
         Map.overlayer = data.overlayer;
+        deadColor     = data.deadColor;
     });
 
     socket.on('newJoin', function(data) {
@@ -515,18 +520,17 @@ function init() {
     ctx.fillStyle = 'green';
     // Fill entire canvas
     ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
-    // document.getElementById('play-again').addEventListener('click', function() {
-    //     reset();
-    // });
-    // reset();
-    // Initializations don't work within Map declaration
     Map.board = Board(Map.gridHeight, Map.gridWidth, 0);
     Map.overlayer = Board(Map.gridHeight, Map.gridWidth, 0);
 
     initImages();
     initSocket(socket);
-    socket.emit('requestUsers');
     gameLoop();
+}
+
+// Start a new game
+function replay() {
+
 }
 
 socket.on('connected');

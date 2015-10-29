@@ -37,7 +37,7 @@ var board       = Board(gridHeight, gridWidth, 0);
 var plants      = Board(gridHeight, gridWidth, 0);
 var overlayer   = Board(gridHeight, gridWidth, 0);
 var numPowerups = 0;
-var deadColor   = "#BCBCBC";
+var deadColor   = '#BCBCBC';
 
 function addNewPlayer(id, name) {
     var i = true;
@@ -50,7 +50,7 @@ function addNewPlayer(id, name) {
     // TODO: check if start position is valid
     x = Math.floor(Math.random()*gridWidth*tileLength);
     y = Math.floor(Math.random()*gridHeight*tileLength);
-    newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, powerup:'house' };
+    newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, powerup:'house', connected:true };
     users[id] = newPlayer;
     scores[id] = 0;
     leaderboard.push(id); // Remove this later
@@ -63,34 +63,34 @@ function updateLeaderboard() {
     // http://www.w3schools.com/jsref/jsref_sort.asp
     if (Object.keys(scores).length > 1) {
         leaderboard.sort(function(a, b) {return (scores[b]-scores[a]);});
-        io.emit('leaderboardUpdate', leaderboard);
+        var slicedLeaderboard = leaderboard.slice(0, 9);
+        io.emit('leaderboardUpdate', slicedLeaderboard);
     }
 }
 
-// Randomly populates board with 15 powerups
+// Randomly populates board with a number of powerups
 function addPowerups() {
     var x = Math.floor(Math.random() * gridWidth);
     var y = Math.floor(Math.random() * gridHeight);
     var puptype = Math.floor(Math.random() * 3) + 2;
-    if (numPowerups <= 30 && overlayer[y][x] === 0) {
+    if (numPowerups <= 45 && overlayer[y][x] === 0) {
         overlayer[y][x] = puptype;
         numPowerups++;
     }
 }
 
-// Gives an AOE boost to a specific plant
-function powerupWaterBucket(x, y) {    
-    plants[x][y].power = 1;
-    setTimeout(endPlantPowerup(x,y), 10000);
-}
-
-// Gives an AOE boost to plants
-function powerupSeeds(x, y) {
-
-}
-
-function endPlantPowerup(x, y) {
-    plants[y][x].power = 0;
+// Gives a boost to some plants
+function powerupPlant(x, y, powerup) {   
+    (plants[y-1][x-1]).power = powerup; 
+    (plants[y-1][x]).power   = powerup;
+    (plants[y-1][x+1]).power = powerup;
+    (plants[y][x-1]).power   = powerup;
+    (plants[y][x]).power     = powerup;
+    (plants[y][x+1]).power   = powerup;
+    (plants[y+1][x-1]).power = powerup;
+    (plants[y+1][x]).power   = powerup;
+    (plants[y+1][x+1]).power = powerup;
+    setTimeout(powerdownPlant(x,y), 30000);
 }
 
 function attackPlant(newBoard, attackingType, strength, x, y) {
@@ -108,16 +108,20 @@ function attackPlant(newBoard, attackingType, strength, x, y) {
 function expandPlant(newBoard, pid, x, y) {
     var iterations = 1;
     var options = 5;
-    var strength = plants[y][x].rank - 0.1;
-    if (plants[y][x].power === 1)   // Water bucket
+    var strength = (plants[y][x]).rank - 0.1;
+    if ((plants[y][x]).power === 1)   // Water bucket
+    {   
+        console.log("waterbucket enhanced plant detected");
         options += 4;
-    if (plants[y][x].power === 2)   // ??
+    }
+    if ((plants[y][x]).power === 2)   // ??
         strength += 0.25;
-    if (plants[y][x].power === 3)   // ??
+    if ((plants[y][x]).power === 3)   // ??
         iterations = 3;
 
     while (iterations > 0) {
         iterations--;
+        if (options > 5) console.log(options);
         var expand_choice = Math.floor(Math.random() * options);
         var i; var j;
         // Randomized switch guarantees only one expansion per iteration per plant
@@ -261,13 +265,12 @@ io.on('connection', function(socket) {
             scores:     scores,
             leaderboard:leaderboard,
             board:      board,
-            overlayer:  overlayer
+            overlayer:  overlayer,
+            deadColor:  deadColor
         });
         io.emit('newJoin', newPlayer);
     });
-    socket.on('requestUsers',function() {
-        socket.emit('usersUpdate', {users:users});
-    });
+
     socket.on('0', function() { // Heartbeat
         console.log('socket.on:0');
         // TODO: kick a player if haven't received a heartbeat in a while
@@ -294,12 +297,12 @@ io.on('connection', function(socket) {
         case 'waterbucket':
             console.log('Water bucket used');
             if (board[data.y][data.x] === 1)
-                powerupWaterBucket(data.x, data.y);
+                powerupPlant(data.x, data.y, 1);
             break;
         case 'seeds':
             console.log('Seeds used');
             if (board[data.y][data.x] === 1)
-                powerupSeeds(data.x, data.y);
+                powerupPlant(data.x, data.y, 2);
             break;
         case 'boots':
             console.log("Boots used");
@@ -328,6 +331,7 @@ io.on('connection', function(socket) {
             // set to a gray-ish color on disconnect
             // colors aren't quite coming out right but they do change at least
             users[socket.id].color = deadColor;
+            users[socket.id].connected = false;
         }
         io.emit('aDisconnect', users);
     });
