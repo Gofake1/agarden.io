@@ -312,6 +312,10 @@ io.on('connection', function(socket) {
         // Remove player from usersd
         if (users[socket.id] !== null) {
             // delete users[socket.id];
+            
+            // set to a gray-ish color on disconnect
+            // colors aren't quite coming out right but they do change at least
+            users[socket.id].color = "#BCBCBC";
         }
         io.emit('aDisconnect', users);
     });
