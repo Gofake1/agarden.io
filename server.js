@@ -66,32 +66,42 @@ function updateLeaderboard() {
     }
 }
 
-// Randomly populates board with 15 powerups
+// Randomly populates board with a number of powerups
 function addPowerups() {
     var x = Math.floor(Math.random() * gridWidth);
     var y = Math.floor(Math.random() * gridHeight);
     var puptype = Math.floor(Math.random() * 3) + 2;
-    if (numPowerups <= 30 && overlayer[y][x] === 0) {
+    if (numPowerups <= 45 && overlayer[y][x] === 0) {
         overlayer[y][x] = puptype;
         numPowerups++;
     }
 }
 
-// Gives an AOE boost to a specific plant
-function powerupWaterBucket(x, y) {    
-    plants[x][y].power = 1;
-    setTimeout(endPlantPowerup(x,y), 10000);
+// Gives a boost to some plants
+function powerupPlant(x, y, powerup) {   
+    plants[y-1][x-1].power = powerup; 
+    plants[y-1][x].power = powerup;
+    plants[y-1][x+1].power = powerup;
+    plants[y][x-1].power = powerup;
+    plants[y][x].power = powerup;
+    plants[y][x+1].power = powerup;
+    plants[y+1][x-1].power = powerup;
+    plants[y+1][x].power = powerup;
+    plants[y+1][x+1].power = powerup;
+    setTimeout(powerdownPlant(x,y), 30000);
 }
 
-// Gives an AOE boost to plants
-function powerupSeeds(x, y) {
-
-}
-
-function endPlantPowerup(x, y) {
+function powerupPlant(x, y) {   
+    plants[y-1][x-1].power = 0; 
+    plants[y-1][x].power = 0;
+    plants[y-1][x+1].power = 0;
+    plants[y][x-1].power = 0;
     plants[y][x].power = 0;
+    plants[y][x+1].power = 0;
+    plants[y+1][x-1].power = 0;
+    plants[y+1][x].power = 0;
+    plants[y+1][x+1].power = 0;
 }
-
 
 function attackPlant(newBoard, attackingType, strength, x, y) {
     if ((plants[y][x]).rank > 0.1) {
@@ -110,7 +120,10 @@ function expandPlant(newBoard, pid, x, y) {
     var options = 5;
     var strength = plants[y][x].rank - 0.1;
     if (plants[y][x].power === 1)   // Water bucket
+    {   
+        console.log("waterbucket enhanced plant detected");
         options += 4;
+    }
     if (plants[y][x].power === 2)   // ??
         strength += 0.25;
     if (plants[y][x].power === 3)   // ??
@@ -118,6 +131,7 @@ function expandPlant(newBoard, pid, x, y) {
 
     while (iterations > 0) {
         iterations--;
+        if (options > 5) console.log(options);
         var expand_choice = Math.floor(Math.random() * options);
         var i; var j;
         // Randomized switch guarantees only one expansion per iteration per plant
@@ -288,12 +302,12 @@ io.on('connection', function(socket) {
         case 'waterbucket':
             console.log('Water bucket used');
             if (board[data.y][data.x] === 1)
-                powerupWaterBucket(data.x, data.y);
+                powerupPlant(data.x, data.y, 1);
             break;
         case 'seeds':
             console.log('Seeds used');
             if (board[data.y][data.x] === 1)
-                powerupSeeds(data.x, data.y);
+                powerupPlant(data.x, data.y, 2);
             break;
         case '?????':
             break;
