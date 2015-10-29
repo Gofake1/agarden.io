@@ -35,10 +35,17 @@ var board = Board(gridHeight, gridWidth, 0);
 var plants = Board(gridHeight, gridWidth, 0);
 var overlayer = Board(gridHeight, gridWidth, 0);
 var numPowerups = 0;
+var deadColor = "#BCBCBC";
 
 // TODO: check that name, position, color are unique
 function addNewPlayer(id, name) {
-    color = '#'+(Math.random().toString(16)+'000000').slice(2,8);
+    var i = 0;
+    while (i == 0) {
+        color = '#'+(Math.random().toString(16)+'000000').slice(2,8);
+        if (color != deadColor) {
+            i = 1; 
+        }
+    }
     // TODO: check if start position is valid
     x = Math.floor(Math.random()*gridWidth*tileLength);
     y = Math.floor(Math.random()*gridHeight*tileLength);
@@ -312,10 +319,10 @@ io.on('connection', function(socket) {
         // Remove player from usersd
         if (users[socket.id] !== null) {
             // delete users[socket.id];
-            
+
             // set to a gray-ish color on disconnect
             // colors aren't quite coming out right but they do change at least
-            users[socket.id].color = "#BCBCBC";
+            users[socket.id].color = deadColor;
         }
         io.emit('aDisconnect', users);
     });
