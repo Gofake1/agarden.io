@@ -157,6 +157,9 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
                         break;
                     case (1): // Plant
                         var plantHere = plants[y][x];
+                        console.log("plant: " + plantHere.pid);
+                        console.log("players: " + allPlayers);
+                        console.log("thisPlayer: " + allPlayers[plantHere.pid]);
                         ctx.fillStyle = allPlayers[plantHere.pid].color;
                         ctx.fillRect(xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength);
                         drawSprite(tilled, xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength, 0.8 - plantHere.rank*1.5);
@@ -441,7 +444,6 @@ function initSocket(socket) {
     socket.on('leaderboardUpdate', function(data) {
         console.log('socket.on:leaderboardUpdate');
         leaderboard = data;
-        //console.log(allPlayers[leaderboard[0]].score);
     });
 
     socket.on('scoreUpdate', function(data) {
