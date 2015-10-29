@@ -157,9 +157,6 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
                         break;
                     case (1): // Plant
                         var plantHere = plants[y][x];
-                        console.log("plant: " + plantHere.pid);
-                        console.log("players: " + allPlayers);
-                        console.log("thisPlayer: " + allPlayers[plantHere.pid]);
                         if (allPlayers[plantHere.pid])
                         {
                             ctx.fillStyle = allPlayers[plantHere.pid].color;
@@ -452,6 +449,10 @@ function initSocket(socket) {
     socket.on('scoreUpdate', function(data) {
         scores = data;
     });
+
+    socket.on('usersUpdate', function(data) {
+        allPlayers = data.users;
+    });
 }
 
 // Picks up whatever item the player is standing on
@@ -525,6 +526,7 @@ function init() {
     // reset();
     initImages();
     initSocket(socket);
+    socket.emit('requestUsers');
     gameLoop();
 }
 

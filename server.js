@@ -230,7 +230,9 @@ io.on('connection', function(socket) {
         });
         io.emit('newJoin', newPlayer);
     });
-
+    socket.on('requestUsers',function() {
+        socket.emit('usersUpdate', {users:users})
+    });
     socket.on('0', function() { // Heartbeat
         console.log('socket.on:0');
         // TODO: kick a player if haven't received a heartbeat in a while
@@ -276,7 +278,7 @@ io.on('connection', function(socket) {
     socket.on('disconnect', function() {
         console.log('A user disconnected');
         socket.disconnect();
-        // Remove player from users
+        // Remove player from usersd
         if (users[socket.id] !== null) {
             // delete users[socket.id];
         }
