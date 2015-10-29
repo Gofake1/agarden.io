@@ -228,6 +228,7 @@ function drawLeaderboard() {
             // ctx.fillStyle ='white';
         }
     });
+  
 }
 
 // MAKE THIS DYNAMIC

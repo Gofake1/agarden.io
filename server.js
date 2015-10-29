@@ -62,7 +62,8 @@ function updateLeaderboard() {
     // http://www.w3schools.com/jsref/jsref_sort.asp
     if (Object.keys(scores).length > 1) {
         leaderboard.sort(function(a, b) {return (scores[b]-scores[a]);});
-        io.emit('leaderboardUpdate', leaderboard);
+        var slicedLeaderboard = leaderboard.slice(0, 9);
+        io.emit('leaderboardUpdate', slicedLeaderboard);
     }
 }
 
