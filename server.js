@@ -67,16 +67,16 @@ function addPowerups() {
     var x = Math.floor(Math.random() * gridWidth);
     var y = Math.floor(Math.random() * gridHeight);
     var puptype = Math.floor(Math.random() * 3) + 2;
-    if (numPowerups <= 15 && overlayer[y][x] === 0) {
+    if (numPowerups <= 30 && overlayer[y][x] === 0) {
         overlayer[y][x] = puptype;
         numPowerups++;
     }
 }
 
-// Gives a boost to a specific plant
-function powerupWaterBucket(x, y) {
-    // TODO: implement area of effect
-
+// Gives an AOE boost to a specific plant
+function powerupWaterBucket(x, y) {    
+    plants[x][y].power = 1;
+    setTimeout(endPlantPowerup(x,y), 10000);
 }
 
 // Gives an AOE boost to plants
@@ -84,15 +84,10 @@ function powerupSeeds(x, y) {
 
 }
 
-// Temporarily makes a player move faster
-// Put here for consistency, though the server doesn't necessarily need to know about it
-// Could just be implemented in app.js 
-function powerupBoots() {
-
-    // Set player's speed higher for a set amount of time
-    // Thomas said something about a timer function he saw that would be helpful
-
+function endPlantPowerup(x, y) {
+    plants[y][x].power = 0;
 }
+
 
 function attackPlant(newBoard, attackingType, strength, x, y) {
     if ((plants[y][x]).rank > 0.1) {
@@ -101,72 +96,101 @@ function attackPlant(newBoard, attackingType, strength, x, y) {
     }
     else if ((plants[y][x]).rank <= 0.15) {
         // This plant is weak, take it over
-        newBoard[y][x] = attackingType;
+        plants[y][x] = attackingType;
     }
 }
 
 // Handles a single plant expansion
 function expandPlant(newBoard, pid, x, y) {
-    var expand_choice = Math.floor(Math.random() * 5);
-    var i; var j;
-    // Randomized switch guarantees only one expansion per iteration per plant
-    // Selects target tile
-    switch (expand_choice) {
-        case(0):
-            i = -1; j = 0;
-            // Up
-            break;
-        case(1):
-            i = 0; j = -1;
-            // Left
-            break;
-        case(2):
-            i = 0; j = 0;
-            // Center (no action)
-            break;
-        case(3):
-            i = 0; j = 1;
-            // Right
-            break;
-        case(4):
-            i = 1; j = 0;
-            // Down
-            break;
-    }
+    var iterations = 1;
+    var options = 5;
+    var strength = plants[y][x].rank - 0.1;
+    if (plants[y][x].power === 1)   // Water bucket
+        options += 4;
+    if (plants[y][x].power === 2)   // ??
+        strength += 0.25;
+    if (plants[y][x].power === 3)   // ??
+        iterations = 3;
 
-    if ((plants[y][x]).rank > 0.5) {
-        if (y+i>gridHeight-1 || y+i<0 || x+j>gridWidth-1 || x+j<0) {
-            /* out of bounds, take no action */
+    while (iterations > 0) {
+        iterations--;
+        var expand_choice = Math.floor(Math.random() * options);
+        var i; var j;
+        // Randomized switch guarantees only one expansion per iteration per plant
+        // Selects target tile
+        switch (expand_choice) {
+            case(0):
+                i = -1; j = 0;
+                // Up
+                break;
+            case(1):
+                i = 0; j = -1;
+                // Left
+                break;
+            case(2):
+                i = 0; j = 0;
+                // Center (no action)
+                break;
+            case(3):
+                i = 0; j = 1;
+                // Right
+                break;
+            case(4):
+                i = 1; j = 0;
+                // Down
+                break;
+            case(5):
+                i = -1; j = -1;
+                // Up-left
+                break;
+            case(6):
+                i = 1; j = 1;
+                // Up-right
+                break;
+            case(7):
+                i = 1; j = -1;
+                // Down-Left
+                break;
+            case(8):
+                i = 1; j = 1;
+                // Down-Right
+                break;
         }
-        else if (board[y+i][x+j] == 't') {
-            // Tilled land, expansion
-            // Don't do anything to alter the center tile
-            if (i !== 0 || j !== 0) {
-                // Expand plant
-                newBoard[y+i][x+j] = 1;
-                // Create a plant at that location
-                plants[y+i][x+j] = new Plant(0.1, pid, 0);
 
-                // Score keeping
-                // Users who have left the game no longer earn points, 
-                // but their plants can still expand
-                if (users[pid]) {
-                    scores[pid]++;
-                    io.emit('scoreUpdate', scores);
+        if ((plants[y][x]).rank > 0.5) {
+            if (y+i>gridHeight-1 || y+i<0 || x+j>gridWidth-1 || x+j<0) {
+                /* out of bounds, take no action */
+            }
+            else if (board[y+i][x+j] == 't') {
+                // Tilled land, expansion
+                // Don't do anything to alter the center tile
+                if (i !== 0 || j !== 0) {
+                    // Expand plant
+                    newBoard[y+i][x+j] = 1;
+                    // Create a plant at that location
+                    plants[y+i][x+j] = new Plant(0.1, pid, 0);
+
+                    // Score keeping
+                    // Users who have left the game no longer earn points, 
+                    // but their plants can still expand
+                    if (users[pid]) {
+                        scores[pid]++;
+                        io.emit('scoreUpdate', scores);
+                    }
                 }
             }
-        }
-        else if (!isNaN(board[y+i][x+j]) && board[y+i][x+j] === 0) {
-            // This is a dirt tile, retry
-            expandPlant(newBoard, pid, x+j, y+i);
-        }
-        else if ((plants[y+i][x+j]).pid == pid) {
-            // This is a plant tile of the same player, retry
-            expandPlant(newBoard, pid, x+j, y+i);
-        }
-        else if ((plants[y+i][x+j]).pid != pid) {
-            // This is a plant tile of a different player (to attack)
-            attackPlant(newBoard, pid, (plants[y][x]).rank-0.1, x, y);
+            else if (!isNaN(board[y+i][x+j]) && board[y+i][x+j] === 0) {
+                // This is a dirt tile, retry
+                expandPlant(newBoard, pid, x+j, y+i);
+            }
+            else if ((plants[y+i][x+j]).pid == pid) {
+                // This is a plant tile of the same player, retry
+                expandPlant(newBoard, pid, x+j, y+i);
+            }
+            else if ((plants[y+i][x+j]).pid != pid) {
+                // This is a plant tile of a different player (to attack)
+                attackPlant(newBoard, pid, strength, x, y);
+            }
         }
     }
 }
@@ -246,25 +270,32 @@ io.on('connection', function(socket) {
 
     socket.on('2', function(data) { // Use power up
         console.log('socket.on:2');
-        if (data.powerup == 'house') {
+        switch (data.powerup) {
+        case 'house':
             console.log('House placed at x:'+data.x+' and y:'+data.y);
             overlayer[data.y][data.x] = 1;
             board[data.y][data.x] = 1;
             plants[data.y][data.x] = new Plant(0.5, data.playerid, 0);
             io.emit('overlayerUpdate', {x:data.x, y:data.y, value:data.id});
-        } 
-        else if (data.powerup == 'waterbucket') {
+            break;
+        case 'waterbucket':
             console.log('Water bucket used');
-            powerupWaterBucket(data.x, data.y);
-        }
-        else if (data.powerup == 'seeds') {
+            if (board[data.y][data.x] === 1)
+                powerupWaterBucket(data.x, data.y);
+            break;
+        case 'seeds':
             console.log('Seeds used');
-            powerupSeeds(data.x, data.y);
+            if (board[data.y][data.x] === 1)
+                powerupSeeds(data.x, data.y);
+            break;
+        case '?????':
+            break;
+        case 'boots':
+            console.log("Boots used");
+        default:
+            break;
         }
-        else if (data.power == 'boots') {
-            console.log('Boots used');
-        }
-        io.emit('powerupUsed', data);
+        socket.emit('powerupUsed', data);
     });
 
     socket.on('3', function(data) {
