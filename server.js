@@ -49,7 +49,7 @@ function addNewPlayer(id, name) {
     // TODO: check if start position is valid
     x = Math.floor(Math.random()*gridWidth*tileLength);
     y = Math.floor(Math.random()*gridHeight*tileLength);
-    newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, powerup:'house' };
+    newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, powerup:'house', connected:true };
     users[id] = newPlayer;
     scores[id] = 0;
     leaderboard.push(id); // Remove this later
@@ -61,9 +61,6 @@ function updateLeaderboard() {
     // Get the highest score at the front of the array
     // http://www.w3schools.com/jsref/jsref_sort.asp
     if (Object.keys(scores).length > 1) {
-        // Keep getting TypeError: Cannot read property 'score' of undefined
-        // at users[b].score
-        // Moved scores from {users} to {scores}
         leaderboard.sort(function(a, b) {return (scores[b]-scores[a]);});
         io.emit('leaderboardUpdate', leaderboard);
     }
@@ -264,6 +261,9 @@ io.on('connection', function(socket) {
     socket.on('requestUsers',function() {
         socket.emit('usersUpdate', {users:users})
     });
+    socket.on('getDeadColor',function() {
+        socket.emit('sendDeadColor', deadColor);
+    });
     socket.on('0', function() { // Heartbeat
         console.log('socket.on:0');
         // TODO: kick a player if haven't received a heartbeat in a while
@@ -323,6 +323,7 @@ io.on('connection', function(socket) {
             // set to a gray-ish color on disconnect
             // colors aren't quite coming out right but they do change at least
             users[socket.id].color = deadColor;
+            users[socket.id].connected = false;
         }
         io.emit('aDisconnect', users);
     });

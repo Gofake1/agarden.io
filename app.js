@@ -29,7 +29,8 @@ var thisPlayer = {
     name:'',
     speed:125,
     color:null,
-    powerup:''
+    powerup:'',
+    connected:true
 };
 
 var Map = {
@@ -78,6 +79,7 @@ var plants = Board(Map.gridHeight, Map.gridWidth, 0);
 var allPlayers = {};
 var scores = {};
 var leaderboard = [];
+var deadColor;
 
 // Sprites
 var dirt = new Image();
@@ -212,10 +214,11 @@ function drawLeaderboard() {
     ctx.fillText('Leaderboard', window.innerWidth-190, 40);
 
     var newLineHeight = 50;
+    var rank;
     leaderboard.forEach(function(value, index) {
-        newLineHeight += 20;
-        var rank = index+1;
-        if (allPlayers[value] !== undefined) {
+        if (allPlayers[value].connected !== false && allPlayers[value].color !== deadColor) {
+            newLineHeight += 20;
+            rank = index+1;
             ctx.fillStyle = allPlayers[value].color;
             ctx.fillText(rank+'. '+allPlayers[value].name, window.innerWidth-230, newLineHeight);
             // ctx.beginPath();
@@ -454,6 +457,10 @@ function initSocket(socket) {
     socket.on('usersUpdate', function(data) {
         allPlayers = data.users;
     });
+
+    socket.on('sendDeadColor', function(data) {
+        deadColor = data;
+    });
 }
 
 // Picks up whatever item the player is standing on
@@ -527,6 +534,7 @@ function init() {
     // reset();
     initImages();
     initSocket(socket);
+    socket.emit('getDeadColor');
     socket.emit('requestUsers');
     gameLoop();
 }
