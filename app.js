@@ -12,80 +12,72 @@ var Board = function(numRows, numCols, value) {
     return this.array;
 };
 
-// Plant Class definition
 var Plant = function(rank, pid, power) {
     var plant;
-    plant.rank = rank;
-    plant.pid = pid;
+    plant.rank  = rank;
+    plant.pid   = pid;
     plant.power = power;
     return plant;
-}
-
+};
 
 var thisPlayer = {
-    id:null,
-    x:null,
-    y:null,
-    name:'',
-    speed:125,
-    color:null,
+    id:     null,
+    x:      null,
+    y:      null,
+    name:   '',
+    speed:  125,
+    color:  null,
     powerup:''
 };
 
 var Map = {
     // Total number of tiles in game 
-    gridHeight : 50,
-    gridWidth : 100,
-    board : null,
-    overlayer : null
-}
-// Initializations don't work within Map declaration
-Map.board = Board(Map.gridHeight, Map.gridWidth, 0);
-Map.overlayer = Board(Map.gridHeight, Map.gridWidth, 0);
-
+    gridHeight:50,
+    gridWidth: 100,
+    board:     null,
+    overlayer: null
+};
 
 var Viewport = {
     // Start and end values are for viewport expansion
-    numTiles_x_start : 20,
-    numTiles_x_max : 30,
+    numTiles_x_start:20,
+    numTiles_x_max:  30,
 
-    // Number of visible tiles (width)
-    numTiles_x : this.numTiles_x_start,
-    board_tileLength : window.innerWidth / this.numTiles_x,
-    // For syncing player movement with Map.board
-    objective_tileLength : 20,
-    numTiles_y : window.innerHeight / this.board_tileLength + 1,
+    numTiles_x:this.numTiles_x_start, // Number of visible tiles (width)
+    board_tileLength:window.innerWidth / this.numTiles_x,
+    objective_tileLength:20, // For syncing player movement with Map.board
+    numTiles_y:window.innerHeight / this.board_tileLength + 1,
 
     // Record the Map.board's visible bounds
-    vizmin_x : null,
-    vizmin_y : null,
-    vizmax_x : null,
-    vizmax_y : null
-}
+    vizmin_x:null,
+    vizmin_y:null,
+    vizmax_x:null,
+    vizmax_y:null
+};
 
 // class Game {
 //    
 // }
 
-var canvas = document.getElementById('canvas');
-var ctx = canvas.getContext('2d');
-ctx.canvas.width = window.innerWidth;
+var canvas        = document.getElementById('canvas');
+var ctx           = canvas.getContext('2d');
+ctx.canvas.width  = window.innerWidth;
 ctx.canvas.height = window.innerHeight;
 
 // Game variables
 var initGrowthAlpha = 0.8;
-var plants = Board(Map.gridHeight, Map.gridWidth, 0);
-var allPlayers = {};
-var scores = {};
-var leaderboard = [];
+var plants          = Board(Map.gridHeight, Map.gridWidth, 0);
+var allPlayers      = {};
+var scores          = {};
+var leaderboard     = [];
 
 // Sprites
-var dirt = new Image();
-var plant = new Image();
+var dirt        = new Image();
+var plant       = new Image();
 var waterBucket = new Image();
-var boots = new Image();
-var house = new Image();
-var tilled = new Image();
+var boots       = new Image();
+var house       = new Image();
+var tilled      = new Image();
 
 var mouseX = null;
 var mouseY = null;
@@ -105,15 +97,19 @@ function updateBoardVars() {
     // X
     if (xPos < Viewport.board_tileLength*numTiles_x / 2)
         Viewport.vizmin_x = 0;
-    else if (xPos > Viewport.board_tileLength*Map.gridWidth - Viewport.board_tileLength*numTiles_x / 2)
-        Viewport.vizmin_x = Viewport.board_tileLength*Map.gridWidth - Viewport.board_tileLength*2*numTiles_x / 2;
+    else if (xPos > Viewport.board_tileLength*Map.gridWidth -
+                    Viewport.board_tileLength*numTiles_x / 2)
+        Viewport.vizmin_x = Viewport.board_tileLength*Map.gridWidth -
+                            Viewport.board_tileLength*2*numTiles_x / 2;
     else
         Viewport.vizmin_x = xPos-Viewport.board_tileLength*numTiles_x / 2;
     // Y
     if (yPos < Viewport.board_tileLength*Viewport.numTiles_y / 2)
         Viewport.vizmin_y = 0;
-    else if (yPos > Viewport.board_tileLength*Map.gridHeight - Viewport.board_tileLength*Viewport.numTiles_y / 2)
-        Viewport.vizmin_y = Viewport.board_tileLength*Map.gridHeight - Viewport.board_tileLength*2*Viewport.numTiles_y / 2;
+    else if (yPos > Viewport.board_tileLength*Map.gridHeight -
+                    Viewport.board_tileLength*Viewport.numTiles_y / 2)
+        Viewport.vizmin_y = Viewport.board_tileLength*Map.gridHeight -
+                            Viewport.board_tileLength*2*Viewport.numTiles_y / 2;
     else
         Viewport.vizmin_y = yPos-Viewport.board_tileLength*Viewport.numTiles_y / 2;
 
@@ -123,8 +119,9 @@ function updateBoardVars() {
 
 // Gets the player's entered name
 function getName() {
-    thisPlayer.name = document.getElementById("pname").value;
+    thisPlayer.name = document.getElementById('pname').value;
 
+    // Enable game inputs
     window.addEventListener('mousemove', mouseInput, false);
     window.addEventListener('keypress', keyInput, false);
     window.addEventListener('click', mouseClick, false);
@@ -134,7 +131,7 @@ function getName() {
 // This function will draw an image in the exact dimensions we want.
 // It will be useful for resizing tiles as the window resizes
 function drawSprite(img, x, y, w, h, alpha) {
-    ctx.globalAlpha = alpha; // The site doesn't work with this line for me
+    ctx.globalAlpha = alpha;
     ctx.drawImage(img, x, y, w, h);
     ctx.globalAlpha = 1;
 }
@@ -157,8 +154,7 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
                         break;
                     case (1): // Plant
                         var plantHere = plants[y][x];
-                        if (allPlayers[plantHere.pid])
-                        {
+                        if (allPlayers[plantHere.pid]) {
                             ctx.fillStyle = allPlayers[plantHere.pid].color;
                             ctx.fillRect(xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength);
                             drawSprite(tilled, xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength, 0.8 - plantHere.rank*1.5);
@@ -202,13 +198,13 @@ function drawOverlayer(xmin, ymin, xmax, ymax, board_tileLength) {
 function drawLeaderboard() {
     ctx.globalAlpha = 0.4;
     ctx.strokeRect(window.innerWidth-250, 10, 240, 300);
-    ctx.fillStyle = 'black';
+    ctx.fillStyle   = 'black';
     ctx.fillRect(window.innerWidth-250, 10, 240, 300);
 
     ctx.globalAlpha = 0.9;
-    ctx.fillStyle = 'white';
-    ctx.font = '20px Arial';
-    ctx.textAlign = 'left';
+    ctx.fillStyle   = 'white';
+    ctx.font        = '20px Arial';
+    ctx.textAlign   = 'left';
     ctx.fillText('Leaderboard', window.innerWidth-190, 40);
 
     var newLineHeight = 50;
@@ -227,30 +223,29 @@ function drawLeaderboard() {
     });
 }
 
-// MAKE THIS DYNAMIC
 function drawScore() {
     ctx.globalAlpha = 0.4;
     ctx.strokeRect(10, window.innerHeight-60, 250, 50);
-    ctx.fillStyle = 'black';
+    ctx.fillStyle   = 'black';
     ctx.fillRect(10, window.innerHeight-60, 250, 50);
 
     ctx.globalAlpha = 0.9;
-    ctx.fillStyle = 'white';
-    ctx.font = '20px Arial';
-    ctx.textAlign = 'left';
+    ctx.fillStyle   = 'white';
+    ctx.font        = '20px Arial';
+    ctx.textAlign   = 'left';
     ctx.fillText('Score: '+scores[thisPlayer.id], 15, window.innerHeight-30);
 }
 
 function drawCurrentPowerup() {
     ctx.globalAlpha = 0.4;
     ctx.strokeRect(10, 10, 300, 55);
-    ctx.fillStyle = 'black';
+    ctx.fillStyle   = 'black';
     ctx.fillRect(10, 10, 300, 55);
 
     ctx.globalAlpha = 0.9;
-    ctx.fillStyle = 'white';
-    ctx.font = '20px Arial';
-    ctx.textAlign = 'left';
+    ctx.fillStyle   = 'white';
+    ctx.font        = '20px Arial';
+    ctx.textAlign   = 'left';
 
     // create the powerup string
     var powstring = ' Current Powerup: ';
@@ -309,13 +304,9 @@ function drawViewport() {
     }
 }
 
-function endSpeedBoost() {
-    thisPlayer.speed = 125;
-}
-
 function boostSpeed() {
     thisPlayer.speed = 75;
-    setTimeout(endSpeedBoost, 10000);
+    setTimeout(function() {thisPlayer.speed = 125;}, 10000);
 }
 
 // Use powerup on space or enter key
@@ -355,8 +346,8 @@ function playerMove() {
 
         // mov is the player diameter
         var mov = 2*(Viewport.board_tileLength/2.25);
-        // distances in x and y of mouse from player, player pos needs to be converted to 
-        // reflect relative Map.board vision (thisPlayer.x is objective position)
+        // Distances in x and y of mouse from player, player pos needs to be converted to 
+        // Reflect relative Map.board vision (thisPlayer.x is objective position)
         relPosX = thisPlayer.x / Viewport.objective_tileLength * Viewport.board_tileLength - Viewport.vizmin_x;
         relPosY = thisPlayer.y / Viewport.objective_tileLength * Viewport.board_tileLength - Viewport.vizmin_y;
         var distX = mouseX - (relPosX-mov/2);
@@ -364,7 +355,6 @@ function playerMove() {
 
         if (distX !== 0 && distY !== 0) {
             angle = Math.atan2(distX, distY*-1);
-
             thisPlayer.x -= (((relPosX - mov/2) - mouseX + Viewport.board_tileLength/2)/thisPlayer.speed);
             thisPlayer.y -= (((relPosY - mov/2) - mouseY + Viewport.board_tileLength/2)/thisPlayer.speed);
         }
@@ -375,12 +365,12 @@ function playerMove() {
 // so that there is no draw delay
 // Draw delay obscures the leaderboard and other text overlay
 function initImages() {
-    dirt.src = 'sprites/dirt.jpg';
-    plant.src = 'sprites/plant.png';
+    dirt.src        = 'sprites/dirt.jpg';
+    plant.src       = 'sprites/plant.png';
     waterBucket.src = 'sprites/water_bucket.png';
-    boots.src = 'sprites/boots.png';
-    house.src = 'sprites/house.png';
-    tilled.src = 'sprites/tilled.jpg';
+    boots.src       = 'sprites/boots.png';
+    house.src       = 'sprites/house.png';
+    tilled.src      = 'sprites/tilled.jpg';
 }
 
 function initSocket(socket) {
@@ -391,10 +381,10 @@ function initSocket(socket) {
 
     socket.on('setup', function(data) {
         console.log('console.on:setup');
-        allPlayers = data.users;
-        scores = data.scores;
-        leaderboard = data.leaderboard;
-        Map.board = data.board;
+        allPlayers    = data.users;
+        scores        = data.scores;
+        leaderboard   = data.leaderboard;
+        Map.board     = data.board;
         Map.overlayer = data.overlayer;
     });
 
@@ -406,6 +396,10 @@ function initSocket(socket) {
     socket.on('aDisconnect', function(data) {
         console.log('socket.on:aDisconnect');
         allPlayers = data;
+    });
+
+    socket.on('gameOver', function(data) {
+        $('#gameoverScreen').modal();
     });
 
     socket.on('powerupUsed', function(data) {
@@ -428,7 +422,7 @@ function initSocket(socket) {
 
     socket.on('overlayerUpdate', function(data) {
         console.log('socket.on:overlayerUpdate');
-        Map.overlayer[data.y][data.x]=0;
+        Map.overlayer[data.y][data.x] = 0;
     });
 
     socket.on('boardUpdateAll', function(data) {
@@ -525,6 +519,10 @@ function init() {
     //     reset();
     // });
     // reset();
+    // Initializations don't work within Map declaration
+    Map.board = Board(Map.gridHeight, Map.gridWidth, 0);
+    Map.overlayer = Board(Map.gridHeight, Map.gridWidth, 0);
+
     initImages();
     initSocket(socket);
     socket.emit('requestUsers');

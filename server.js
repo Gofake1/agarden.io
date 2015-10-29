@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var port = 3000;
 
 var Board = function(numRows, numCols, value) {
     var array = [];
@@ -20,30 +21,30 @@ var Plant = function(rank, pid, power) {
     this.rank = rank;
     this.pid = pid;
     this.power = power;
-}
+};
 
 // Total number of tiles in game 
 var gridHeight = 50;
-var gridWidth = 100;
+var gridWidth  = 100;
 var tileLength = 15;
    
 // Global variables
-var users = {};
-var scores = {};
+var users       = {};
+var scores      = {};
+var tilled      = {}; // Dict of tilled dirt timers
 var leaderboard = [];
-var board = Board(gridHeight, gridWidth, 0);
-var plants = Board(gridHeight, gridWidth, 0);
-var overlayer = Board(gridHeight, gridWidth, 0);
+var board       = Board(gridHeight, gridWidth, 0);
+var plants      = Board(gridHeight, gridWidth, 0);
+var overlayer   = Board(gridHeight, gridWidth, 0);
 var numPowerups = 0;
-var deadColor = "#BCBCBC";
+var deadColor   = "#BCBCBC";
 
-// TODO: check that name, position, color are unique
 function addNewPlayer(id, name) {
-    var i = 0;
-    while (i == 0) {
+    var i = true;
+    while (i) {
         color = '#'+(Math.random().toString(16)+'000000').slice(2,8);
         if (color != deadColor) {
-            i = 1; 
+            i = false; 
         }
     }
     // TODO: check if start position is valid
@@ -61,9 +62,6 @@ function updateLeaderboard() {
     // Get the highest score at the front of the array
     // http://www.w3schools.com/jsref/jsref_sort.asp
     if (Object.keys(scores).length > 1) {
-        // Keep getting TypeError: Cannot read property 'score' of undefined
-        // at users[b].score
-        // Moved scores from {users} to {scores}
         leaderboard.sort(function(a, b) {return (scores[b]-scores[a]);});
         io.emit('leaderboardUpdate', leaderboard);
     }
@@ -94,7 +92,6 @@ function powerupSeeds(x, y) {
 function endPlantPowerup(x, y) {
     plants[y][x].power = 0;
 }
-
 
 function attackPlant(newBoard, attackingType, strength, x, y) {
     if ((plants[y][x]).rank > 0.1) {
@@ -227,6 +224,12 @@ function processBoard() {
                         expandPlant(newBoard, (plants[y][x]).pid, x, y);
                         growPlant(newBoard, x, y);
                         break;
+                    case ('t'):
+                        // If tilled for more than 5 seconds, untill
+                        if (tilled[str(y)+str(x)].getMilliseconds() > Date.now().getMilliseconds() - 5000) {
+                            board[y][x] = 0;
+                        }
+                        break;
                 }
             }
         }
@@ -245,6 +248,7 @@ app.get('/', function(req, res) {
     res.sendFile(__dirname+'/index.html');
 });
 
+// Socket messages
 io.on('connection', function(socket) {
     console.log('A user connected');
 
@@ -253,25 +257,27 @@ io.on('connection', function(socket) {
         newPlayer = addNewPlayer(socket.id, data.name);
         socket.emit('playerCreated', newPlayer);
         socket.emit('setup', {
-            users:users,
-            scores:scores,
+            users:      users,
+            scores:     scores,
             leaderboard:leaderboard,
-            board:board,
-            overlayer:overlayer
+            board:      board,
+            overlayer:  overlayer
         });
         io.emit('newJoin', newPlayer);
     });
     socket.on('requestUsers',function() {
-        socket.emit('usersUpdate', {users:users})
+        socket.emit('usersUpdate', {users:users});
     });
     socket.on('0', function() { // Heartbeat
         console.log('socket.on:0');
         // TODO: kick a player if haven't received a heartbeat in a while
+        socket.emit('gameOver', {});
     });
 
     socket.on('1', function(data) { // Till
         console.log('socket.on:1');
         board[data.y][data.x] = 't';
+        tilled[str(data.y)+str(data.x)] = new Date();
         io.emit("boardUpdate", {x:data.x, y:data.y, value:'t'});
     });
 
@@ -295,10 +301,9 @@ io.on('connection', function(socket) {
             if (board[data.y][data.x] === 1)
                 powerupSeeds(data.x, data.y);
             break;
-        case '?????':
-            break;
         case 'boots':
             console.log("Boots used");
+            break;
         default:
             break;
         }
@@ -330,9 +335,6 @@ io.on('connection', function(socket) {
 });
 
 setInterval(gameLoop, 1000);
-
 app.use(express.static(__dirname));
-http.listen(3000);
-
-console.log("agarden.io server successfully started!");
-console.log("Listening on port 3000 ...");
+http.listen(port);
+console.log('Listening on port '+port);
