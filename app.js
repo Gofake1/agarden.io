@@ -12,6 +12,16 @@ var Board = function(numRows, numCols, value) {
     return this.array;
 };
 
+// Plant Class definition
+var Plant = function(rank, pid, power) {
+    var plant;
+    plant.rank = rank;
+    plant.pid = pid;
+    plant.power = power;
+    return plant;
+}
+
+
 var thisPlayer = {
     id:null,
     x:null,
@@ -53,12 +63,6 @@ var Viewport = {
     vizmax_y : null
 }
 
-// class Plant {
-//     this.stage = 1;
-//     this.health = 100;
-//     this.strength = 1;
-// }
-
 // class Game {
 //    
 // }
@@ -70,7 +74,7 @@ ctx.canvas.height = window.innerHeight;
 
 // Game variables
 var initGrowthAlpha = 0.8;
-var plantRanks = Board(Map.gridHeight, Map.gridWidth, 0);
+var plants = Board(Map.gridHeight, Map.gridWidth, 0);
 var allPlayers = {};
 var scores = {};
 var leaderboard = [];
@@ -151,13 +155,12 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
                     case (0): // Dirt
                         drawSprite(dirt, xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength, 1);
                         break;
-                    default: // Player's color
-                        if (allPlayers[Map.board[y][x]]) {
-                            ctx.fillStyle = allPlayers[Map.board[y][x]].color;
-                        }
+                    case (1): // Plant
+                        var plantHere = plants[y][x];
+                        ctx.fillStyle = allPlayers[plantHere.pid].color;
                         ctx.fillRect(xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength);
-                        drawSprite(tilled, xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength, 0.8 - (plantRanks[y][x])*1.5);
-                        drawSprite(plant, xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength, plantRanks[y][x]*0.75);
+                        drawSprite(tilled, xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength, 0.8 - plantHere.rank*1.5);
+                        drawSprite(plant, xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength, plantHere.rank*0.75);
                         break;
                 }
             }
@@ -427,7 +430,7 @@ function initSocket(socket) {
     socket.on('boardUpdateAll', function(data) {
         console.log('socket.on:boardUpdateAll');
         Map.board = data.board;
-        plantRanks = data.plantRanks;
+        plants = data.plants;
     });
 
     socket.on('boardUpdate', function(data) {

@@ -15,6 +15,13 @@ var Board = function(numRows, numCols, value) {
     return array;
 };
 
+// Plant Class definition
+var Plant = function(rank, pid, power) {
+    this.rank = rank;
+    this.pid = pid;
+    this.power = power;
+}
+
 // Total number of tiles in game 
 var gridHeight = 50;
 var gridWidth = 100;
@@ -25,7 +32,7 @@ var users = {};
 var scores = {};
 var leaderboard = [];
 var board = Board(gridHeight, gridWidth, 0);
-var plantRanks = Board(gridHeight, gridWidth, 0);
+var plants = Board(gridHeight, gridWidth, 0);
 var overlayer = Board(gridHeight, gridWidth, 0);
 var numPowerups = 0;
 
@@ -88,18 +95,18 @@ function powerupBoots() {
 }
 
 function attackPlant(newBoard, attackingType, strength, x, y) {
-    if (plantRanks[y][x] > 0.1) {
+    if ((plants[y][x]).rank > 0.1) {
         // This plant is too strong to take over, attack
-        plantRanks[y][x] -= strength;
+        (plants[y][x]).rank -= strength;
     }
-    else if (plantRanks[y][x] <= 0.15) {
+    else if ((plants[y][x]).rank <= 0.15) {
         // This plant is weak, take it over
         newBoard[y][x] = attackingType;
     }
 }
 
 // Handles a single plant expansion
-function expandPlant(newBoard, type, x, y) {
+function expandPlant(newBoard, pid, x, y) {
     var expand_choice = Math.floor(Math.random() * 5);
     var i; var j;
     // Randomized switch guarantees only one expansion per iteration per plant
@@ -127,7 +134,7 @@ function expandPlant(newBoard, type, x, y) {
             break;
     }
 
-    if (plantRanks[y][x] > 0.5) {
+    if ((plants[y][x]).rank > 0.5) {
         if (y+i>gridHeight-1 || y+i<0 || x+j>gridWidth-1 || x+j<0) {
             /* out of bounds, take no action */
         }
@@ -136,37 +143,38 @@ function expandPlant(newBoard, type, x, y) {
             // Don't do anything to alter the center tile
             if (i !== 0 || j !== 0) {
                 // Expand plant
-                newBoard[y+i][x+j] = type;
-                plantRanks[y+i][x+j] = 0.1;
+                newBoard[y+i][x+j] = 1;
+                // Create a plant at that location
+                plants[y+i][x+j] = new Plant(0.1, pid, 0);
 
                 // Score keeping
                 // Users who have left the game no longer earn points, 
                 // but their plants can still expand
-                if (users[type]) {
-                    scores[type]++;
+                if (users[pid]) {
+                    scores[pid]++;
                     io.emit('scoreUpdate', scores);
                 }
             }
         }
         else if (!isNaN(board[y+i][x+j]) && board[y+i][x+j] === 0) {
             // This is a dirt tile, retry
-            expandPlant(newBoard, type, x+j, y+i);
+            expandPlant(newBoard, pid, x+j, y+i);
         }
-        else if (board[y+i][x+j] == type) {
+        else if ((plants[y+i][x+j]).pid == pid) {
             // This is a plant tile of the same player, retry
-            expandPlant(newBoard, type, x+j, y+i);
+            expandPlant(newBoard, pid, x+j, y+i);
         }
-        else if (board[y+i][x+j] != type) {
+        else if ((plants[y+i][x+j]).pid != pid) {
             // This is a plant tile of a different player (to attack)
-            attackPlant(newBoard, type, plantRanks[y][x]-0.1, x, y);
+            attackPlant(newBoard, pid, (plants[y][x]).rank-0.1, x, y);
         }
     }
 }
 
-function growPlant(newBoard, type, x, y) {
+function growPlant(newBoard, x, y) {
     // Grow the plant
-    if(plantRanks[y][x] <= 0.5) {
-        plantRanks[y][x] += 0.03;
+    if((plants[y][x]).rank <= 0.5) {
+        (plants[y][x]).rank += 0.03;
     }
 }
 
@@ -185,18 +193,15 @@ function processBoard() {
                         // Board is already full of zeros, no need for operation
                         break;
                     case (1):
-                        break;
-                    default: // TODO: grow plant for any player
-                        if (board[y][x] != 't')
-                            expandPlant(newBoard, board[y][x], x, y);
-                            growPlant(newBoard, board[y][x], x, y);
+                        expandPlant(newBoard, (plants[y][x]).pid, x, y);
+                        growPlant(newBoard, x, y);
                         break;
                 }
             }
         }
     }
     board = newBoard;
-    io.emit('boardUpdateAll', { board:board, plantRanks:plantRanks });
+    io.emit('boardUpdateAll', { board:board, plants:plants });
 }
 
 function gameLoop() {
@@ -242,8 +247,8 @@ io.on('connection', function(socket) {
         if (data.powerup == 'house') {
             console.log('House placed at x:'+data.x+' and y:'+data.y);
             overlayer[data.y][data.x] = 1;
-            board[data.y][data.x] = data.playerid;
-            plantRanks[data.y][data.x] = 0.5;
+            board[data.y][data.x] = 1;
+            plants[data.y][data.x] = new Plant(0.5, data.playerid, 0);
             io.emit('overlayerUpdate', {x:data.x, y:data.y, value:data.id});
         } 
         else if (data.powerup == 'waterbucket') {
