@@ -160,10 +160,13 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
                         console.log("plant: " + plantHere.pid);
                         console.log("players: " + allPlayers);
                         console.log("thisPlayer: " + allPlayers[plantHere.pid]);
-                        ctx.fillStyle = allPlayers[plantHere.pid].color;
-                        ctx.fillRect(xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength);
-                        drawSprite(tilled, xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength, 0.8 - plantHere.rank*1.5);
-                        drawSprite(plant, xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength, plantHere.rank*0.75);
+                        if (allPlayers[plantHere.pid])
+                        {
+                            ctx.fillStyle = allPlayers[plantHere.pid].color;
+                            ctx.fillRect(xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength);
+                            drawSprite(tilled, xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength, 0.8 - plantHere.rank*1.5);
+                            drawSprite(plant, xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength, plantHere.rank*0.75);
+                        }
                         break;
                 }
             }
