@@ -80,28 +80,28 @@ function addPowerups() {
 
 // Gives a boost to some plants
 function powerupPlant(x, y, powerup) {   
-    plants[y-1][x-1].power = powerup; 
-    plants[y-1][x].power = powerup;
-    plants[y-1][x+1].power = powerup;
-    plants[y][x-1].power = powerup;
-    plants[y][x].power = powerup;
-    plants[y][x+1].power = powerup;
-    plants[y+1][x-1].power = powerup;
-    plants[y+1][x].power = powerup;
-    plants[y+1][x+1].power = powerup;
+    (plants[y-1][x-1]).power = powerup; 
+    (plants[y-1][x]).power = powerup;
+    (plants[y-1][x+1]).power = powerup;
+    (plants[y][x-1]).power = powerup;
+    (plants[y][x]).power = powerup;
+    (plants[y][x+1]).power = powerup;
+    (plants[y+1][x-1]).power = powerup;
+    (plants[y+1][x]).power = powerup;
+    (plants[y+1][x+1]).power = powerup;
     setTimeout(powerdownPlant(x,y), 30000);
 }
 
 function powerupPlant(x, y) {   
-    plants[y-1][x-1].power = 0; 
-    plants[y-1][x].power = 0;
-    plants[y-1][x+1].power = 0;
-    plants[y][x-1].power = 0;
-    plants[y][x].power = 0;
-    plants[y][x+1].power = 0;
-    plants[y+1][x-1].power = 0;
-    plants[y+1][x].power = 0;
-    plants[y+1][x+1].power = 0;
+    (plants[y-1][x-1]).power = 0; 
+    (plants[y-1][x]).power = 0;
+    (plants[y-1][x+1]).power = 0;
+    (plants[y][x-1]).power = 0;
+    (plants[y][x]).power = 0;
+    (plants[y][x+1]).power = 0;
+    (plants[y+1][x-1]).power = 0;
+    (plants[y+1][x]).power = 0;
+    (plants[y+1][x+1]).power = 0;
 }
 
 function attackPlant(newBoard, attackingType, strength, x, y) {
@@ -119,15 +119,15 @@ function attackPlant(newBoard, attackingType, strength, x, y) {
 function expandPlant(newBoard, pid, x, y) {
     var iterations = 1;
     var options = 5;
-    var strength = plants[y][x].rank - 0.1;
-    if (plants[y][x].power === 1)   // Water bucket
+    var strength = (plants[y][x]).rank - 0.1;
+    if ((plants[y][x]).power === 1)   // Water bucket
     {   
         console.log("waterbucket enhanced plant detected");
         options += 4;
     }
-    if (plants[y][x].power === 2)   // ??
+    if ((plants[y][x]).power === 2)   // ??
         strength += 0.25;
-    if (plants[y][x].power === 3)   // ??
+    if ((plants[y][x]).power === 3)   // ??
         iterations = 3;
 
     while (iterations > 0) {
