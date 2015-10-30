@@ -212,17 +212,18 @@ function drawLeaderboard() {
     var newLineHeight = 50;
     var rank;
     leaderboard.forEach(function(value, index) {
-        if (allPlayers[value].connected !== false && allPlayers[value].color !== deadColor) {
-            newLineHeight += 20;
-            rank = index+1;
-            ctx.fillStyle = allPlayers[value].color;
-            ctx.fillText(rank+'. '+allPlayers[value].name, window.innerWidth-230, newLineHeight);
-            // ctx.beginPath();
-            // ctx.arc(window.innerWidth-50, newLineHeight-9, 9, 0, 2*Math.PI, false);
-            // ctx.fillStyle = allPlayers[value].color;
-            // ctx.fill();
-            // ctx.fillStyle ='white';
-        }
+        if (allPlayers[value])
+            if (allPlayers[value].connected !== false && allPlayers[value].color !== deadColor) {
+                newLineHeight += 20;
+                rank = index+1;
+                ctx.fillStyle = allPlayers[value].color;
+                ctx.fillText(rank+'. '+allPlayers[value].name, window.innerWidth-230, newLineHeight);
+                // ctx.beginPath();
+                // ctx.arc(window.innerWidth-50, newLineHeight-9, 9, 0, 2*Math.PI, false);
+                // ctx.fillStyle = allPlayers[value].color;
+                // ctx.fill();
+                // ctx.fillStyle ='white';
+            }
     });
 }
 
@@ -524,6 +525,7 @@ function init() {
 
     initImages();
     initSocket(socket);
+    socket.emit('requestUsers');
     gameLoop();
 }
 
