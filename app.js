@@ -224,7 +224,6 @@ function drawLeaderboard() {
             // ctx.fillStyle ='white';
         }
     });
-  
 }
 
 function drawScore() {
