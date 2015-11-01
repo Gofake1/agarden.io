@@ -436,13 +436,19 @@ function initSocket(socket) {
         plants = data.plants;
     });
 
+    socket.on('plantsUpdate', function(data) {
+        console.log('socket.on:boardUpdateAll');
+        plants[data.y][data.x] = data.plant;
+    });
+
     socket.on('boardUpdate', function(data) {
         console.log('socket.on:boardUpdate');
         Map.board[data.y][data.x] = data.value;
     });
 
     socket.on('leaderboardUpdate', function(data) {
-        console.log('socket.on:leaderboardUpdate');
+        // commented out for now to make console debugging easier
+        //console.log('socket.on:leaderboardUpdate');
         leaderboard = data;
     });
 

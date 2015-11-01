@@ -70,27 +70,52 @@ function updateLeaderboard() {
 
 // Randomly populates board with a number of powerups
 function addPowerups() {
-    var x = Math.floor(Math.random() * gridWidth);
-    var y = Math.floor(Math.random() * gridHeight);
-    var puptype = Math.floor(Math.random() * 3) + 2;
-    if (numPowerups <= 45 && overlayer[y][x] === 0) {
-        overlayer[y][x] = puptype;
-        numPowerups++;
+    while (numPowerups < 45)
+    {
+        var x = Math.floor(Math.random() * gridWidth);
+        var y = Math.floor(Math.random() * gridHeight);
+        var puptype = Math.floor(Math.random() * 3) + 2;
+        if (overlayer[y][x] === 0) {
+            overlayer[y][x] = puptype;
+            numPowerups++;
+        }
+    }
+}
+
+function powerupSpecificPlant(y, x, powerup) {
+    // only power up a plant if it exists in the game
+    if (board[y][x] === 1)
+    {
+        (plants[y][x]).power = powerup;
+        io.emit("plantsUpdate", {x:x, y:y, plant:plants[y][x]});
     }
 }
 
 // Gives a boost to some plants
+function powerdownPlant(x, y) {   
+    powerupSpecificPlant(y,x,0);
+    powerupSpecificPlant(y+1,x,0);
+    powerupSpecificPlant(y-1,x,0);
+    powerupSpecificPlant(y,x+1,0);
+    powerupSpecificPlant(y+1,x+1,0);
+    powerupSpecificPlant(y-1,x+1,0);
+    powerupSpecificPlant(y,x-1,0);
+    powerupSpecificPlant(y+1,x-1,0);
+    powerupSpecificPlant(y-1,x-1,0);
+}
+
+// Gives a boost to some plants
 function powerupPlant(x, y, powerup) {   
-    (plants[y-1][x-1]).power = powerup; 
-    (plants[y-1][x]).power   = powerup;
-    (plants[y-1][x+1]).power = powerup;
-    (plants[y][x-1]).power   = powerup;
-    (plants[y][x]).power     = powerup;
-    (plants[y][x+1]).power   = powerup;
-    (plants[y+1][x-1]).power = powerup;
-    (plants[y+1][x]).power   = powerup;
-    (plants[y+1][x+1]).power = powerup;
-    setTimeout(powerdownPlant(x,y), 30000);
+    powerupSpecificPlant(y,x,powerup);
+    powerupSpecificPlant(y+1,x,powerup);
+    powerupSpecificPlant(y-1,x,powerup);
+    powerupSpecificPlant(y,x+1,powerup);
+    powerupSpecificPlant(y+1,x+1,powerup);
+    powerupSpecificPlant(y-1,x+1,powerup);
+    powerupSpecificPlant(y,x-1,powerup);
+    powerupSpecificPlant(y+1,x-1,powerup);
+    powerupSpecificPlant(y-1,x-1,powerup);
+    //setTimeout(powerdownPlant(x,y), 30000);
 }
 
 function attackPlant(newBoard, attackingType, strength, x, y) {
@@ -111,8 +136,8 @@ function expandPlant(newBoard, pid, x, y) {
     var strength = (plants[y][x]).rank - 0.1;
     if ((plants[y][x]).power === 1)   // Water bucket
     {   
-        console.log("waterbucket enhanced plant detected");
-        options += 4;
+        options = 9;
+        iterations = 9;
     }
     if ((plants[y][x]).power === 2)   // ??
         strength += 0.25;
@@ -121,7 +146,6 @@ function expandPlant(newBoard, pid, x, y) {
 
     while (iterations > 0) {
         iterations--;
-        if (options > 5) console.log(options);
         var expand_choice = Math.floor(Math.random() * options);
         var i; var j;
         // Randomized switch guarantees only one expansion per iteration per plant
@@ -152,7 +176,7 @@ function expandPlant(newBoard, pid, x, y) {
                 // Up-left
                 break;
             case(6):
-                i = 1; j = 1;
+                i = -1; j = 1;
                 // Up-right
                 break;
             case(7):
@@ -229,8 +253,8 @@ function processBoard() {
                         growPlant(newBoard, x, y);
                         break;
                     case ('t'):
-                        // If tilled for more than 8 seconds, untill
-                        if (Date.now() - tilled[y.toString()+x.toString()] > 8000) {
+                        // If tilled for more than 15 seconds, untill
+                        if (Date.now() - tilled[y.toString()+x.toString()] > 15000) {
                             board[y][x] = 0;
                             delete tilled[y.toString()+x.toString()];
                         }
