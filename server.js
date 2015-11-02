@@ -258,14 +258,14 @@ function agePlant(newBoard, x, y) {
         if((plants[y][x]).rank <= 0.5) {
             (plants[y][x]).rank += 0.03;
         }
-        if (plants[y][x].powerTime > 0)
+    }
+    if (plants[y][x].powerTime > 0)
+    {
+        plants[y][x].powerTime--;
+        if (plants[y][x].powerTime === 0)
         {
-            plants[y][x].powerTime--;
-            if (plants[y][x].powerTime === 0)
-            {
-                plants[y][x].power = 0;
-                console.log("power down plant");
-            }
+            plants[y][x].power = 0;
+            console.log("power down plant");
         }
     }
 }
