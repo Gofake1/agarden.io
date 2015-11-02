@@ -336,7 +336,6 @@ io.on('connection', function(socket) {
     socket.on('0', function() { // Heartbeat
         console.log('socket.on:0');
         // TODO: kick a player if haven't received a heartbeat in a while
-        socket.emit('gameOver', {});
     });
 
     socket.on('1', function(data) { // Till

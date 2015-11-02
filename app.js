@@ -378,7 +378,7 @@ function initImages() {
     boots.src       = 'sprites/boots.png';
     house.src       = 'sprites/house.png';
     tilled.src      = 'sprites/tilled.jpg';
-    seeds.src       = 'sprites/seeds.png'
+    seeds.src       = 'sprites/seeds.png';
 }
 
 function initSocket(socket) {
@@ -405,10 +405,6 @@ function initSocket(socket) {
     socket.on('aDisconnect', function(data) {
         console.log('socket.on:aDisconnect');
         allPlayers = data;
-    });
-
-    socket.on('gameOver', function(data) {
-        $('#gameoverScreen').modal();
     });
 
     socket.on('powerupUsed', function(data) {
@@ -547,7 +543,7 @@ function init() {
 
 // Start a new game
 function replay() {
-
+    socket.emit('newPlayer');
 }
 
 socket.on('connected');
