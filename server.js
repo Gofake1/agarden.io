@@ -118,6 +118,17 @@ function powerupPlant(x, y, powerup) {
     setTimeout(powerdownPlant, 30000, x, y);
 }
 
+// Called when a house is captured, changes ownership of plants
+function changePlant(changeID, newID) {
+    for (var y = 0; y < gridHeight; y++) {
+        for (var x = 0; x < gridWidth; x++) {
+            if (plants[y][x] === changeID) {
+                plants[y][x] = newID; 
+            }
+        }
+    }
+}
+
 function attackPlant(newBoard, attackingType, strength, x, y) {
     if ((plants[y][x]).rank > 0.1) {
         // This plant is too strong to take over, attack
@@ -127,8 +138,15 @@ function attackPlant(newBoard, attackingType, strength, x, y) {
     }
     else if ((plants[y][x]).rank <= 0.15) {
         // This plant is weak, take it over
+        var temp = plants[y][x].pid; 
         plants[y][x].pid = attackingType;
         plants[y][x].rank = .2;
+
+        // if we're capturing a house
+        if (overlayer[y][x] === 1) {
+            overlayer[y][x] = 0; 
+            changePlant(temp, attackingType);
+        }
     }
 }
 
