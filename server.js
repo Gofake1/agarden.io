@@ -111,8 +111,8 @@ function powerupPlant(x, y, powerup) {
 function changePlant(changeID, newID) {
     for (var y = 0; y < gridHeight; y++) {
         for (var x = 0; x < gridWidth; x++) {
-            if (plants[y][x] === changeID) {
-                plants[y][x] = newID; 
+            if (plants[y][x].pid === changeID) {
+                plants[y][x].pid = newID; 
             }
         }
     }
