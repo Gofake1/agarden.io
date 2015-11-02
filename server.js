@@ -82,8 +82,9 @@ function addPowerups() {
     }
 }
 
-function powerupSpecificPlant(y, x, powerup) {
+function powerupSpecificPlant(x, y, powerup) {
     // only power up a plant if it exists in the game
+    console.log("x,y: " + x + "," + y);
     if (board[y][x] === 1)
     {
         (plants[y][x]).power = powerup;
@@ -92,30 +93,32 @@ function powerupSpecificPlant(y, x, powerup) {
 }
 
 // Gives a boost to some plants
-function powerdownPlant(x, y) {   
-    powerupSpecificPlant(y,x,0);
-    powerupSpecificPlant(y+1,x,0);
-    powerupSpecificPlant(y-1,x,0);
-    powerupSpecificPlant(y,x+1,0);
-    powerupSpecificPlant(y+1,x+1,0);
-    powerupSpecificPlant(y-1,x+1,0);
-    powerupSpecificPlant(y,x-1,0);
-    powerupSpecificPlant(y+1,x-1,0);
-    powerupSpecificPlant(y-1,x-1,0);
+function powerdownPlant(x, y) {  
+    console.log("Powering down plants around: " + x + "," + y); 
+    powerupSpecificPlant(x,y,0);
+    powerupSpecificPlant(x+1,y,0);
+    powerupSpecificPlant(x-1,y,0);
+    powerupSpecificPlant(x,y+1,0);
+    powerupSpecificPlant(x+1,y+1,0);
+    powerupSpecificPlant(x-1,y+1,0);
+    powerupSpecificPlant(x,y-1,0);
+    powerupSpecificPlant(x+1,y-1,0);
+    powerupSpecificPlant(x-1,y-1,0);
 }
 
 // Gives a boost to some plants
 function powerupPlant(x, y, powerup) {   
-    powerupSpecificPlant(y,x,powerup);
-    powerupSpecificPlant(y+1,x,powerup);
-    powerupSpecificPlant(y-1,x,powerup);
-    powerupSpecificPlant(y,x+1,powerup);
-    powerupSpecificPlant(y+1,x+1,powerup);
-    powerupSpecificPlant(y-1,x+1,powerup);
-    powerupSpecificPlant(y,x-1,powerup);
-    powerupSpecificPlant(y+1,x-1,powerup);
-    powerupSpecificPlant(y-1,x-1,powerup);
-    //setTimeout(powerdownPlant(x,y), 30000);
+    powerupSpecificPlant(x,y,powerup);
+    powerupSpecificPlant(x+1,y,powerup);
+    powerupSpecificPlant(x-1,y,powerup);
+    powerupSpecificPlant(x,y+1,powerup);
+    powerupSpecificPlant(x+1,y+1,powerup);
+    powerupSpecificPlant(x-1,y+1,powerup);
+    powerupSpecificPlant(x,y-1,powerup);
+    powerupSpecificPlant(x+1,y-1,powerup);
+    powerupSpecificPlant(x-1,y-1,powerup);
+    console.log("Powering up plants around: " + x + "," + y); 
+    setTimeout(powerdownPlant, 30000, x, y);
 }
 
 function attackPlant(newBoard, attackingType, strength, x, y) {
@@ -134,12 +137,12 @@ function expandPlant(newBoard, pid, x, y) {
     var iterations = 1;
     var options = 5;
     var strength = (plants[y][x]).rank - 0.1;
-    if ((plants[y][x]).power === 1)   // Water bucket
+    if ((plants[y][x]).power === 1)   // Seeds
     {   
         options = 9;
         iterations = 9;
     }
-    if ((plants[y][x]).power === 2)   // ??
+    if ((plants[y][x]).power === 2)   // Waterbucket
         strength += 0.25;
     if ((plants[y][x]).power === 3)   // ??
         iterations = 3;
@@ -212,12 +215,12 @@ function expandPlant(newBoard, pid, x, y) {
                 }
             }
             else if (!isNaN(board[y+i][x+j]) && board[y+i][x+j] === 0) {
-                // This is a dirt tile, retry
-                expandPlant(newBoard, pid, x+j, y+i);
+                // This is a dirt tile, fail
+                //expandPlant(newBoard, pid, x+j, y+i);
             }
             else if ((plants[y+i][x+j]).pid == pid) {
-                // This is a plant tile of the same player, retry
-                expandPlant(newBoard, pid, x+j, y+i);
+                // This is a plant tile of the same player, fail
+                // expandPlant(newBoard, pid, x+j, y+i);
             }
             else if ((plants[y+i][x+j]).pid != pid) {
                 // This is a plant tile of a different player (to attack)
@@ -327,12 +330,12 @@ io.on('connection', function(socket) {
         case 'waterbucket':
             console.log('Water bucket used');
             if (board[data.y][data.x] === 1)
-                powerupPlant(data.x, data.y, 1);
+                powerupPlant(data.x, data.y, 2);
             break;
         case 'seeds':
             console.log('Seeds used');
             if (board[data.y][data.x] === 1)
-                powerupPlant(data.x, data.y, 2);
+                powerupPlant(data.x, data.y, 1);
             break;
         case 'boots':
             console.log("Boots used");
@@ -371,4 +374,4 @@ io.on('connection', function(socket) {
 setInterval(gameLoop, 1000);
 app.use(express.static(__dirname));
 http.listen(port);
-console.log('Listening on port '+port);
+console.log('Listening on port '+ port);

@@ -80,6 +80,7 @@ var waterBucket = new Image();
 var boots       = new Image();
 var house       = new Image();
 var tilled      = new Image();
+var seeds       = new Image();
 
 var mouseX = null;
 var mouseY = null;
@@ -184,6 +185,7 @@ function drawOverlayer(xmin, ymin, xmax, ymax, board_tileLength) {
                         drawSprite(waterBucket, x*tl-xmin+tl/9, y*tl-ymin+tl/9, tl*3/4, tl*3/4, 1);
                         break;
                     case (3):
+                        drawSprite(seeds, x*tl-xmin+tl/9, y*tl-ymin+tl/9, tl*3/4, tl*3/4, 1);
                         break;
                     case (4):
                         drawSprite(boots, x*tl-xmin, y*tl-ymin, tl, tl, 1);
@@ -265,7 +267,7 @@ function drawCurrentPowerup() {
             drawSprite(waterBucket, 185, 18, 40, 40);
             break;
         case ('seeds'):
-            drawSprite();
+            drawSprite(seeds, 185, 18, 40, 40);
             break;
         case ('boots'):
             drawSprite(boots, 185, 18, 40, 40);
@@ -375,6 +377,7 @@ function initImages() {
     boots.src       = 'sprites/boots.png';
     house.src       = 'sprites/house.png';
     tilled.src      = 'sprites/tilled.jpg';
+    seeds.src       = 'sprites/seeds.png'
 }
 
 function initSocket(socket) {
