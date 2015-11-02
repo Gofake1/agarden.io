@@ -116,12 +116,9 @@ function changePlant(changeID, newID) {
             }
         }
     }
-    //users[changeID].connected = false;
-    //socket.disconnect();
-    io.emit('aDisconnect', users);
-
-    // trigger a game over screen for users[changeID]
-    // socket.emit('gameOver', changeID);
+    
+    users[changeID].connected = false;
+    io.emit('playerLost', {id:changeID});
 }
 
 function attackPlant(attackingType, strength, power, powerTime, x, y) {
@@ -142,7 +139,7 @@ function attackPlant(attackingType, strength, power, powerTime, x, y) {
         // if we're capturing a house
         if (overlayer[y][x] === 1) {
             overlayer[y][x] = 0; 
-            io.emit("overlayerUpdate", {x:data.x, y:data.y, value:0});
+            io.emit("overlayerUpdate", {x:x, y:y, value:0});
             changePlant(temp, attackingType);
         }
     }

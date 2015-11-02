@@ -464,8 +464,10 @@ function initSocket(socket) {
         allPlayers = data.users;
     });
 
-    socket.on('gameOver', function(data) {
-        
+    socket.on('playerLost', function(data) {
+       if (data.id === thisPlayer.id) {
+            $('#gameoverScreen').modal();
+       } 
     });
 }
 
