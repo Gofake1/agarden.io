@@ -120,7 +120,9 @@ function changePlant(changeID, newID) {
     //users[changeID].connected = false;
     //socket.disconnect();
     io.emit('aDisconnect', users);
+
     // trigger a game over screen for users[changeID]
+    // socket.emit('gameOver', changeID);
 }
 
 function attackPlant(attackingType, strength, power, powerTime, x, y) {

@@ -463,6 +463,10 @@ function initSocket(socket) {
     socket.on('usersUpdate', function(data) {
         allPlayers = data.users;
     });
+
+    socket.on('gameOver', function(data) {
+        
+    });
 }
 
 // Picks up whatever item the player is standing on
