@@ -95,7 +95,6 @@ function powerupSpecificPlant(x, y, powerup) {
 
 // Gives a boost to some plants
 function powerupPlant(x, y, powerup) {
-    console.log("Powered up!");
     powerupSpecificPlant(x,y,powerup);
     powerupSpecificPlant(x+1,y,powerup);
     powerupSpecificPlant(x-1,y,powerup);
@@ -251,21 +250,20 @@ function agePlant(newBoard, x, y) {
     // Grow the plant
     var iterations = 1;
     if (plants[y][x].power === 2) // waterbucket
-        iterations += 1;
+        iterations += 2;
     while (iterations)
     {
         iterations--;
         if((plants[y][x]).rank <= 0.5) {
             (plants[y][x]).rank += 0.03;
         }
-        if (plants[y][x].powerTime > 0)
+    }
+    if (plants[y][x].powerTime > 0)
+    {
+        plants[y][x].powerTime--;
+        if (plants[y][x].powerTime === 0)
         {
-            plants[y][x].powerTime--;
-            if (plants[y][x].powerTime === 0)
-            {
-                plants[y][x].power = 0;
-                console.log("power down plant");
-            }
+            plants[y][x].power = 0;
         }
     }
 }
