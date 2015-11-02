@@ -12,13 +12,14 @@ var Board = function(numRows, numCols, value) {
     return this.array;
 };
 
-var Plant = function(rank, pid, power) {
-    var plant;
-    plant.rank  = rank;
-    plant.pid   = pid;
-    plant.power = power;
-    return plant;
-};
+// var Plant = function(rank, pid, power) {
+//     var plant;
+//     plant.rank  = rank;
+//     plant.pid   = pid;
+//     plant.power = power;
+//     plant.powerTime = 0;
+//     return plant;
+// };
 
 var thisPlayer = {
     id:       null,

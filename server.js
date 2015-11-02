@@ -21,6 +21,7 @@ var Plant = function(rank, pid, power) {
     this.rank = rank;
     this.pid = pid;
     this.power = power;
+    this.powerTime = 0;
 };
 
 // Total number of tiles in game 
@@ -87,25 +88,14 @@ function powerupSpecificPlant(x, y, powerup) {
     if (board[y][x] === 1)
     {
         (plants[y][x]).power = powerup;
+        (plants[y][x]).powerTime = 30;
         io.emit("plantsUpdate", {x:x, y:y, plant:plants[y][x]});
     }
 }
 
 // Gives a boost to some plants
-function powerdownPlant(x, y) {  
-    powerupSpecificPlant(x,y,0);
-    powerupSpecificPlant(x+1,y,0);
-    powerupSpecificPlant(x-1,y,0);
-    powerupSpecificPlant(x,y+1,0);
-    powerupSpecificPlant(x+1,y+1,0);
-    powerupSpecificPlant(x-1,y+1,0);
-    powerupSpecificPlant(x,y-1,0);
-    powerupSpecificPlant(x+1,y-1,0);
-    powerupSpecificPlant(x-1,y-1,0);
-}
-
-// Gives a boost to some plants
-function powerupPlant(x, y, powerup) {   
+function powerupPlant(x, y, powerup) {
+    console.log("Powered up!");
     powerupSpecificPlant(x,y,powerup);
     powerupSpecificPlant(x+1,y,powerup);
     powerupSpecificPlant(x-1,y,powerup);
@@ -115,20 +105,21 @@ function powerupPlant(x, y, powerup) {
     powerupSpecificPlant(x,y-1,powerup);
     powerupSpecificPlant(x+1,y-1,powerup);
     powerupSpecificPlant(x-1,y-1,powerup);
-    setTimeout(powerdownPlant, 30000, x, y);
 }
 
-function attackPlant(newBoard, attackingType, strength, x, y) {
+function attackPlant(attackingType, strength, power, powerTime, x, y) {
     if ((plants[y][x]).rank > 0.1) {
         // This plant is too strong to take over, attack
         (plants[y][x]).rank -= strength;
         if (plants[y][x].rank <= 0)
-            plants[y][x] = .01;
+            plants[y][x].rank = .01;
     }
     else if ((plants[y][x]).rank <= 0.15) {
-        // This plant is weak, take it over
+        // This plant is weak, take it over!!!
         plants[y][x].pid = attackingType;
         plants[y][x].rank = .2;
+        plants[y][x].power = power;
+        plants[y][x].powerTime = powerTime;
     }
 }
 
@@ -217,24 +208,40 @@ function expandPlant(newBoard, pid, x, y) {
             }
             else if (!isNaN(board[y+i][x+j]) && board[y+i][x+j] === 0) {
                 // This is a dirt tile, fail
-                //expandPlant(newBoard, pid, x+j, y+i);
+                // expandPlant(newBoard, pid, x+j, y+i);
             }
             else if ((plants[y+i][x+j]).pid == pid) {
-                // This is a plant tile of the same player, fail
+                // This is a plant tile of the same player, retry
                 // expandPlant(newBoard, pid, x+j, y+i);
             }
             else if ((plants[y+i][x+j]).pid != pid) {
                 // This is a plant tile of a different player (to attack)
-                attackPlant(newBoard, pid, strength, x+j, y+i);
+                attackPlant(pid, strength, plants[y][x].power, plants[y][x].powerTime, x+j, y+i);
             }
         }
     }
 }
 
-function growPlant(newBoard, x, y) {
+function agePlant(newBoard, x, y) {
     // Grow the plant
-    if((plants[y][x]).rank <= 0.5) {
-        (plants[y][x]).rank += 0.03;
+    var iterations = 1;
+    if (plants[y][x].power === 2) // waterbucket
+        iterations += 1;
+    while (iterations)
+    {
+        iterations--;
+        if((plants[y][x]).rank <= 0.5) {
+            (plants[y][x]).rank += 0.03;
+        }
+        if (plants[y][x].powerTime > 0)
+        {
+            plants[y][x].powerTime--;
+            if (plants[y][x].powerTime === 0)
+            {
+                plants[y][x].power = 0;
+                console.log("power down plant");
+            }
+        }
     }
 }
 
@@ -254,7 +261,7 @@ function processBoard() {
                         break;
                     case (1):
                         expandPlant(newBoard, (plants[y][x]).pid, x, y);
-                        growPlant(newBoard, x, y);
+                        agePlant(newBoard, x, y);
                         break;
                     case ('t'):
                         // If tilled for more than 120 seconds, untill
@@ -312,7 +319,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('1', function(data) { // Till
-        console.log('socket.on:1');
+        //console.log('socket.on:1');
         board[data.y][data.x] = 't';
         tilled[data.y.toString()+data.x.toString()] = new Date();
         io.emit("boardUpdate", {x:data.x, y:data.y, value:'t'});
