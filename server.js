@@ -142,6 +142,7 @@ function attackPlant(attackingType, strength, power, powerTime, x, y) {
         // if we're capturing a house
         if (overlayer[y][x] === 1) {
             overlayer[y][x] = 0; 
+            io.emit("overlayerUpdate", {x:data.x, y:data.y, value:0});
             changePlant(temp, attackingType);
         }
     }
