@@ -130,13 +130,13 @@ function attackPlant(attackingType, strength, power, powerTime, x, y) {
         // This plant is too strong to take over, attack
         (plants[y][x]).rank -= strength;
         if (plants[y][x].rank <= 0)
-            plants[y][x].rank = .01;
+            plants[y][x].rank = 0.01;
     }
     else if ((plants[y][x]).rank <= 0.15) {
         // This plant is weak, take it over!!!
         var temp = plants[y][x].pid; 
         plants[y][x].pid = attackingType;
-        plants[y][x].rank = .2;
+        plants[y][x].rank = 0.2;
         plants[y][x].power = power;
         plants[y][x].powerTime = powerTime;
 

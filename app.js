@@ -72,7 +72,7 @@ var plants          = Board(Map.gridHeight, Map.gridWidth, 0);
 var allPlayers      = {};
 var scores          = {};
 var leaderboard     = [];
-var deadColor;
+var deadColor       = '#BCBCBC';
 
 // Sprites
 var dirt        = new Image();
