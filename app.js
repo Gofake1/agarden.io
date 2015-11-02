@@ -543,7 +543,7 @@ function init() {
 
 // Start a new game
 function replay() {
-    socket.emit('newPlayer');
+    socket.emit('newPlayer', {name: thisPlayer.name});
 }
 
 socket.on('connected');
