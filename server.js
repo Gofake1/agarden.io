@@ -84,7 +84,6 @@ function addPowerups() {
 
 function powerupSpecificPlant(x, y, powerup) {
     // only power up a plant if it exists in the game
-    console.log("x,y: " + x + "," + y);
     if (board[y][x] === 1)
     {
         (plants[y][x]).power = powerup;
@@ -94,7 +93,6 @@ function powerupSpecificPlant(x, y, powerup) {
 
 // Gives a boost to some plants
 function powerdownPlant(x, y) {  
-    console.log("Powering down plants around: " + x + "," + y); 
     powerupSpecificPlant(x,y,0);
     powerupSpecificPlant(x+1,y,0);
     powerupSpecificPlant(x-1,y,0);
@@ -117,7 +115,6 @@ function powerupPlant(x, y, powerup) {
     powerupSpecificPlant(x,y-1,powerup);
     powerupSpecificPlant(x+1,y-1,powerup);
     powerupSpecificPlant(x-1,y-1,powerup);
-    console.log("Powering up plants around: " + x + "," + y); 
     setTimeout(powerdownPlant, 30000, x, y);
 }
 
@@ -125,10 +122,13 @@ function attackPlant(newBoard, attackingType, strength, x, y) {
     if ((plants[y][x]).rank > 0.1) {
         // This plant is too strong to take over, attack
         (plants[y][x]).rank -= strength;
+        if (plants[y][x].rank <= 0)
+            plants[y][x] = .01;
     }
     else if ((plants[y][x]).rank <= 0.15) {
         // This plant is weak, take it over
-        plants[y][x] = attackingType;
+        plants[y][x].pid = attackingType;
+        plants[y][x].rank = .2;
     }
 }
 
@@ -140,12 +140,13 @@ function expandPlant(newBoard, pid, x, y) {
     if ((plants[y][x]).power === 1)   // Seeds
     {   
         options = 9;
-        iterations = 9;
+        iterations = 4;
     }
     if ((plants[y][x]).power === 2)   // Waterbucket
+    {
         strength += 0.25;
-    if ((plants[y][x]).power === 3)   // ??
-        iterations = 3;
+        iterations = 9;
+    }
 
     while (iterations > 0) {
         iterations--;
@@ -203,7 +204,7 @@ function expandPlant(newBoard, pid, x, y) {
                     // Expand plant
                     newBoard[y+i][x+j] = 1;
                     // Create a plant at that location
-                    plants[y+i][x+j] = new Plant(0.1, pid, 0);
+                    plants[y+i][x+j] = new Plant(0.15, pid, 0);
 
                     // Score keeping
                     // Users who have left the game no longer earn points, 
@@ -224,7 +225,7 @@ function expandPlant(newBoard, pid, x, y) {
             }
             else if ((plants[y+i][x+j]).pid != pid) {
                 // This is a plant tile of a different player (to attack)
-                attackPlant(newBoard, pid, strength, x, y);
+                attackPlant(newBoard, pid, strength, x+j, y+i);
             }
         }
     }
@@ -256,8 +257,8 @@ function processBoard() {
                         growPlant(newBoard, x, y);
                         break;
                     case ('t'):
-                        // If tilled for more than 15 seconds, untill
-                        if (Date.now() - tilled[y.toString()+x.toString()] > 15000) {
+                        // If tilled for more than 120 seconds, untill
+                        if (Date.now() - tilled[y.toString()+x.toString()] > 120000) {
                             board[y][x] = 0;
                             delete tilled[y.toString()+x.toString()];
                         }
