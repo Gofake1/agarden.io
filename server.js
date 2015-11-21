@@ -43,15 +43,15 @@ var deadColor   = '#BCBCBC';
 function addNewPlayer(id, name) {
     var i = true;
     while (i) {
-        color = '#'+(Math.random().toString(16)+'000000').slice(2,8);
+        var color = '#'+(Math.random().toString(16)+'000000').slice(2,8);
         if (color != deadColor) {
             i = false; 
         }
     }
     // TODO: check if start position is valid
-    x = Math.floor(Math.random()*gridWidth*tileLength);
-    y = Math.floor(Math.random()*gridHeight*tileLength);
-    newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, powerup:'house', connected:true };
+    var x = Math.floor(Math.random()*gridWidth*tileLength);
+    var y = Math.floor(Math.random()*gridHeight*tileLength);
+    var newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, powerup:'house', connected:true };
     users[id] = newPlayer;
     scores[id] = 0;
     leaderboard.push(id); // Remove this later
