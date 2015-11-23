@@ -217,23 +217,23 @@ QUnit.test('Regression Tests: usePowerup', function(assert) {
 QUnit.test('New Feature Tests: incrementPowerupsUsed tests', function(assert) {
     function testIncrementPowerupsUsed() {
 
-    var thisPlayer = {
-    id:       null,
-    x:        null,
-    y:        null,
-    name:     '',
-    speed:    125,
-    color:    null,
-    powerup:  '',
-    connected:true,
-    powerupsUsed: 0,
-    captured: null
-    };
-    var powerupsBefore = thisPlayer.powerupsUsed;
+        var thisPlayer = {
+            id:       null,
+            x:        null,
+            y:        null,
+            name:     '',
+            speed:    125,
+            color:    null,
+            powerup:  '',
+            connected:true,
+            powerupsUsed: 0,
+            captured: null
+        };
+        var powerupsBefore = thisPlayer.powerupsUsed;
 
-    incrementPowerupsUsed(thisPlayer);
+        incrementPowerupsUsed(thisPlayer);
 
-    assert.equal(thisPlayer.powerupsUsed, powerupsBefore+1);
+        assert.equal(thisPlayer.powerupsUsed, powerupsBefore+1);
 
     }
 
@@ -261,13 +261,13 @@ QUnit.test('New Feature Tests: Increment Captured', function(assert) {
     testCaptureCount();
 });
 
-QUnit.test('New Feature Tests: timeAlive', function(assert) {
+QUnit.asyncTest('New Feature Tests: timeAlive', function(assert) {
     function testTimeAlive() {
         var testPlayer = addNewPlayer(1337, "Foo");
         setTimeout(function() {
             removePlayer(1337);
+            assert.equal(timeAlive(startTime, endTime), 5000);
         }, 5000);
-        assert.equal(timeAlive(startTime, endTime), 5000);
     }
 
     testTimeAlive();
