@@ -53,6 +53,7 @@ function addNewPlayer(id, name) {
     users[id] = newPlayer;
     scores[id] = 0;
     leaderboard.push(id); // Remove this later
+    startTime = new Date();
     return newPlayer;
 }
 
@@ -253,7 +254,6 @@ QUnit.test('Regression Tests: Increment Captured', function(assert) {
         attackPlant(attacking_id, strength, 0, 0, 0, 1);
         attackPlant(attacking_id, strength, 0, 0, 1, 1);
         assert.equal(1, users[attacking_id].captured);
-
     }
 
     testCaptureCount();
@@ -261,7 +261,7 @@ QUnit.test('Regression Tests: Increment Captured', function(assert) {
 
 QUnit.test('New Feature Tests: timeAlive', function(assert) {
     function testTimeAlive() {
-        addNewPlayer(1337, "Foo");
+        var testPlayer = addNewPlayer(1337, "Foo");
         setTimeout(function() {
             removePlayer(1337);
         }, 5000);
