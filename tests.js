@@ -8,7 +8,7 @@ var Board = function(numRows, numCols, value) {
         array[i] = column;
     }
     return array;
-}
+};
 
 var Plant = function(rank, pid, power) {
     this.rank = rank;
@@ -16,8 +16,6 @@ var Plant = function(rank, pid, power) {
     this.power = power;
     this.powerTime = 0;
 };
-
-
 
 // Total number of tiles in game 
 var gridHeight = 50;
@@ -49,7 +47,7 @@ function addNewPlayer(id, name) {
     // TODO: check if start position is valid
     var x = Math.floor(Math.random()*gridWidth*tileLength);
     var y = Math.floor(Math.random()*gridHeight*tileLength);
-    var newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, powerup:'house', connected:true, captured:0 };
+    var newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, powerup:'house', connected:true };
     users[id] = newPlayer;
     scores[id] = 0;
     leaderboard.push(id); // Remove this later
@@ -74,8 +72,6 @@ function attackPlant(attackingType, strength, power, powerTime, x, y) {
         plants[y][x].rank = 0.2;
         plants[y][x].power = power;
         plants[y][x].powerTime = powerTime;
-        // Increment plants captured here
-        users[attackingType].captured++;
 
         // if we're capturing a house
         if (overlayer[y][x] === 1) {
@@ -130,6 +126,13 @@ function usePowerup(data) {
     }
 }
 
+function incrementPowerupsUsed(player) {
+    player.powerupsUsed += 1;
+}
+
+function timeAlive(player) {
+}
+
 //////// END FUNCTIONS FOR TESTS ///////////////////
 
 
@@ -137,29 +140,29 @@ function usePowerup(data) {
 
 // Tests
 
-QUnit.test('Regression Tests: addNewPlayer tests', function(assert) {
-	function testAddPlayer(id, name, newPlayer) {
-		var testPlayer = addNewPlayer(id, name);
-		assert.equal(testPlayer.name, newPlayer.name);
+QUnit.test('Regression Tests: addNewPlayer', function(assert) {
+    function testAddPlayer(id, name, newPlayer) {
+        var testPlayer = addNewPlayer(id, name);
+        assert.equal(testPlayer.name, newPlayer.name);
         assert.equal(testPlayer.id, newPlayer.id);
         assert.equal(users[id].name, newPlayer.name);
-	}
+    }
 
-	var newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, powerup:'house', connected:true, captured:0 };
-	testAddPlayer(1, 'Spencer', newPlayer);
+    var newPlayer = { id:1, x:0, y:0, name:'Spencer', speed:125, color:'red', powerup:'house', connected:true };
+    testAddPlayer(1, 'Spencer', newPlayer);
 });
 
 
-QUnit.test('Regression Tests: attackPlant tests', function(assert) {
+QUnit.test('Regression Tests: attackPlant', function(assert) {
     function testAttackPlant() {
         // Hard code board values for tests
         var attacking_id = '0';
         var defending_id = '1';
         var defending_health_start = 1;
-        var strength = .3;
+        var strength = 0.3;
         plants[0][0] = new Plant(1, attacking_id, 0);
         plants[0][1] = new Plant(1, attacking_id, 0);
-        plants[1][0] = new Plant(.10, defending_id, 0);
+        plants[1][0] = new Plant(0.10, defending_id, 0);
         plants[1][1] = new Plant(defending_health_start, defending_id, 0);
         assert.equal(defending_id, plants[1][0].pid);
         assert.equal(defending_health_start, plants[1][1].rank);
@@ -172,7 +175,7 @@ QUnit.test('Regression Tests: attackPlant tests', function(assert) {
     testAttackPlant();
 });
 
-QUnit.test('Regression Tests: usePowerup tests', function(assert) {
+QUnit.test('Regression Tests: usePowerup', function(assert) {
     function testUsePowerup() {
         var original_overlayer_spot = 0;
         var house_value = 1;
@@ -204,10 +207,6 @@ QUnit.test('Regression Tests: usePowerup tests', function(assert) {
     testUsePowerup();
 });
 
-function incrementPowerupsUsed()
-{
-}
-
 QUnit.test('New Feature Tests: incrementPowerupsUsed tests', function(assert) {
     function testIncrementPowerupsUsed() {
 
@@ -220,12 +219,12 @@ QUnit.test('New Feature Tests: incrementPowerupsUsed tests', function(assert) {
     color:    null,
     powerup:  '',
     connected:true,
-    powerupsUsed: 0,
-    captured: null
+    powerupsUsed: 0
+    //captured: null
     };
     var powerupsBefore = thisPlayer.powerupsUsed;
 
-    incrementPowerupsUsed();
+    incrementPowerupsUsed(thisPlayer);
 
     assert.equal(thisPlayer.powerupsUsed, powerupsBefore+1);
 
@@ -234,18 +233,17 @@ QUnit.test('New Feature Tests: incrementPowerupsUsed tests', function(assert) {
     testIncrementPowerupsUsed();
 });
 
-
-QUnit.test('New Feature Tests: Increment Captured tests', function(assert) {
+QUnit.test('Regression Tests: Increment Captured', function(assert) {
     function testCaptureCount() {
          // Hard code board values for tests
         var attacking_id = '0';
         var defending_id = '1';
         var defending_health_start = 1;
-        var strength = .3;
+        var strength = 0.3;
         assert.equal(0, users[attacking_id].captured);
         plants[0][0] = new Plant(1, attacking_id, 0);
         plants[0][1] = new Plant(1, attacking_id, 0);
-        plants[1][0] = new Plant(.10, defending_id, 0);
+        plants[1][0] = new Plant(0.10, defending_id, 0);
         plants[1][1] = new Plant(defending_health_start, defending_id, 0);
         attackPlant(attacking_id, strength, 0, 0, 0, 1);
         attackPlant(attacking_id, strength, 0, 0, 1, 1);
@@ -255,5 +253,15 @@ QUnit.test('New Feature Tests: Increment Captured tests', function(assert) {
 
     testCaptureCount();
 });
-// Expand plant
-// Key Input
+
+QUnit.test('New Feature Tests: timeAlive', function(assert) {
+    function testTimeAlive() {
+        addNewPlayer(1337, "Foo");
+        setTimeout(function() {
+            removePlayer(1337);
+        }, 5000);
+        assert.equal(timeAlive(1337), 5000);
+    }
+
+    testTimeAlive();
+});
