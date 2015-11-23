@@ -54,6 +54,10 @@ function addNewPlayer(id, name) {
     return newPlayer;
 }
 
+function removePlayer(id) {
+    delete users[id];
+}
+
 function attackPlant(attackingType, strength, power, powerTime, x, y) {
     if ((plants[y][x]).rank > 0.1) {
         // This plant is too strong to take over, attack
