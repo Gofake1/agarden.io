@@ -561,8 +561,8 @@ function replay() {
 
 // Prints the time alive to the game over modal
 function printTimeAlive() {
-
-    var timeStr = "Time Alive: ";
+    var time = timeAlive();
+    var timeStr = "Time Alive: " + time;
     document.getElementById("time").innerHTML = timeStr;
 }
 
