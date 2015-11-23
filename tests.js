@@ -198,5 +198,36 @@ QUnit.test('Regression Tests: usePowerup tests', function(assert) {
     testUsePowerup();
 });
 
+function incrementPowerupsUsed()
+{
+}
+
+QUnit.test('New Feature Tests: incrementPowerupsUsed tests', function(assert) {
+    function testIncrementPowerupsUsed() {
+
+    var thisPlayer = {
+    id:       null,
+    x:        null,
+    y:        null,
+    name:     '',
+    speed:    125,
+    color:    null,
+    powerup:  '',
+    connected:true,
+    powerupsUsed: 0
+    //captured: null
+    };
+    var powerupsBefore = thisPlayer.powerupsUsed;
+
+    incrementPowerupsUsed();
+
+    assert.equal(thisPlayer.powerupsUsed, powerupsBefore+1);
+
+    }
+
+    testIncrementPowerupsUsed();
+});
+
+
 // Expand plant
 // Key Input
