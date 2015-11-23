@@ -8,7 +8,7 @@ var Board = function(numRows, numCols, value) {
         array[i] = column;
     }
     return array;
-}
+};
 
 var Plant = function(rank, pid, power) {
     this.rank = rank;
@@ -106,10 +106,10 @@ QUnit.test('Regression 2) attackPlant tests', function(assert) {
         var attacking_id = '0';
         var defending_id = '1';
         var defending_health_start = 1;
-        var strength = .3;
+        var strength = 0.3;
         plants[0][0] = new Plant(1, attacking_id, 0);
         plants[0][1] = new Plant(1, attacking_id, 0);
-        plants[1][0] = new Plant(.10, defending_id, 0);
+        plants[1][0] = new Plant(0.10, defending_id, 0);
         plants[1][1] = new Plant(defending_health_start, defending_id, 0);
         assert.equal(defending_id, plants[1][0].pid);
         assert.equal(defending_health_start, plants[1][1].rank);
