@@ -325,6 +325,7 @@ function keyInput(key) {
         if (thisPlayer.powerup === 'boots')
             boostSpeed();
         socket.emit('2', data);
+        // increment number of powerups used
         thisPlayer.powerup = '';
     }
 }

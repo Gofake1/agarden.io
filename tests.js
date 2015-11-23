@@ -1,3 +1,5 @@
+// Code from server.js
+
 var Board = function(numRows, numCols, value) {
     var array = [];
     for (var i = 0; i < numRows; i++) {
@@ -46,6 +48,8 @@ function addNewPlayer(id, name) {
 }
 
 
+// Code from app.js
+
 
 
 // Tests
@@ -54,10 +58,11 @@ QUnit.test('addNewPlayer tests', function(assert) {
 	function testAddPlayer(id, name, newPlayer) {
 		var testPlayer = addNewPlayer(id, name);
 		assert.equal(testPlayer.name, newPlayer.name);
+		assert.equal(testPlayer.id, newPlayer.id);
+		assert.equal(users[id].name, newPlayer.name);
 	}
 
 	var newPlayer = { id:1, x:0, y:0, name:'Spencer', speed:125, color:'red', powerup:'house', connected:true };
 	testAddPlayer(1, 'Spencer', newPlayer);
 
 });
-
