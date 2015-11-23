@@ -371,6 +371,7 @@ function playerMove() {
 
 function incrementPowerupsUsed()
 {
+    thisPlayer.powerupsUsed += 1;
 }
 
 // This function will be used to load images prior to their use
@@ -578,8 +579,8 @@ function printPlantsCaptured() {
 
 // Prints the number of powerups used to the game over modal
 function printPowerupsUsed() {
-
-    powerupStr = "Powerups Used: ";
+    var used = thisPlayer.powerupsUsed;
+    powerupStr = "Powerups Used: " + used;
     document.getElementById("powerups").innerHTML = powerupStr;
 
 }
