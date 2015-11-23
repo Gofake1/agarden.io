@@ -169,6 +169,7 @@ QUnit.test('Regression Tests: attackPlant', function(assert) {
         plants[0][1] = new Plant(1, attacking_id, 0);
         plants[1][0] = new Plant(0.10, defending_id, 0);
         plants[1][1] = new Plant(defending_health_start, defending_id, 0);
+        users[attacking_id] = { id:attacking_id, x:0, y:0, name:'Spencer', speed:125, color:'red', powerup:'house', connected:true, captured:0 };
         assert.equal(defending_id, plants[1][0].pid);
         assert.equal(defending_health_start, plants[1][1].rank);
         attackPlant(attacking_id, strength, 0, 0, 0, 1);
@@ -238,13 +239,14 @@ QUnit.test('New Feature Tests: incrementPowerupsUsed tests', function(assert) {
     testIncrementPowerupsUsed();
 });
 
-QUnit.test('Regression Tests: Increment Captured', function(assert) {
+QUnit.test('New Feature Tests: Increment Captured', function(assert) {
     function testCaptureCount() {
          // Hard code board values for tests
         var attacking_id = '0';
         var defending_id = '1';
         var defending_health_start = 1;
         var strength = 0.3;
+        users[attacking_id] = { id:attacking_id, x:0, y:0, name:'Spencer', speed:125, color:'red', powerup:'house', connected:true, captured:0 };
         assert.equal(0, users[attacking_id].captured);
         plants[0][0] = new Plant(1, attacking_id, 0);
         plants[0][1] = new Plant(1, attacking_id, 0);
