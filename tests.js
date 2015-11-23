@@ -124,6 +124,11 @@ function usePowerup(data) {
     }
 }
 
+function incrementPowerupsUsed(player)
+{
+    player.powerupsUsed += 1;
+}
+
 //////// END FUNCTIONS FOR TESTS ///////////////////
 
 
@@ -198,10 +203,6 @@ QUnit.test('Regression Tests: usePowerup tests', function(assert) {
     testUsePowerup();
 });
 
-function incrementPowerupsUsed()
-{
-}
-
 QUnit.test('New Feature Tests: incrementPowerupsUsed tests', function(assert) {
     function testIncrementPowerupsUsed() {
 
@@ -219,7 +220,7 @@ QUnit.test('New Feature Tests: incrementPowerupsUsed tests', function(assert) {
     };
     var powerupsBefore = thisPlayer.powerupsUsed;
 
-    incrementPowerupsUsed();
+    incrementPowerupsUsed(thisPlayer);
 
     assert.equal(thisPlayer.powerupsUsed, powerupsBefore+1);
 
