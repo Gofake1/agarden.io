@@ -145,7 +145,8 @@ function drawGrid(xmin, ymin, xmax, ymax, board_tileLength) {
         for (var x = 0; x < Map.gridWidth; x++) {
             xLength = x*Viewport.board_tileLength;
             yLength = y*Viewport.board_tileLength;
-            if (xLength>=xmin-Viewport.board_tileLength && xLength<xmax && yLength>=ymin-Viewport.board_tileLength && yLength<ymax) {
+            if (xLength>=xmin-Viewport.board_tileLength && xLength<xmax && 
+                yLength>=ymin-Viewport.board_tileLength && yLength<ymax) {
                 ctx.strokeRect(xLength-xmin, yLength-ymin, Viewport.board_tileLength, Viewport.board_tileLength);
                 switch (Map.board[y][x]) {
                     // We can use characters to represent non-plant tiles
@@ -571,8 +572,8 @@ function printScore() {
 
 // Prints the number of plants captured to the game over modal
 function printPlantsCaptured() {
-
-    plantStr = "Plants Captured: ";
+    var plants = thisPlayer.captured;
+    plantStr = "Plants Captured: " + plants;
     document.getElementById("plants").innerHTML = plantStr;
 }
 
