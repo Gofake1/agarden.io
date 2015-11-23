@@ -266,7 +266,7 @@ QUnit.asyncTest('New Feature Tests: timeAlive', function(assert) {
         var testPlayer = addNewPlayer(1337, "Foo");
         setTimeout(function() {
             removePlayer(1337);
-            assert.equal(timeAlive(startTime, endTime), 5000);
+            assert.ok(timeAlive(startTime, endTime), "number succeeds");
         }, 5000);
     }
 
