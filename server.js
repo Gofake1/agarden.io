@@ -61,6 +61,11 @@ function addNewPlayer(id, name) {
     return newPlayer;
 }
 
+function removePlayer(id) {
+    delete users[id];
+    endTime = new Date();
+}
+
 // Updates the order of the leaderboard
 function updateLeaderboard() {
     // Get the highest score at the front of the array

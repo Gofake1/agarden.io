@@ -369,9 +369,12 @@ function playerMove() {
     }
 }
 
-function incrementPowerupsUsed()
-{
+function incrementPowerupsUsed() {
     thisPlayer.powerupsUsed += 1;
+}
+
+function timeAlive(start, end) {
+    return end - start;
 }
 
 // This function will be used to load images prior to their use
