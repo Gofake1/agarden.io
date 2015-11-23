@@ -17,8 +17,6 @@ var Plant = function(rank, pid, power) {
     this.powerTime = 0;
 };
 
-
-
 // Total number of tiles in game 
 var gridHeight = 50;
 var gridWidth  = 100;
@@ -125,3 +123,9 @@ QUnit.test('Regression 2) attackPlant tests', function(assert) {
 
 // Expand plant
 // Key Input
+
+QUnit.test('Feature test 1) timeAlive tests', function(assert) {
+    function testTimeAlive() {
+        
+    }
+});
