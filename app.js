@@ -29,7 +29,8 @@ var thisPlayer = {
     speed:    125,
     color:    null,
     powerup:  '',
-    connected:true
+    connected:true,
+    powerupsUsed: 0
     //captured: null
 };
 
@@ -366,6 +367,10 @@ function playerMove() {
             thisPlayer.y -= (((relPosY - mov/2) - mouseY + Viewport.board_tileLength/2)/thisPlayer.speed);
         }
     }
+}
+
+function incrementPowerupsUsed()
+{
 }
 
 // This function will be used to load images prior to their use

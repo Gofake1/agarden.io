@@ -305,6 +305,33 @@ function processBoard() {
     io.emit('boardUpdateAll', { board:board, plants:plants });
 }
 
+function usePowerup(data) {
+    switch (data.powerup) {
+    case 'house':
+        console.log('House placed at x:'+data.x+' and y:'+data.y);
+        overlayer[data.y][data.x] = 1;
+        board[data.y][data.x] = 1;
+        plants[data.y][data.x] = new Plant(0.5, data.playerid, 0);
+        io.emit('overlayerUpdate', {x:data.x, y:data.y, value:data.id});
+        break;
+    case 'waterbucket':
+        console.log('Water bucket used');
+        if (board[data.y][data.x] === 1)
+            powerupPlant(data.x, data.y, 2);
+        break;
+    case 'seeds':
+        console.log('Seeds used');
+        if (board[data.y][data.x] === 1)
+            powerupPlant(data.x, data.y, 1);
+        break;
+    case 'boots':
+        console.log("Boots used");
+        break;
+    default:
+        break;
+    }
+}
+
 function gameLoop() {
     processBoard();
     addPowerups();
@@ -353,30 +380,7 @@ io.on('connection', function(socket) {
 
     socket.on('2', function(data) { // Use power up
         console.log('socket.on:2');
-        switch (data.powerup) {
-        case 'house':
-            console.log('House placed at x:'+data.x+' and y:'+data.y);
-            overlayer[data.y][data.x] = 1;
-            board[data.y][data.x] = 1;
-            plants[data.y][data.x] = new Plant(0.5, data.playerid, 0);
-            io.emit('overlayerUpdate', {x:data.x, y:data.y, value:data.id});
-            break;
-        case 'waterbucket':
-            console.log('Water bucket used');
-            if (board[data.y][data.x] === 1)
-                powerupPlant(data.x, data.y, 2);
-            break;
-        case 'seeds':
-            console.log('Seeds used');
-            if (board[data.y][data.x] === 1)
-                powerupPlant(data.x, data.y, 1);
-            break;
-        case 'boots':
-            console.log("Boots used");
-            break;
-        default:
-            break;
-        }
+        usePowerup(data);
         socket.emit('powerupUsed', data);
     });
 
