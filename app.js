@@ -571,8 +571,8 @@ function printScore() {
 
 // Prints the number of plants captured to the game over modal
 function printPlantsCaptured() {
-
-    plantStr = "Plants Captured: ";
+    var plants = thisPlayer.captured;
+    plantStr = "Plants Captured: " + plants;
     document.getElementById("plants").innerHTML = plantStr;
 }
 
