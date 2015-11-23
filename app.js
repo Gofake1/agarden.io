@@ -72,6 +72,8 @@ var scores          = {};
 var leaderboard     = [];
 var deadColor       = '#BCBCBC';
 var scoreHistory    = {};
+var startTime;
+var endTime;
 
 // Sprites
 var dirt        = new Image();
@@ -404,6 +406,7 @@ function initSocket(socket) {
         Map.board     = data.board;
         Map.overlayer = data.overlayer;
         deadColor     = data.deadColor;
+        startTime     = new Date();
     });
 
     socket.on('newJoin', function(data) {
@@ -476,6 +479,7 @@ function initSocket(socket) {
             printScore();
             printPlantsCaptured();
             printPowerupsUsed();
+            endTime = new Date();
        } 
     });
 }
@@ -561,8 +565,7 @@ function replay() {
 
 // Prints the time alive to the game over modal
 function printTimeAlive() {
-
-    var timeStr = "Time Alive: ";
+    var timeStr = "Time Alive: " + timeAlive(startTime, endTime);
     document.getElementById("time").innerHTML = timeStr;
 }
 
@@ -585,7 +588,6 @@ function printPowerupsUsed() {
     var used = thisPlayer.powerupsUsed;
     powerupStr = "Powerups Used: " + used;
     document.getElementById("powerups").innerHTML = powerupStr;
-
 }
 
 socket.on('connected');
