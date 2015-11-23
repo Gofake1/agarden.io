@@ -178,9 +178,9 @@ QUnit.test('Regression Tests: usePowerup tests', function(assert) {
         board[1][5] = 1;
         plants[1][1] = new Plant(1, '1', 0);
         plants[1][5] = new Plant(1, '1', 0);
-        dataHouse = {playerid:'1', powerup:'house', x:0, y:0};
-        dataWaterBucket = {playerid:'1', powerup:'waterbucket', x:1, y:1};
-        dataSeeds = {playerid:'1', powerup:'seeds', x:5, y:1};
+        var dataHouse = {playerid:'1', powerup:'house', x:0, y:0};
+        var dataWaterBucket = {playerid:'1', powerup:'waterbucket', x:1, y:1};
+        var dataSeeds = {playerid:'1', powerup:'seeds', x:5, y:1};
 
         assert.equal(original_overlayer_spot, overlayer[0][0]);
         assert.equal(plants[1][1].power, no_powerup);
@@ -198,5 +198,28 @@ QUnit.test('Regression Tests: usePowerup tests', function(assert) {
     testUsePowerup();
 });
 
+
+
+QUnit.test('Regression Tests: Increment Captured tests', function(assert) {
+    function testCaptureCount() {
+         // Hard code board values for tests
+        var attacking_id = '0';
+        var defending_id = '1';
+        var defending_health_start = 1;
+        var strength = .3;
+        assert.equal(0, users[attacking_id].captured);
+        plants[0][0] = new Plant(1, attacking_id, 0);
+        plants[0][1] = new Plant(1, attacking_id, 0);
+        plants[1][0] = new Plant(.10, defending_id, 0);
+        plants[1][1] = new Plant(defending_health_start, defending_id, 0);
+        attackPlant(attacking_id, strength, 0, 0, 0, 1);
+        attackPlant(attacking_id, strength, 0, 0, 1, 1);
+        assert.equal(1, users[attacking_id].captured);
+
+    }
+
+    testCaptureCount();
+
+});
 // Expand plant
 // Key Input
