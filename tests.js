@@ -90,6 +90,8 @@ QUnit.test('Regression 1) addNewPlayer tests', function(assert) {
 	function testAddPlayer(id, name, newPlayer) {
 		var testPlayer = addNewPlayer(id, name);
 		assert.equal(testPlayer.name, newPlayer.name);
+        assert.equal(testPlayer.id, newPlayer.id);
+        assert.equal(users[id].name, newPlayer.name);
 	}
 
 	var newPlayer = { id:1, x:0, y:0, name:'Spencer', speed:125, color:'red', powerup:'house', connected:true };
