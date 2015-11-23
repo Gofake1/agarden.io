@@ -30,6 +30,7 @@ var thisPlayer = {
     color:    null,
     powerup:  '',
     connected:true
+    //captured: null
 };
 
 var Map = {
@@ -462,6 +463,10 @@ function initSocket(socket) {
     socket.on('playerLost', function(data) {
        if (data.id === thisPlayer.id) {
             $('#gameoverScreen').modal();
+            printTimeAlive();
+            printScore();
+            printPlantsCaptured();
+            printPowerupsUsed();
        } 
     });
 }
@@ -543,6 +548,35 @@ function init() {
 // Start a new game
 function replay() {
     socket.emit('newPlayer', {name: thisPlayer.name});
+}
+
+// Prints the time alive to the game over modal
+function printTimeAlive() {
+
+    var timeStr = "Time Alive: ";
+    document.getElementById("time").innerHTML = timeStr;
+}
+
+// Prints the score to the game over modal
+function printScore() {
+    var score = scores[thisPlayer.id];
+    var scoreStr = "Largest Size: " + score;
+    document.getElementById("score").innerHTML = scoreStr;
+}
+
+// Prints the number of plants captured to the game over modal
+function printPlantsCaptured() {
+
+    plantStr = "Plants Captured: ";
+    document.getElementById("plants").innerHTML = plantStr;
+}
+
+// Prints the number of powerups used to the game over modal
+function printPowerupsUsed() {
+
+    powerupStr = "Powerups Used: ";
+    document.getElementById("powerups").innerHTML = powerupStr;
+
 }
 
 socket.on('connected');
