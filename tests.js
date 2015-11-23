@@ -131,7 +131,7 @@ function usePowerup(data) {
 
 // Tests
 
-QUnit.test('Regression 1) addNewPlayer tests', function(assert) {
+QUnit.test('Regression Tests: addNewPlayer tests', function(assert) {
 	function testAddPlayer(id, name, newPlayer) {
 		var testPlayer = addNewPlayer(id, name);
 		assert.equal(testPlayer.name, newPlayer.name);
@@ -144,7 +144,7 @@ QUnit.test('Regression 1) addNewPlayer tests', function(assert) {
 });
 
 
-QUnit.test('Regression 2) attackPlant tests', function(assert) {
+QUnit.test('Regression Tests: attackPlant tests', function(assert) {
     function testAttackPlant() {
         // Hard code board values for tests
         var attacking_id = '0';
@@ -166,8 +166,7 @@ QUnit.test('Regression 2) attackPlant tests', function(assert) {
     testAttackPlant();
 });
 
-
-QUnit.test('Regression 3) usePowerup tests', function(assert) {
+QUnit.test('Regression Tests: usePowerup tests', function(assert) {
     function testUsePowerup() {
         var original_overlayer_spot = 0;
         var house_value = 1;
@@ -194,7 +193,6 @@ QUnit.test('Regression 3) usePowerup tests', function(assert) {
         assert.equal(house_value, overlayer[0][0]);
         assert.equal(water_powerup, plants[1][1].power);
         assert.equal(seeds_powerup, plants[1][5].power);
-
     }
 
     testUsePowerup();
