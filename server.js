@@ -42,8 +42,9 @@ var deadColor   = '#BCBCBC';
 
 function addNewPlayer(id, name) {
     var i = true;
+    var color;
     while (i) {
-        var color = '#'+(Math.random().toString(16)+'000000').slice(2,8);
+        color = '#'+(Math.random().toString(16)+'000000').slice(2,8);
         if (color != deadColor) {
             i = false; 
         }
