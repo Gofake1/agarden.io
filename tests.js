@@ -47,7 +47,7 @@ function addNewPlayer(id, name) {
     // TODO: check if start position is valid
     var x = Math.floor(Math.random()*gridWidth*tileLength);
     var y = Math.floor(Math.random()*gridHeight*tileLength);
-    var newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, powerup:'house', connected:true };
+    var newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, powerup:'house', connected:true, captured:0 };
     users[id] = newPlayer;
     scores[id] = 0;
     leaderboard.push(id); // Remove this later
@@ -68,6 +68,8 @@ function attackPlant(attackingType, strength, power, powerTime, x, y) {
         plants[y][x].rank = 0.2;
         plants[y][x].power = power;
         plants[y][x].powerTime = powerTime;
+        // Increment plants captured here
+        users[attackingType].captured++;
 
         // if we're capturing a house
         if (overlayer[y][x] === 1) {
@@ -144,7 +146,7 @@ QUnit.test('Regression Tests: addNewPlayer', function(assert) {
         assert.equal(users[id].name, newPlayer.name);
     }
 
-    var newPlayer = { id:1, x:0, y:0, name:'Spencer', speed:125, color:'red', powerup:'house', connected:true };
+    var newPlayer = { id:1, x:0, y:0, name:'Spencer', speed:125, color:'red', powerup:'house', connected:true, captured:0 };
     testAddPlayer(1, 'Spencer', newPlayer);
 });
 
@@ -215,8 +217,8 @@ QUnit.test('New Feature Tests: incrementPowerupsUsed tests', function(assert) {
     color:    null,
     powerup:  '',
     connected:true,
-    powerupsUsed: 0
-    //captured: null
+    powerupsUsed: 0,
+    captured: null
     };
     var powerupsBefore = thisPlayer.powerupsUsed;
 
