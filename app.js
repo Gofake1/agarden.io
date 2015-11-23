@@ -475,11 +475,11 @@ function initSocket(socket) {
     socket.on('playerLost', function(data) {
        if (data.id === thisPlayer.id) {
             $('#gameoverScreen').modal();
+            endTime = new Date();
             printTimeAlive();
             printScore();
             printPlantsCaptured();
             printPowerupsUsed();
-            endTime = new Date();
        } 
     });
 }
