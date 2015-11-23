@@ -30,6 +30,7 @@ var thisPlayer = {
     color:    null,
     powerup:  '',
     connected:true
+    //captured: null
 };
 
 var Map = {
