@@ -54,8 +54,7 @@ function addNewPlayer(id, name) {
     // TODO: check if start position is valid
     var x = Math.floor(Math.random()*gridWidth*tileLength);
     var y = Math.floor(Math.random()*gridHeight*tileLength);
-    var newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, powerup:'house', connected:true, powerupsUsed:0 };
-    // var newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, powerup:'house', connected:true, captured:0 };
+    var newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, powerup:'house', connected:true, captured:0 };
     users[id] = newPlayer;
     scores[id] = 0;
     leaderboard.push(id); // Remove this later
@@ -140,7 +139,7 @@ function attackPlant(attackingType, strength, power, powerTime, x, y) {
         plants[y][x].power = power;
         plants[y][x].powerTime = powerTime;
         // Increment plants captured here
-        // users[attackingType].captured++;
+        users[attackingType].captured++;
 
         // if we're capturing a house
         if (overlayer[y][x] === 1) {

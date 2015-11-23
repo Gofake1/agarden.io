@@ -30,8 +30,8 @@ var thisPlayer = {
     color:    null,
     powerup:  '',
     connected:true,
-    powerupsUsed: 0
-    //captured: null
+    powerupsUsed: 0,
+    captured: null
 };
 
 var Map = {
