@@ -41,6 +41,8 @@ var numPowerups = 0;
 var deadColor   = '#BCBCBC';
 
 function addNewPlayer(id, name) {
+    // Need to make sure all game over stats are initialized to 0
+    // Need to make sure to start a timer for total time alive
     var i = true;
     var color;
     while (i) {
@@ -219,6 +221,8 @@ function expandPlant(newBoard, pid, x, y) {
                     newBoard[y+i][x+j] = 1;
                     // Create a plant at that location
                     plants[y+i][x+j] = new Plant(0.15, pid, 0);
+
+                    // Increment number of tiles captured
 
                     // Score keeping
                     // Users who have left the game no longer earn points, 

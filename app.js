@@ -57,10 +57,6 @@ var Viewport = {
     vizmax_y:null
 };
 
-// class Game {
-//    
-// }
-
 var canvas        = document.getElementById('canvas');
 var ctx           = canvas.getContext('2d');
 ctx.canvas.width  = window.innerWidth;
@@ -73,6 +69,7 @@ var allPlayers      = {};
 var scores          = {};
 var leaderboard     = [];
 var deadColor       = '#BCBCBC';
+var scoreHistory    = {};
 
 // Sprites
 var dirt        = new Image();
@@ -325,6 +322,7 @@ function keyInput(key) {
         if (thisPlayer.powerup === 'boots')
             boostSpeed();
         socket.emit('2', data);
+        // increment number of powerups used
         thisPlayer.powerup = '';
     }
 }
