@@ -80,6 +80,50 @@ function attackPlant(attackingType, strength, power, powerTime, x, y) {
     }
 }
 
+function powerupSpecificPlant(x, y, powerup) {
+    // only power up a plant if it exists in the game
+    if (board[y][x] === 1)
+    {
+        (plants[y][x]).power = powerup;
+        (plants[y][x]).powerTime = 30;
+    }
+}
+
+// Gives a boost to some plants
+function powerupPlant(x, y, powerup) {
+    powerupSpecificPlant(x,y,powerup);
+    powerupSpecificPlant(x+1,y,powerup);
+    powerupSpecificPlant(x-1,y,powerup);
+    powerupSpecificPlant(x,y+1,powerup);
+    powerupSpecificPlant(x+1,y+1,powerup);
+    powerupSpecificPlant(x-1,y+1,powerup);
+    powerupSpecificPlant(x,y-1,powerup);
+    powerupSpecificPlant(x+1,y-1,powerup);
+    powerupSpecificPlant(x-1,y-1,powerup);
+}
+
+function usePowerup(data) {
+    switch (data.powerup) {
+    case 'house':
+        overlayer[data.y][data.x] = 1;
+        board[data.y][data.x] = 1;
+        plants[data.y][data.x] = new Plant(0.5, data.playerid, 0);
+        break;
+    case 'waterbucket':
+        if (board[data.y][data.x] === 1)
+            powerupPlant(data.x, data.y, 2);
+        break;
+    case 'seeds':
+        if (board[data.y][data.x] === 1)
+            powerupPlant(data.x, data.y, 1);
+        break;
+    case 'boots':
+        break;
+    default:
+        break;
+    }
+}
+
 //////// END FUNCTIONS FOR TESTS ///////////////////
 
 
@@ -97,11 +141,11 @@ QUnit.test('Regression 1) addNewPlayer tests', function(assert) {
 
 	var newPlayer = { id:1, x:0, y:0, name:'Spencer', speed:125, color:'red', powerup:'house', connected:true };
 	testAddPlayer(1, 'Spencer', newPlayer);
-
 });
 
+
 QUnit.test('Regression 2) attackPlant tests', function(assert) {
-    function testAddPlayer(id, name, newPlayer) {
+    function testAttackPlant() {
         // Hard code board values for tests
         var attacking_id = '0';
         var defending_id = '1';
@@ -119,8 +163,41 @@ QUnit.test('Regression 2) attackPlant tests', function(assert) {
         assert.equal(defending_health_start-strength, plants[1][1].rank);
     }
 
-    var newPlayer = { id:1, x:0, y:0, name:'Spencer', speed:125, color:'red', powerup:'house', connected:true };
-    testAddPlayer(1, 'Spencer', newPlayer);
+    testAttackPlant();
+});
+
+
+QUnit.test('Regression 3) usePowerup tests', function(assert) {
+    function testUsePowerup() {
+        var original_overlayer_spot = 0;
+        var house_value = 1;
+        var no_powerup = 0;
+        var water_powerup = 2;
+        var seeds_powerup = 1;
+        overlayer[0][0] = original_overlayer_spot;
+        board[1][1] = 1;
+        board[1][5] = 1;
+        plants[1][1] = new Plant(1, '1', 0);
+        plants[1][5] = new Plant(1, '1', 0);
+        dataHouse = {playerid:'1', powerup:'house', x:0, y:0};
+        dataWaterBucket = {playerid:'1', powerup:'waterbucket', x:1, y:1};
+        dataSeeds = {playerid:'1', powerup:'seeds', x:5, y:1};
+
+        assert.equal(original_overlayer_spot, overlayer[0][0]);
+        assert.equal(plants[1][1].power, no_powerup);
+        assert.equal(plants[1][5].power, no_powerup);
+
+        usePowerup(dataHouse);
+        usePowerup(dataWaterBucket);
+        usePowerup(dataSeeds);
+
+        assert.equal(house_value, overlayer[0][0]);
+        assert.equal(water_powerup, plants[1][1].power);
+        assert.equal(seeds_powerup, plants[1][5].power);
+
+    }
+
+    testUsePowerup();
 });
 
 // Expand plant
