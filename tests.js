@@ -32,6 +32,8 @@ var plants      = Board(gridHeight, gridWidth, 0);
 var overlayer   = Board(gridHeight, gridWidth, 0);
 var numPowerups = 0;
 var deadColor   = '#BCBCBC';
+var startTime;
+var endTime;
 
 /////// START FUNCTIONS FOR TESTS
 
@@ -56,6 +58,7 @@ function addNewPlayer(id, name) {
 
 function removePlayer(id) {
     delete users[id];
+    endTime = new Date();
 }
 
 function attackPlant(attackingType, strength, power, powerTime, x, y) {
@@ -84,8 +87,7 @@ function attackPlant(attackingType, strength, power, powerTime, x, y) {
 
 function powerupSpecificPlant(x, y, powerup) {
     // only power up a plant if it exists in the game
-    if (board[y][x] === 1)
-    {
+    if (board[y][x] === 1) {
         (plants[y][x]).power = powerup;
         (plants[y][x]).powerTime = 30;
     }
@@ -130,7 +132,8 @@ function incrementPowerupsUsed(player) {
     player.powerupsUsed += 1;
 }
 
-function timeAlive(player) {
+function timeAlive(start, end) {
+    return end - start;
 }
 
 //////// END FUNCTIONS FOR TESTS ///////////////////
@@ -260,7 +263,7 @@ QUnit.test('New Feature Tests: timeAlive', function(assert) {
         setTimeout(function() {
             removePlayer(1337);
         }, 5000);
-        assert.equal(timeAlive(1337), 5000);
+        assert.equal(timeAlive(startTime, endTime), 5000);
     }
 
     testTimeAlive();
