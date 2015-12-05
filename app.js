@@ -376,7 +376,7 @@ function incrementPowerupsUsed() {
 }
 
 function timeAlive(start, end) {
-    return end - start;
+    return (end - start)/1000;
 }
 
 // This function will be used to load images prior to their use
@@ -565,7 +565,7 @@ function replay() {
 
 // Prints the time alive to the game over modal
 function printTimeAlive() {
-    var timeStr = "Time Alive: " + timeAlive(startTime, endTime);
+    var timeStr = "Time Alive: " + timeAlive(startTime, endTime) + " seconds";
     document.getElementById("time").innerHTML = timeStr;
 }
 
