@@ -295,8 +295,8 @@ function processBoard() {
                         agePlant(newBoard, x, y);
                         break;
                     case ('t'):
-                        // If tilled for more than 120 seconds, untill
-                        if (Date.now() - tilled[y.toString()+x.toString()] > 120000) {
+                        // If tilled for more than 30 seconds, untill
+                        if (Date.now() - tilled[y.toString()+x.toString()] > 30000) {
                             board[y][x] = 0;
                             delete tilled[y.toString()+x.toString()];
                         }
@@ -316,7 +316,9 @@ function usePowerup(data) {
         overlayer[data.y][data.x] = 1;
         board[data.y][data.x] = 1;
         plants[data.y][data.x] = new Plant(0.5, data.playerid, 0);
+        scores[data.playerid] += 1;
         io.emit('overlayerUpdate', {x:data.x, y:data.y, value:data.id});
+        io.emit('scoreUpdate', scores);
         break;
     case 'waterbucket':
         console.log('Water bucket used');

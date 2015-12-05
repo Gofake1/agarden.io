@@ -217,7 +217,7 @@ function drawLeaderboard() {
     var newLineHeight = 50;
     var rank;
     leaderboard.forEach(function(value, index) {
-        if (allPlayers[value])
+        if (allPlayers[value] && scores[value] > 0)
             if (allPlayers[value].connected !== false && allPlayers[value].color !== deadColor) {
                 newLineHeight += 20;
                 rank = index+1;
@@ -320,15 +320,19 @@ function boostSpeed() {
 
 // Use powerup on space or enter key
 function keyInput(key) {
-    if ((key.charCode == 13 || key.charCode == 32) && thisPlayer.powerup !== '') {
-        var xTile = Math.floor(thisPlayer.x / Viewport.objective_tileLength);
-        var yTile = Math.floor(thisPlayer.y / Viewport.objective_tileLength);
-        data = {playerid:thisPlayer.id, powerup:thisPlayer.powerup, x:xTile, y:yTile};
-        if (thisPlayer.powerup === 'boots')
-            boostSpeed();
-        socket.emit('2', data);
-        incrementPowerupsUsed();
-        thisPlayer.powerup = '';
+    var xTile = Math.floor(thisPlayer.x / Viewport.objective_tileLength);
+    var yTile = Math.floor(thisPlayer.y / Viewport.objective_tileLength);
+    if ((key.charCode == 13 || key.charCode == 32) && thisPlayer.powerup !== '' && xTile < Map.gridWidth && xTile >= 0 && yTile < Map.gridHeight && yTile >= 0)
+    {
+        if (!(thisPlayer.powerup === 'house' && Map.board[yTile][xTile] === 1))
+        {
+            data = {playerid:thisPlayer.id, powerup:thisPlayer.powerup, x:xTile, y:yTile};
+            if (thisPlayer.powerup === 'boots')
+                boostSpeed();
+            socket.emit('2', data);
+            incrementPowerupsUsed();
+            thisPlayer.powerup = '';
+        }
     }
 }
 
@@ -340,11 +344,17 @@ function mouseInput(mouse) {
 
 // Till land on mouse click
 function mouseClick() {
-    xTile = Math.floor(thisPlayer.x / Viewport.objective_tileLength);
-    yTile = Math.floor(thisPlayer.y / Viewport.objective_tileLength);
-    if (Map.board[yTile][xTile] === 0) {
-        Map.board[yTile][xTile] = 't';
-        socket.emit('1', {x:xTile, y:yTile});
+    if (thisPlayer.id !== null)
+    {
+        xTile = Math.floor(thisPlayer.x / Viewport.objective_tileLength);
+        yTile = Math.floor(thisPlayer.y / Viewport.objective_tileLength);
+        if (xTile < Map.gridWidth && xTile >= 0 && yTile < Map.gridHeight && yTile >= 0)
+        {
+            if (Map.board[yTile][xTile] === 0) {
+                Map.board[yTile][xTile] = 't';
+                socket.emit('1', {x:xTile, y:yTile});
+            }
+        }
     }
 }
 
@@ -480,7 +490,7 @@ function initSocket(socket) {
             printScore();
             printPlantsCaptured();
             printPowerupsUsed();
-       } 
+       }
     });
 }
 
@@ -492,7 +502,8 @@ function processOverlayer() {
     var yTile = Math.floor(thisPlayer.y / Viewport.objective_tileLength);
 
     // The object of the tile you are currently standing on
-    if (thisPlayer.powerup === '') {
+    if (thisPlayer.powerup === '' && xTile < Map.gridWidth && xTile >= 0 && yTile < Map.gridHeight && yTile >= 0)
+    {
         current = Map.overlayer[yTile][xTile];
         switch (current) {
             case (0):
