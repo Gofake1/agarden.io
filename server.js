@@ -411,6 +411,8 @@ io.on('connection', function(socket) {
         }
         socket.disconnect();
         io.emit('aDisconnect', users);
+        scores[socket.id] = 0;
+        io.emit('scoresUpdate', scores);
     });
 
 });
