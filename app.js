@@ -571,7 +571,7 @@ function init() {
 
 // Start a new game
 function replay() {
-    socket.emit('newPlayer', {name: thisPlayer.name});
+    socket.emit('resetPlayer', {name: thisPlayer.name});
 }
 
 // Prints the time alive to the game over modal

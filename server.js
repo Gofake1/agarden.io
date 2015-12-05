@@ -61,6 +61,26 @@ function addNewPlayer(id, name) {
     return newPlayer;
 }
 
+function resetPlayer(id, name) {
+    // Need to make sure all game over stats are initialized to 0
+    // Need to make sure to start a timer for total time alive
+    var i = true;
+    var color;
+    while (i) {
+        color = '#'+(Math.random().toString(16)+'000000').slice(2,8);
+        if (color != deadColor) {
+            i = false; 
+        }
+    }
+    // TODO: check if start position is valid
+    var x = Math.floor(Math.random()*gridWidth*tileLength);
+    var y = Math.floor(Math.random()*gridHeight*tileLength);
+    var newPlayer = { id:id, x:x, y:y, name:name, speed:125, color:color, powerup:'house', connected:true, powerupsUsed:0, captured:0 };
+    users[id] = newPlayer;
+    scores[id] = 0;
+    return newPlayer;
+}
+
 function removePlayer(id) {
     delete users[id];
     endTime = new Date();
@@ -355,6 +375,21 @@ io.on('connection', function(socket) {
     socket.on('newPlayer', function(data) {
         console.log('socket.on:newPlayer');
         newPlayer = addNewPlayer(socket.id, data.name);
+        socket.emit('playerCreated', newPlayer);
+        socket.emit('setup', {
+            users:      users,
+            scores:     scores,
+            leaderboard:leaderboard,
+            board:      board,
+            overlayer:  overlayer,
+            deadColor:  deadColor
+        });
+        io.emit('newJoin', newPlayer);
+    });
+
+    socket.on('resetPlayer', function(data) {
+        console.log('socket.on:newPlayer');
+        newPlayer = resetPlayer(socket.id, data.name);
         socket.emit('playerCreated', newPlayer);
         socket.emit('setup', {
             users:      users,
