@@ -215,12 +215,12 @@ function drawLeaderboard() {
     ctx.fillText('Leaderboard', window.innerWidth-190, 40);
 
     var newLineHeight = 50;
-    var rank;
+    var rank = 1;
     leaderboard.forEach(function(value, index) {
         if (allPlayers[value] && scores[value] > 0)
+        {
             if (allPlayers[value].connected !== false && allPlayers[value].color !== deadColor) {
                 newLineHeight += 20;
-                rank = index+1;
                 //ctx.fillStyle = allPlayers[value].color;
                 ctx.fillText(rank+'. '+allPlayers[value].name, window.innerWidth-230, newLineHeight);
                 ctx.beginPath();
@@ -228,7 +228,9 @@ function drawLeaderboard() {
                 ctx.fillStyle = allPlayers[value].color;
                 ctx.fill();
                 ctx.fillStyle ='white';
+                rank++;
             }
+        }
     });
 }
 
@@ -242,7 +244,7 @@ function drawScore() {
     ctx.fillStyle   = 'white';
     ctx.font        = '20px Arial';
     ctx.textAlign   = 'left';
-    ctx.fillText('Score: '+scores[thisPlayer.id], 15, window.innerHeight-30);
+    ctx.fillText('Score: '+((scores[thisPlayer.id]=='undefined') ? scores[thisPlayer.id]:0) , 15, window.innerHeight-30);
 }
 
 function drawCurrentPowerup() {
