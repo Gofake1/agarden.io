@@ -486,6 +486,7 @@ function initSocket(socket) {
 
     socket.on('playerLost', function(data) {
        if (data.id === thisPlayer.id) {
+            thisPlayer.captured = data.captured;
             $('#gameoverScreen').modal();
             endTime = new Date();
             printTimeAlive();

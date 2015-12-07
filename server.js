@@ -146,7 +146,7 @@ function changePlant(changeID, newID) {
     }
     
     users[changeID].connected = false;
-    io.emit('playerLost', {id:changeID});
+    io.emit('playerLost', {id:changeID, captured:users[changeID].captured});
 }
 
 function attackPlant(attackingType, strength, power, powerTime, x, y) {
