@@ -325,8 +325,8 @@ function keyInput(key) {
     var xTile = Math.floor(thisPlayer.x / Viewport.objective_tileLength);
     var yTile = Math.floor(thisPlayer.y / Viewport.objective_tileLength);
     if ((key.charCode == 13 || key.charCode == 32) && thisPlayer.powerup !== '' && xTile < Map.gridWidth && xTile >= 0 && yTile < Map.gridHeight && yTile >= 0)
-    {
-        if (!(thisPlayer.powerup === 'house' && Map.board[yTile][xTile] === 1 && overlayer[yTile][xTile] === 0))
+    {   
+        if (!(thisPlayer.powerup === 'house' && (Map.board[yTile][xTile] === 1 || Map.overlayer[yTile][xTile] != 0)))
         {
             data = {playerid:thisPlayer.id, powerup:thisPlayer.powerup, x:xTile, y:yTile};
             if (thisPlayer.powerup === 'boots')
