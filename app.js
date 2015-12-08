@@ -447,6 +447,12 @@ function initSocket(socket) {
         if (data.powerup == 'waterbucket') {
             Map.overlayer[data.y][data.x] = 2;
         }
+        else if (data.powerup == 'boots') {
+            Map.overlayer[data.y][data.x] = 4;
+        }
+        else if (data.powerup == 'seeds') {
+            Map.overlayer[data.y][data.x] = 3;
+        }
     });
 
     socket.on('overlayerUpdate', function(data) {

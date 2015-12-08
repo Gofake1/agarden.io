@@ -101,12 +101,23 @@ function updateLeaderboard() {
 function addPowerups() {
     while (numPowerups < 45)
     {
+        console.log('add powerups');
         var x = Math.floor(Math.random() * gridWidth);
         var y = Math.floor(Math.random() * gridHeight);
         var puptype = Math.floor(Math.random() * 3) + 2;
         if (overlayer[y][x] === 0) {
             overlayer[y][x] = puptype;
             numPowerups++;
+            if (puptype == 2) {
+                var powerup = 'waterbucket';
+            }
+            else if (puptype == 3) {
+                var powerup = 'seeds';
+            }
+            else if (puptype == 4) {
+                var powerup = 'boots'
+            }
+            io.emit("powerupSpawned", {x:x, y:y, powerup:powerup});
         }
     }
 }
