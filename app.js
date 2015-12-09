@@ -457,7 +457,12 @@ function initSocket(socket) {
 
     socket.on('overlayerUpdate', function(data) {
         console.log('socket.on:overlayerUpdate');
-        Map.overlayer[data.y][data.x] = 0;
+        if (data.value === 0) {
+            Map.overlayer[data.y][data.x] = 0;
+        }
+        else {
+            Map.overlayer[data.y][data.x] = 1;
+        }
     });
 
     socket.on('boardUpdateAll', function(data) {
